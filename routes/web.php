@@ -10,6 +10,14 @@ use App\Http\Controllers\Admin\Auth\VerifyEmailController as AdminVerifyEmailCon
 use App\Http\Controllers\Admin\Auth\EmailVerificationNotificationController as AdminEmailVerificationNotificationController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController as AdminConfirmablePasswordController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
+// Transportation Services Controllers
+use App\Http\Controllers\Admin\TransportationServiceController;
+use App\Http\Controllers\Admin\ServicePricingController;
+use App\Http\Controllers\Admin\CityController;
+use App\Http\Controllers\Admin\VehicleTypeController;
+use App\Http\Controllers\Admin\ParcelTypeController;
+
 use Illuminate\Support\Facades\Route;
 
 // Customer Routes
@@ -24,6 +32,7 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
@@ -45,18 +54,114 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Admin Authenticated Routes  
     Route::middleware('admin.auth')->group(function () {
+        // Main Dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [AdminLoginController::class, 'destroy'])->name('logout');
         
+        // Email Verification Routes
         Route::get('/verify-email', [AdminEmailVerificationPromptController::class, 'index'])->name('verification.notice');
         Route::get('/verify-email/{id}/{hash}', [AdminVerifyEmailController::class, 'verify'])
             ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
         Route::post('/email/verification-notification', [AdminEmailVerificationNotificationController::class, 'store'])
             ->middleware('throttle:6,1')->name('verification.send');
             
+        // Password Confirmation
         Route::get('/confirm-password', [AdminConfirmablePasswordController::class, 'show'])->name('password.confirm');
         Route::post('/confirm-password', [AdminConfirmablePasswordController::class, 'store']);
+        
+        // ===================================
+        // Transportation Services Management
+        // ===================================
+        Route::prefix('transportation')->name('transportation.')->group(function () {
+            
+            // Transportation Services CRUD
+            Route::resource('services', TransportationServiceController::class);
+            Route::patch('services/{service}/toggle', [TransportationServiceController::class, 'toggle'])
+                ->name('services.toggle');
+            
+            // Service Pricing CRUD
+            Route::resource('pricing', ServicePricingController::class);
+            Route::patch('pricing/{pricing}/toggle', [ServicePricingController::class, 'toggle'])
+                ->name('pricing.toggle');
+            Route::post('pricing/{pricing}/duplicate', [ServicePricingController::class, 'duplicate'])
+                ->name('pricing.duplicate');
+            
+            // Cities Management CRUD
+            Route::resource('cities', CityController::class);
+            Route::patch('cities/{city}/toggle', [CityController::class, 'toggle'])
+                ->name('cities.toggle');
+            
+            // Vehicle Types Management CRUD
+            Route::resource('vehicle-types', VehicleTypeController::class);
+            Route::patch('vehicle-types/{vehicleType}/toggle', [VehicleTypeController::class, 'toggle'])
+                ->name('vehicle-types.toggle');
+            
+            // Parcel Types Management CRUD
+            Route::resource('parcel-types', ParcelTypeController::class);
+            Route::patch('parcel-types/{parcelType}/toggle', [ParcelTypeController::class, 'toggle'])
+                ->name('parcel-types.toggle');
+        });
     });
 });
 
 require __DIR__.'/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| Transportation Services Route Summary
+|--------------------------------------------------------------------------
+| 
+| The following routes are now available for transportation services:
+|
+| Transportation Services:
+| GET     /admin/transportation/services                           admin.transportation.services.index
+| GET     /admin/transportation/services/create                    admin.transportation.services.create
+| POST    /admin/transportation/services                           admin.transportation.services.store
+| GET     /admin/transportation/services/{service}                 admin.transportation.services.show
+| GET     /admin/transportation/services/{service}/edit            admin.transportation.services.edit
+| PUT     /admin/transportation/services/{service}                 admin.transportation.services.update
+| DELETE  /admin/transportation/services/{service}                 admin.transportation.services.destroy
+| PATCH   /admin/transportation/services/{service}/toggle          admin.transportation.services.toggle
+|
+| Service Pricing:
+| GET     /admin/transportation/pricing                            admin.transportation.pricing.index
+| GET     /admin/transportation/pricing/create                     admin.transportation.pricing.create
+| POST    /admin/transportation/pricing                            admin.transportation.pricing.store
+| GET     /admin/transportation/pricing/{pricing}                  admin.transportation.pricing.show
+| GET     /admin/transportation/pricing/{pricing}/edit             admin.transportation.pricing.edit
+| PUT     /admin/transportation/pricing/{pricing}                  admin.transportation.pricing.update
+| DELETE  /admin/transportation/pricing/{pricing}                  admin.transportation.pricing.destroy
+| PATCH   /admin/transportation/pricing/{pricing}/toggle           admin.transportation.pricing.toggle
+| POST    /admin/transportation/pricing/{pricing}/duplicate        admin.transportation.pricing.duplicate
+|
+| Cities:
+| GET     /admin/transportation/cities                             admin.transportation.cities.index
+| GET     /admin/transportation/cities/create                      admin.transportation.cities.create
+| POST    /admin/transportation/cities                             admin.transportation.cities.store
+| GET     /admin/transportation/cities/{city}                      admin.transportation.cities.show
+| GET     /admin/transportation/cities/{city}/edit                 admin.transportation.cities.edit
+| PUT     /admin/transportation/cities/{city}                      admin.transportation.cities.update
+| DELETE  /admin/transportation/cities/{city}                      admin.transportation.cities.destroy
+| PATCH   /admin/transportation/cities/{city}/toggle               admin.transportation.cities.toggle
+|
+| Vehicle Types:
+| GET     /admin/transportation/vehicle-types                      admin.transportation.vehicle-types.index
+| GET     /admin/transportation/vehicle-types/create               admin.transportation.vehicle-types.create
+| POST    /admin/transportation/vehicle-types                      admin.transportation.vehicle-types.store
+| GET     /admin/transportation/vehicle-types/{vehicleType}        admin.transportation.vehicle-types.show
+| GET     /admin/transportation/vehicle-types/{vehicleType}/edit   admin.transportation.vehicle-types.edit
+| PUT     /admin/transportation/vehicle-types/{vehicleType}        admin.transportation.vehicle-types.update
+| DELETE  /admin/transportation/vehicle-types/{vehicleType}        admin.transportation.vehicle-types.destroy
+| PATCH   /admin/transportation/vehicle-types/{vehicleType}/toggle admin.transportation.vehicle-types.toggle
+|
+| Parcel Types:
+| GET     /admin/transportation/parcel-types                       admin.transportation.parcel-types.index
+| GET     /admin/transportation/parcel-types/create                admin.transportation.parcel-types.create
+| POST    /admin/transportation/parcel-types                       admin.transportation.parcel-types.store
+| GET     /admin/transportation/parcel-types/{parcelType}          admin.transportation.parcel-types.show
+| GET     /admin/transportation/parcel-types/{parcelType}/edit     admin.transportation.parcel-types.edit
+| PUT     /admin/transportation/parcel-types/{parcelType}          admin.transportation.parcel-types.update
+| DELETE  /admin/transportation/parcel-types/{parcelType}          admin.transportation.parcel-types.destroy
+| PATCH   /admin/transportation/parcel-types/{parcelType}/toggle   admin.transportation.parcel-types.toggle
+|
+*/

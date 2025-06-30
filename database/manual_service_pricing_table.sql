@@ -1,0 +1,36 @@
+-- Manual SQL to create service_pricing table if migration fails
+-- Run this in your MySQL database if needed
+
+CREATE TABLE `service_pricing` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `transportation_service_id` bigint(20) UNSIGNED NOT NULL,
+  `pickup_city_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `dropoff_city_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `vehicle_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `base_price` decimal(10,2) NOT NULL,
+  `price_per_km` decimal(8,2) DEFAULT NULL,
+  `price_per_day` decimal(8,2) DEFAULT NULL,
+  `airport_pickup_surcharge` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `airport_dropoff_surcharge` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `transfer_type` varchar(255) DEFAULT NULL,
+  `parcel_type` varchar(255) DEFAULT NULL,
+  `weight_limit` decimal(8,2) DEFAULT NULL,
+  `distance_km` int(11) DEFAULT NULL,
+  `weekend_surcharge_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `night_surcharge_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `night_start_time` time NOT NULL DEFAULT '22:00:00',
+  `night_end_time` time NOT NULL DEFAULT '06:00:00',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sp_service_route_idx` (`transportation_service_id`,`pickup_city_id`,`dropoff_city_id`),
+  KEY `sp_vehicle_active_idx` (`vehicle_type_id`,`is_active`),
+  KEY `service_pricing_pickup_city_id_foreign` (`pickup_city_id`),
+  KEY `service_pricing_dropoff_city_id_foreign` (`dropoff_city_id`),
+  KEY `service_pricing_vehicle_type_id_foreign` (`vehicle_type_id`),
+  CONSTRAINT `service_pricing_dropoff_city_id_foreign` FOREIGN KEY (`dropoff_city_id`) REFERENCES `cities` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `service_pricing_pickup_city_id_foreign` FOREIGN KEY (`pickup_city_id`) REFERENCES `cities` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `service_pricing_transportation_service_id_foreign` FOREIGN KEY (`transportation_service_id`) REFERENCES `transportation_services` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `service_pricing_vehicle_type_id_foreign` FOREIGN KEY (`vehicle_type_id`) REFERENCES `vehicle_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
