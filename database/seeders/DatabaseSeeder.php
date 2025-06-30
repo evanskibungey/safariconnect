@@ -19,5 +19,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Seed admin users
+        $this->call(AdminSeeder::class);
+        
+        // Seed transportation services (if exists)
+        if (class_exists('Database\\Seeders\\TransportationServiceSeeder')) {
+            $this->call(TransportationServiceSeeder::class);
+        }
     }
 }
