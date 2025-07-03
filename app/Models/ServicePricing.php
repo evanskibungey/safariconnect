@@ -19,6 +19,8 @@ class ServicePricing extends Model
         'transportation_service_id',
         'pickup_city_id',
         'dropoff_city_id',
+        'pickup_airport_id',
+        'dropoff_airport_id',
         'vehicle_type_id',
         'base_price',
         'price_per_km',
@@ -85,6 +87,16 @@ class ServicePricing extends Model
         return $this->belongsTo(VehicleType::class);
     }
 
+    public function pickupAirport(): BelongsTo
+    {
+        return $this->belongsTo(Airport::class, 'pickup_airport_id');
+    }
+
+    public function dropoffAirport(): BelongsTo
+    {
+        return $this->belongsTo(Airport::class, 'dropoff_airport_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -105,6 +117,20 @@ class ServicePricing extends Model
 
     public function getRouteDescriptionAttribute()
     {
+        // For airport transfers, show airport and city information
+        if ($this->transportationService && $this->transportationService->service_type === 'airport_transfer') {
+            if ($this->transfer_type === 'pickup') {
+                $airport = $this->pickupAirport ? $this->pickupAirport->full_name : 'Airport';
+                $city = $this->dropoffCity ? $this->dropoffCity->name : 'City';
+                return $airport . ' → ' . $city;
+            } elseif ($this->transfer_type === 'dropoff') {
+                $city = $this->pickupCity ? $this->pickupCity->name : 'City';
+                $airport = $this->dropoffAirport ? $this->dropoffAirport->full_name : 'Airport';
+                return $city . ' → ' . $airport;
+            }
+        }
+        
+        // For regular city-to-city routes
         if ($this->pickupCity && $this->dropoffCity) {
             return $this->pickupCity->name . ' → ' . $this->dropoffCity->name;
         }

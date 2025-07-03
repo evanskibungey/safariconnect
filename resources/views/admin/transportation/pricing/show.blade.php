@@ -85,15 +85,7 @@
                         <div>
                             <div class="text-sm font-medium text-gray-500">Route</div>
                             <div class="text-lg font-semibold text-gray-900">
-                                @if($pricing->pickupCity && $pricing->dropoffCity)
-                                    {{ $pricing->pickupCity->name }} → {{ $pricing->dropoffCity->name }}
-                                @elseif($pricing->pickupCity)
-                                    From {{ $pricing->pickupCity->name }}
-                                @elseif($pricing->dropoffCity)
-                                    To {{ $pricing->dropoffCity->name }}
-                                @else
-                                    General Pricing
-                                @endif
+                                {{ $pricing->route_description }}
                             </div>
                             @if($pricing->distance_km)
                                 <div class="text-sm text-gray-500">{{ $pricing->distance_km }} km</div>

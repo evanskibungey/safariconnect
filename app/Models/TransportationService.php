@@ -121,13 +121,21 @@ class TransportationService extends Model
 
     private function calculateAirportTransferPrice($params)
     {
-        $pricing = $this->servicePricing()
-            ->where('pickup_city_id', $params['pickup_city_id'] ?? null)
-            ->where('dropoff_city_id', $params['dropoff_city_id'] ?? null)
+        $query = $this->servicePricing()
             ->where('vehicle_type_id', $params['vehicle_type_id'])
             ->where('transfer_type', $params['transfer_type'])
-            ->where('is_active', true)
-            ->first();
+            ->where('is_active', true);
+
+        // For airport transfers, match based on the transfer type
+        if ($params['transfer_type'] === 'pickup') {
+            $query->where('pickup_airport_id', $params['pickup_airport_id'] ?? null)
+                  ->where('dropoff_city_id', $params['dropoff_city_id'] ?? null);
+        } else {
+            $query->where('pickup_city_id', $params['pickup_city_id'] ?? null)
+                  ->where('dropoff_airport_id', $params['dropoff_airport_id'] ?? null);
+        }
+
+        $pricing = $query->first();
 
         if (!$pricing) return 0;
 

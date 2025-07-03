@@ -51,6 +51,11 @@
                                     <i class="fas fa-map-marker-alt mr-2 w-4"></i>
                                     Cities
                                 </a>
+                                <a href="{{ route('admin.transportation.airports.index') }}" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                    <i class="fas fa-plane mr-2 w-4"></i>
+                                    Airports
+                                </a>
                                 <a href="{{ route('admin.transportation.vehicle-types.index') }}" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                                     <i class="fas fa-truck mr-2 w-4"></i>
@@ -135,6 +140,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.transportation.cities.index')" :active="request()->routeIs('admin.transportation.cities.*')">
                     <i class="fas fa-map-marker-alt mr-2"></i>Cities
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.transportation.airports.index')" :active="request()->routeIs('admin.transportation.airports.*')">
+                    <i class="fas fa-plane mr-2"></i>Airports
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.transportation.vehicle-types.index')" :active="request()->routeIs('admin.transportation.vehicle-types.*')">
                     <i class="fas fa-truck mr-2"></i>Vehicle Types

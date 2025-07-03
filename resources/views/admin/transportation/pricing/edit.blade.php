@@ -66,8 +66,165 @@
                         </div>
                     </div>
 
-                    <!-- Route Selection (for relevant services) -->
-                    <div x-show="needsRoute" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Airport Transfer Specific Configuration -->
+                    <div x-show="serviceType === 'airport_transfer'" class="space-y-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 class="text-lg font-medium text-blue-900 mb-2">
+                                <i class="fas fa-plane mr-2"></i>Airport Transfer Configuration
+                            </h3>
+                            <p class="text-sm text-blue-700">
+                                Configure airport transfer pricing. First select the transfer type (pickup or drop-off), 
+                                then choose the relevant airport and city.
+                            </p>
+                        </div>
+
+                        <!-- Step 1: Transfer Type Selection -->
+                        <div>
+                            <label for="transfer_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                Transfer Type <span class="text-red-500">*</span>
+                            </label>
+                            <select id="transfer_type" 
+                                    name="transfer_type" 
+                                    x-model="transferType"
+                                    @change="resetAirportFields()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('transfer_type') border-red-500 @enderror">
+                                <option value="">Select Transfer Type</option>
+                                <option value="pickup" {{ old('transfer_type', $pricing->transfer_type) === 'pickup' ? 'selected' : '' }}>
+                                    Airport Pickup (Airport → City)
+                                </option>
+                                <option value="dropoff" {{ old('transfer_type', $pricing->transfer_type) === 'dropoff' ? 'selected' : '' }}>
+                                    Airport Drop-off (City → Airport)
+                                </option>
+                            </select>
+                            @error('transfer_type')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Step 2: Airport & City Selection for Pickup -->
+                        <div x-show="transferType === 'pickup'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="pickup_airport_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pickup Airport <span class="text-red-500">*</span>
+                                </label>
+                                <select id="pickup_airport_id" 
+                                        name="pickup_airport_id" 
+                                        x-model="selectedPickupAirport"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pickup_airport_id') border-red-500 @enderror">
+                                    <option value="">Select Pickup Airport</option>
+                                    @foreach($airports as $airport)
+                                        <option value="{{ $airport->id }}" {{ old('pickup_airport_id', $pricing->pickup_airport_id) == $airport->id ? 'selected' : '' }}>
+                                            {{ $airport->full_name }} - {{ $airport->city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('pickup_airport_id')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="dropoff_city_id_pickup" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Destination City <span class="text-red-500">*</span>
+                                </label>
+                                <select id="dropoff_city_id_pickup" 
+                                        name="dropoff_city_id" 
+                                        x-model="selectedDropoffCity"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('dropoff_city_id') border-red-500 @enderror">
+                                    <option value="">Select Destination City</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city->id }}" {{ old('dropoff_city_id', $pricing->dropoff_city_id) == $city->id ? 'selected' : '' }}>
+                                            {{ $city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('dropoff_city_id')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Step 2: City & Airport Selection for Drop-off -->
+                        <div x-show="transferType === 'dropoff'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="pickup_city_id_dropoff" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Origin City <span class="text-red-500">*</span>
+                                </label>
+                                <select id="pickup_city_id_dropoff" 
+                                        name="pickup_city_id" 
+                                        x-model="selectedPickupCity"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pickup_city_id') border-red-500 @enderror">
+                                    <option value="">Select Origin City</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city->id }}" {{ old('pickup_city_id', $pricing->pickup_city_id) == $city->id ? 'selected' : '' }}>
+                                            {{ $city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('pickup_city_id')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="dropoff_airport_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Drop-off Airport <span class="text-red-500">*</span>
+                                </label>
+                                <select id="dropoff_airport_id" 
+                                        name="dropoff_airport_id" 
+                                        x-model="selectedDropoffAirport"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('dropoff_airport_id') border-red-500 @enderror">
+                                    <option value="">Select Drop-off Airport</option>
+                                    @foreach($airports as $airport)
+                                        <option value="{{ $airport->id }}" {{ old('dropoff_airport_id', $pricing->dropoff_airport_id) == $airport->id ? 'selected' : '' }}>
+                                            {{ $airport->full_name }} - {{ $airport->city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('dropoff_airport_id')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Airport Transfer Surcharges -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="airport_pickup_surcharge" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Airport Pickup Surcharge (KSh)
+                                </label>
+                                <input type="number" 
+                                       id="airport_pickup_surcharge" 
+                                       name="airport_pickup_surcharge" 
+                                       value="{{ old('airport_pickup_surcharge', $pricing->airport_pickup_surcharge) }}" 
+                                       step="0.01"
+                                       min="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('airport_pickup_surcharge') border-red-500 @enderror">
+                                @error('airport_pickup_surcharge')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="airport_dropoff_surcharge" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Airport Dropoff Surcharge (KSh)
+                                </label>
+                                <input type="number" 
+                                       id="airport_dropoff_surcharge" 
+                                       name="airport_dropoff_surcharge" 
+                                       value="{{ old('airport_dropoff_surcharge', $pricing->airport_dropoff_surcharge) }}" 
+                                       step="0.01"
+                                       min="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('airport_dropoff_surcharge') border-red-500 @enderror">
+                                @error('airport_dropoff_surcharge')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regular Route Selection (for non-airport services) -->
+                    <div x-show="needsRoute && serviceType !== 'airport_transfer'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="pickup_city_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Pickup City
@@ -126,7 +283,7 @@
                     <!-- Vehicle Type (for relevant services) -->
                     <div x-show="needsVehicleType">
                         <label for="vehicle_type_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            Vehicle Type
+                            Vehicle Type <span x-show="serviceType === 'airport_transfer'" class="text-red-500">*</span>
                         </label>
                         <select id="vehicle_type_id" 
                                 name="vehicle_type_id" 
@@ -141,64 +298,6 @@
                         @error('vehicle_type_id')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
-
-                    <!-- Airport Transfer Specific Fields -->
-                    <div x-show="serviceType === 'airport_transfer'" class="space-y-4">
-                        <h3 class="text-lg font-medium text-gray-900">Airport Transfer Settings</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <label for="transfer_type" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Transfer Type
-                                </label>
-                                <select id="transfer_type" 
-                                        name="transfer_type" 
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('transfer_type') border-red-500 @enderror">
-                                    <option value="">Select Transfer Type</option>
-                                    <option value="pickup" {{ old('transfer_type', $pricing->transfer_type) === 'pickup' ? 'selected' : '' }}>
-                                        Airport Pickup
-                                    </option>
-                                    <option value="dropoff" {{ old('transfer_type', $pricing->transfer_type) === 'dropoff' ? 'selected' : '' }}>
-                                        Airport Drop-off
-                                    </option>
-                                </select>
-                                @error('transfer_type')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="airport_pickup_surcharge" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Airport Pickup Surcharge (KSh)
-                                </label>
-                                <input type="number" 
-                                       id="airport_pickup_surcharge" 
-                                       name="airport_pickup_surcharge" 
-                                       value="{{ old('airport_pickup_surcharge', $pricing->airport_pickup_surcharge) }}" 
-                                       step="0.01"
-                                       min="0"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('airport_pickup_surcharge') border-red-500 @enderror">
-                                @error('airport_pickup_surcharge')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="airport_dropoff_surcharge" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Airport Dropoff Surcharge (KSh)
-                                </label>
-                                <input type="number" 
-                                       id="airport_dropoff_surcharge" 
-                                       name="airport_dropoff_surcharge" 
-                                       value="{{ old('airport_dropoff_surcharge', $pricing->airport_dropoff_surcharge) }}" 
-                                       step="0.01"
-                                       min="0"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('airport_dropoff_surcharge') border-red-500 @enderror">
-                                @error('airport_dropoff_surcharge')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Parcel Delivery Specific Fields -->
@@ -389,6 +488,11 @@
             return {
                 selectedService: '{{ old('transportation_service_id', $pricing->transportation_service_id) }}',
                 serviceType: '{{ $pricing->transportationService->service_type }}',
+                transferType: '{{ old('transfer_type', $pricing->transfer_type) }}',
+                selectedPickupAirport: '{{ old('pickup_airport_id', $pricing->pickup_airport_id) }}',
+                selectedDropoffAirport: '{{ old('dropoff_airport_id', $pricing->dropoff_airport_id) }}',
+                selectedPickupCity: '{{ old('pickup_city_id', $pricing->pickup_city_id) }}',
+                selectedDropoffCity: '{{ old('dropoff_city_id', $pricing->dropoff_city_id) }}',
                 needsRoute: false,
                 needsVehicleType: false,
 
@@ -404,6 +508,13 @@
                         this.needsRoute = ['shared_ride', 'solo_ride', 'parcel_delivery'].includes(this.serviceType);
                         this.needsVehicleType = ['solo_ride', 'airport_transfer', 'car_hire'].includes(this.serviceType);
                     }
+                },
+
+                resetAirportFields() {
+                    this.selectedPickupAirport = '';
+                    this.selectedDropoffAirport = '';
+                    this.selectedPickupCity = '';
+                    this.selectedDropoffCity = '';
                 }
             }
         }

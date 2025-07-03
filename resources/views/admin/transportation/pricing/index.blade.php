@@ -102,24 +102,20 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-900">
-                                        @if($price->pickupCity && $price->dropoffCity)
-                                            {{ $price->pickupCity->name }} → {{ $price->dropoffCity->name }}
-                                            @if($price->distance_km)
-                                                <span class="text-gray-500">({{ $price->distance_km }}km)</span>
-                                            @endif
-                                        @elseif($price->pickupCity)
-                                            From {{ $price->pickupCity->name }}
-                                        @elseif($price->dropoffCity)
-                                            To {{ $price->dropoffCity->name }}
-                                        @else
-                                            General Pricing
+                                        {{ $price->route_description }}
+                                        @if($price->distance_km)
+                                            <span class="text-gray-500">({{ $price->distance_km }}km)</span>
                                         @endif
                                     </div>
                                     @if($price->transfer_type)
-                                        <div class="text-sm text-gray-500">{{ $price->transfer_type_name }}</div>
+                                        <div class="text-sm text-gray-500">
+                                            <i class="fas fa-plane mr-1"></i>{{ $price->transfer_type_name }}
+                                        </div>
                                     @endif
                                     @if($price->parcel_type)
-                                        <div class="text-sm text-gray-500">{{ $price->parcel_type_name }}</div>
+                                        <div class="text-sm text-gray-500">
+                                            <i class="fas fa-box mr-1"></i>{{ $price->parcel_type_name }}
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">

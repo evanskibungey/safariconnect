@@ -35,6 +35,11 @@ class City extends Model
         return $this->hasMany(ServicePricing::class, 'dropoff_city_id');
     }
 
+    public function airports(): HasMany
+    {
+        return $this->hasMany(Airport::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

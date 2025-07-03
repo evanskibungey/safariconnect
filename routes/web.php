@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ServicePricingController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\VehicleTypeController;
 use App\Http\Controllers\Admin\ParcelTypeController;
+use App\Http\Controllers\Admin\AirportController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -100,6 +101,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('parcel-types', ParcelTypeController::class);
             Route::patch('parcel-types/{parcelType}/toggle', [ParcelTypeController::class, 'toggle'])
                 ->name('parcel-types.toggle');
+            
+            // Airports Management CRUD
+            Route::resource('airports', AirportController::class);
+            Route::patch('airports/{airport}/toggle', [AirportController::class, 'toggle'])
+                ->name('airports.toggle');
+            Route::get('api/airports-by-city', [AirportController::class, 'getByCity'])
+                ->name('api.airports-by-city');
+            
+            // Additional API endpoints for pricing
+            Route::get('api/airports-by-city-pricing', [ServicePricingController::class, 'getAirportsByCity'])
+                ->name('api.airports-by-city-pricing');
+            
+            // Temporary debugging route
+            Route::any('debug/pricing-form', [App\Http\Controllers\Admin\DebugController::class, 'debugPricingForm'])
+                ->name('debug.pricing-form');
         });
     });
 });
