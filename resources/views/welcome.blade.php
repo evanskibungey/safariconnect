@@ -186,216 +186,97 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen hero-gradient overflow-hidden">
-        <!-- Animated Background Elements -->
+    <section class="relative h-screen bg-gray-400 overflow-hidden">
+        <!-- Car Background Image Simulation -->
         <div class="absolute inset-0">
-            <div class="absolute top-20 left-10 w-32 h-32 bg-orange-custom/10 rounded-full animate-float"></div>
-            <div class="absolute top-40 right-20 w-24 h-24 bg-blue-500/10 rounded-full animate-float"
-                style="animation-delay: 2s;"></div>
-            <div class="absolute bottom-20 left-1/4 w-20 h-20 bg-green-500/10 rounded-full animate-float"
-                style="animation-delay: 4s;"></div>
-        </div>
-
-        <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900/50 via-transparent to-slate-800/50"></div>
-
-        <!-- Geometric Patterns -->
-        <div class="absolute bottom-0 right-0 w-1/2 h-full overflow-hidden">
-            <div
-                class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-orange-custom/20 to-transparent rounded-full transform rotate-12 animate-float">
-            </div>
-            <div class="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-tl from-blue-500/20 to-transparent rounded-full transform -rotate-12 animate-float"
-                style="animation-delay: 3s;"></div>
-        </div>
-
-        <!-- Content Container -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
-            <div class="w-full">
-                <div class="grid lg:grid-cols-2 gap-12 items-center">
-                    <!-- Left Content -->
-                    <div class="animate-slide-up">
-                        <!-- Premium Fleet Badge -->
-                        <div
-                            class="inline-flex items-center bg-gradient-to-r from-orange-custom to-red-500 text-white px-6 py-3 rounded-full font-medium mb-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            Premium Fleet
-                        </div>
-
-                        <!-- Main Heading -->
-                        <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight">
-                            Airport Transfers <br>
-                            <span
-                                class="bg-gradient-to-r from-orange-custom to-red-500 bg-clip-text text-transparent">Made
-                                Easy</span>
-                        </h1>
-
-                        <!-- Subheading -->
-                        <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                            Never miss a flight with our reliable airport pickup and drop-off services. Track your
-                            driver in real-time and enjoy premium comfort.
-                        </p>
-
-                        <!-- CTA Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-4 mb-12">
-                            <button
-                                class="bg-gradient-to-r from-orange-custom to-red-500 hover:from-red-500 hover:to-orange-custom text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                                Book Now
-                            </button>
-                            <button
-                                class="glass text-white border border-white/20 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all">
-                                Learn More
-                            </button>
-                        </div>
-
-                        <!-- Features -->
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <span class="text-white font-medium">24/7 Service</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <span class="text-white font-medium">Real-time Tracking</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Content - Stats/Visual -->
-                    <div class="hidden lg:block animate-fade-in">
-                        <div class="relative">
-                            <!-- Stats Cards -->
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="glass p-6 rounded-xl text-center">
-                                    <div class="text-3xl font-bold text-white mb-2">50K+</div>
-                                    <div class="text-gray-300">Happy Customers</div>
-                                </div>
-                                <div class="glass p-6 rounded-xl text-center">
-                                    <div class="text-3xl font-bold text-white mb-2">99%</div>
-                                    <div class="text-gray-300">On-time Rate</div>
-                                </div>
-                                <div class="glass p-6 rounded-xl text-center">
-                                    <div class="text-3xl font-bold text-white mb-2">24/7</div>
-                                    <div class="text-gray-300">Support</div>
-                                </div>
-                                <div class="glass p-6 rounded-xl text-center">
-                                    <div class="text-3xl font-bold text-white mb-2">100+</div>
-                                    <div class="text-gray-300">Destinations</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Simulated car background using gradients and shapes -->
+            <div class="absolute inset-0 bg-gradient-to-r from-gray-600 via-gray-500 to-gray-400"></div>
+            <!-- Car silhouette simulation -->
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl h-64">
+                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-96 h-32 bg-gray-800 rounded-t-3xl">
                 </div>
+                <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-80 h-20 bg-gray-700 rounded-t-2xl">
+                </div>
+                <!-- Car windows -->
+                <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-64 h-12 bg-gray-600 rounded-t-xl">
+                </div>
+                <!-- Headlights -->
+                <div
+                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-x-32 w-8 h-6 bg-yellow-300 rounded-sm opacity-80">
+                </div>
+                <div
+                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-x-24 w-8 h-6 bg-yellow-300 rounded-sm opacity-80">
+                </div>
+            </div>
+            <!-- Road/ground -->
+            <div class="absolute bottom-0 w-full h-20 bg-gray-700"></div>
+        </div>
+
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- 24/7 Service Badge -->
+        <div class="absolute top-32 left-1/2 transform -translate-x-1/2 z-30">
+            <div class="bg-orange-custom text-white px-6 py-3 rounded-full font-semibold flex items-center shadow-lg">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                24/7 Service
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center">
+            <div class="text-center">
+                <!-- Main Heading -->
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                    Share Rides, Save Money
+                </h1>
+
+                <!-- Subheading -->
+                <p class="text-lg md:text-xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
+                    Join thousands who are saving up to 50% on intercity travel by sharing rides with verified
+                    co-passengers.
+                </p>
 
                 <!-- Carousel Indicators -->
-                <div class="flex items-center justify-center space-x-3 mt-16">
-                    <button
-                        class="w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-300 transition-all transform hover:scale-125"></button>
-                    <button
-                        class="w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-300 transition-all transform hover:scale-125"></button>
+                <div class="flex items-center justify-center space-x-3 mb-20">
+                    <button class="w-3 h-3 rounded-full bg-white/50 hover:bg-white/70 transition-all"></button>
                     <button class="w-4 h-4 rounded-full bg-orange-custom shadow-lg"></button>
+                    <button class="w-3 h-3 rounded-full bg-white/50 hover:bg-white/70 transition-all"></button>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Arrows -->
         <button
-            class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 w-12 h-12 glass hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all hover:scale-110">
+            class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-30">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
         <button
-            class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 w-12 h-12 glass hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all hover:scale-110">
+            class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-30">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
         </button>
+
     </section>
 
     <!-- Service Cards Section -->
-    <section class="relative -mt-20 z-20 pb-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
-            <div class="text-center mb-12 animate-slide-up">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Services</h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Choose from our range of premium transportation
-                    services designed for your comfort and convenience</p>
-            </div>
-
-            <!-- Service Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                <!-- Share Ride Card -->
+    <section class="relative -mt-16 z-30 pb-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4 lg:gap-6">
+                <!-- Share Ride Card - Active -->
                 <div
-                    class="group bg-gradient-to-br from-brown-custom to-amber-700 hover:from-amber-700 hover:to-brown-custom text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer transform hover:scale-105 hover:-translate-y-2">
-                    <div class="text-center">
+                    class="group bg-brown-custom text-white px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl min-w-0 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
                         <div
-                            class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg mb-2">Share Ride</h3>
-                        <p class="text-sm opacity-90">Affordable shared transport</p>
-                    </div>
-                </div>
-
-                <!-- Solo Ride Card -->
-                <div
-                    class="group bg-gradient-to-br from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-600 text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer transform hover:scale-105 hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg mb-2">Solo Ride</h3>
-                        <p class="text-sm opacity-90">Private comfortable journey</p>
-                    </div>
-                </div>
-
-                <!-- Airport Card -->
-                <div
-                    class="group bg-gradient-to-br from-blue-600 to-cyan-700 hover:from-cyan-700 hover:to-blue-600 text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer transform hover:scale-105 hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-lg mb-2">Airport</h3>
-                        <p class="text-sm opacity-90">Direct airport transfers</p>
-                    </div>
-                </div>
-
-                <!-- Car Hire Card -->
-                <div
-                    class="group bg-gradient-to-br from-teal-600 to-blue-700 hover:from-blue-700 hover:to-teal-600 text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer transform hover:scale-105 hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
                                 </path>
@@ -404,25 +285,72 @@
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-lg mb-2">Car Hire</h3>
-                        <p class="text-sm opacity-90">Long-term vehicle rental</p>
+                        <h3 class="font-bold text-lg whitespace-nowrap">Share Ride</h3>
+                    </div>
+                </div>
+
+                <!-- Solo Ride Card -->
+                <div
+                    class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-all">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-lg whitespace-nowrap">Solo Ride</h3>
+                    </div>
+                </div>
+
+                <!-- Airport Card -->
+                <div
+                    class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:bg-blue-500/30 transition-all">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M10 2a8 8 0 018 8v2a2 2 0 01-2 2h-2.28l-.9-2.7c-.16-.48-.61-.8-1.13-.8H8.31c-.52 0-.97.32-1.13.8L6.28 14H4a2 2 0 01-2-2v-2a8 8 0 018-8zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-lg whitespace-nowrap">Airport</h3>
+                    </div>
+                </div>
+
+                <!-- Car Hire Card -->
+                <div
+                    class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-teal-500/20 rounded-full flex items-center justify-center group-hover:bg-teal-500/30 transition-all">
+                            <svg class="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
+                                </path>
+                                <path
+                                    d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-lg whitespace-nowrap">Car Hire</h3>
                     </div>
                 </div>
 
                 <!-- Parcel Card -->
                 <div
-                    class="group bg-gradient-to-br from-orange-600 to-red-700 hover:from-red-700 hover:to-orange-600 text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer transform hover:scale-105 hover:-translate-y-2">
-                    <div class="text-center">
+                    class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
                         <div
-                            class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            class="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center group-hover:bg-orange-500/30 transition-all">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z">
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-lg mb-2">Parcel</h3>
-                        <p class="text-sm opacity-90">Fast delivery service</p>
+                        <h3 class="font-bold text-lg whitespace-nowrap">Parcel</h3>
                     </div>
                 </div>
             </div>
@@ -430,7 +358,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 bg-white">
+    <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose SafariConnect?</h2>
