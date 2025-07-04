@@ -149,14 +149,29 @@
 
                 <!-- Account Button & Mobile Menu -->
                 <div class="flex items-center space-x-4">
-                    <button
-                        class="hidden sm:flex bg-gradient-to-r from-brown-custom to-amber-700 hover:from-amber-700 hover:to-brown-custom text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-xl items-center transform hover:scale-105">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        Account
-                    </button>
+                    @auth
+                        <!-- User is logged in -->
+                        <div class="hidden sm:flex items-center space-x-4">
+                            <span class="text-white text-sm">Welcome, {{ auth()->user()->name }}!</span>
+                            <a href="{{ route('dashboard') }}"
+                                class="bg-gradient-to-r from-brown-custom to-amber-700 hover:from-amber-700 hover:to-brown-custom text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-xl flex items-center transform hover:scale-105">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                </svg>
+                                Dashboard
+                            </a>
+                        </div>
+                    @else
+                        <!-- User is not logged in -->
+                        <a href="{{ route('login') }}"
+                            class="hidden sm:flex bg-gradient-to-r from-brown-custom to-amber-700 hover:from-amber-700 hover:to-brown-custom text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-xl items-center transform hover:scale-105">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Account
+                        </a>
+                    @endauth
 
                     <!-- Mobile Menu Button -->
                     <button class="lg:hidden text-white p-2" id="mobile-menu-btn">
@@ -178,10 +193,17 @@
                 <a href="#" class="block text-white hover:text-orange-custom font-medium py-2">PRICING</a>
                 <a href="#" class="block text-white hover:text-orange-custom font-medium py-2">ABOUT</a>
                 <a href="#" class="block text-white hover:text-orange-custom font-medium py-2">CONTACT</a>
-                <button
-                    class="w-full mt-4 bg-gradient-to-r from-brown-custom to-amber-700 text-white px-6 py-2 rounded-full font-medium">
-                    Account
-                </button>
+                @auth
+                    <a href="{{ route('dashboard') }}"
+                        class="w-full mt-4 bg-gradient-to-r from-brown-custom to-amber-700 text-white px-6 py-2 rounded-full font-medium text-center block">
+                        Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}"
+                        class="w-full mt-4 bg-gradient-to-r from-brown-custom to-amber-700 text-white px-6 py-2 rounded-full font-medium text-center block">
+                        Account
+                    </a>
+                @endauth
             </div>
         </div>
     </header>
@@ -772,7 +794,7 @@
 
             <!-- Modal panel -->
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <!-- Modal Header -->
                 <div class="bg-gradient-to-r from-brown-custom to-amber-700 px-6 py-4">
                     <div class="flex items-center justify-between">
@@ -786,117 +808,175 @@
                 </div>
 
                 <!-- Modal Body -->
-                <form id="shared-ride-form" class="px-6 py-4">
+                <form id="shared-ride-form" class="px-6 py-6">
                     @csrf
                     
-                    <!-- Route Selection -->
-                    <div class="space-y-4">
-                        <div>
-                            <label for="pickup_city" class="block text-sm font-medium text-gray-700 mb-2">
-                                Pickup City <span class="text-red-500">*</span>
-                            </label>
-                            <select id="pickup_city" name="pickup_city_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
-                                <option value="">Select pickup city</option>
-                                <!-- Options will be populated via AJAX -->
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="dropoff_city" class="block text-sm font-medium text-gray-700 mb-2">
-                                Drop-off City <span class="text-red-500">*</span>
-                            </label>
-                            <select id="dropoff_city" name="dropoff_city_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
-                                <option value="">Select drop-off city</option>
-                                <!-- Options will be populated via AJAX -->
-                            </select>
-                        </div>
-
-                        <!-- Travel Details -->
-                        <div class="grid grid-cols-2 gap-4">
+                    <!-- Form Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- Left Column: Trip Details -->
+                        <div class="space-y-6">
                             <div>
-                                <label for="travel_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Travel Date <span class="text-red-500">*</span>
-                                </label>
-                                <input type="date" id="travel_date" name="travel_date" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
-                                    required min="{{ date('Y-m-d') }}">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-orange-custom" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                    Trip Details
+                                </h4>
+                                
+                                <!-- Route Selection -->
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="pickup_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Pickup City <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="pickup_city" name="pickup_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                                <option value="">Select pickup city</option>
+                                                <!-- Options will be populated via AJAX -->
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="dropoff_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Drop-off City <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="dropoff_city" name="dropoff_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                                <option value="">Select drop-off city</option>
+                                                <!-- Options will be populated via AJAX -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Travel Details -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="travel_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Travel Date <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="travel_date" name="travel_date" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                                required min="{{ date('Y-m-d') }}">
+                                        </div>
+
+                                        <div>
+                                            <label for="travel_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Preferred Time <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="time" id="travel_time" name="travel_time" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                                required>
+                                        </div>
+
+                                        <div>
+                                            <label for="passengers" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Passengers <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="passengers" name="passengers" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                                <option value="1">1 Passenger</option>
+                                                <option value="2">2 Passengers</option>
+                                                <option value="3">3 Passengers</option>
+                                                <option value="4">4 Passengers</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div>
-                                <label for="travel_time" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Preferred Time <span class="text-red-500">*</span>
-                                </label>
-                                <input type="time" id="travel_time" name="travel_time" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
-                                    required>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="passengers" class="block text-sm font-medium text-gray-700 mb-2">
-                                Number of Passengers <span class="text-red-500">*</span>
-                            </label>
-                            <select id="passengers" name="passengers" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
-                                <option value="1">1 Passenger</option>
-                                <option value="2">2 Passengers</option>
-                                <option value="3">3 Passengers</option>
-                                <option value="4">4 Passengers</option>
-                            </select>
-                        </div>
-
-                        <!-- Contact Information -->
-                        <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Information</h4>
                             
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="customer_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Full Name <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="customer_name" name="customer_name" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
-                                        required>
+                            <!-- Price Display -->
+                            <div id="price-display" class="hidden p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Estimated Price:</span>
+                                    <span id="price-amount" class="text-2xl font-bold text-orange-custom"></span>
                                 </div>
-
-                                <div>
-                                    <label for="customer_email" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Email Address <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="email" id="customer_email" name="customer_email" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
-                                        required>
-                                </div>
-
-                                <div>
-                                    <label for="customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Phone Number <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="tel" id="customer_phone" name="customer_phone" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
-                                        placeholder="+254 7XX XXX XXX" required>
-                                </div>
+                                <p class="text-sm text-gray-600 mt-1">Price per passenger for shared ride</p>
                             </div>
                         </div>
+                        
+                        <!-- Right Column: Contact & Account Information -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-orange-custom" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Contact Information
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="customer_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Full Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="customer_name" name="customer_name" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                            required>
+                                    </div>
 
-                        <!-- Price Display -->
-                        <div id="price-display" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-700 font-medium">Estimated Price:</span>
-                                <span id="price-amount" class="text-2xl font-bold text-orange-custom"></span>
+                                    <div>
+                                        <label for="customer_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Email Address <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="email" id="customer_email" name="customer_email" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                            required>
+                                        <p class="text-xs text-gray-500 mt-1">We'll use this for your account login and booking updates</p>
+                                    </div>
+
+                                    <div>
+                                        <label for="customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Phone Number <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="tel" id="customer_phone" name="customer_phone" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                            placeholder="+254 7XX XXX XXX" required>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="text-sm text-gray-600 mt-1">Price per passenger for shared ride</p>
+                            
+                            <!-- Account Password Section -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-orange-custom" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Account Password
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="password" name="password" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Minimum 4 characters</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Confirm Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="password_confirmation" name="password_confirmation" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Re-enter your password to confirm</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Form Actions -->
-                    <div class="mt-6 flex items-center justify-end space-x-4">
+                    <div class="mt-8 flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                         <button type="button" id="cancel-booking" 
-                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium">
                             Cancel
                         </button>
                         <button type="submit" 
-                            class="px-6 py-2 bg-gradient-to-r from-orange-custom to-red-500 text-white rounded-lg hover:from-red-500 hover:to-orange-custom transition-all transform hover:scale-105 shadow-lg">
-                            Book Now
+                            class="px-8 py-3 bg-gradient-to-r from-orange-custom to-red-500 text-white rounded-lg hover:from-red-500 hover:to-orange-custom transition-all transform hover:scale-105 shadow-lg font-medium">
+                            Complete Booking
                         </button>
                     </div>
                 </form>
@@ -1034,6 +1114,18 @@
         sharedRideModal.classList.add('hidden');
         sharedRideForm.reset();
         priceDisplay.classList.add('hidden');
+        
+        // Clear password validation errors
+        const passwordError = document.getElementById('password-error');
+        if (passwordError) {
+            passwordError.remove();
+        }
+        
+        // Remove error styling from password fields
+        const passwordField = document.getElementById('password');
+        const passwordConfirmField = document.getElementById('password_confirmation');
+        if (passwordField) passwordField.classList.remove('border-red-500');
+        if (passwordConfirmField) passwordConfirmField.classList.remove('border-red-500');
     }
 
     closeModalBtn.addEventListener('click', closeModal);
@@ -1108,6 +1200,52 @@
     pickupCitySelect.addEventListener('change', checkPricing);
     dropoffCitySelect.addEventListener('change', checkPricing);
 
+    // Password validation
+    const passwordField = document.getElementById('password');
+    const passwordConfirmField = document.getElementById('password_confirmation');
+    
+    function validatePasswords() {
+        const password = passwordField.value;
+        const passwordConfirm = passwordConfirmField.value;
+        
+        // Remove any existing error styles
+        passwordField.classList.remove('border-red-500');
+        passwordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            passwordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            passwordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            passwordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation
+    passwordField.addEventListener('input', validatePasswords);
+    passwordConfirmField.addEventListener('input', validatePasswords);
+
     // Handle form submission
     sharedRideForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1115,6 +1253,11 @@
         // Validate same city selection
         if (pickupCitySelect.value === dropoffCitySelect.value) {
             alert('Please select different cities for pickup and drop-off.');
+            return;
+        }
+        
+        // Validate passwords
+        if (!validatePasswords()) {
             return;
         }
 
@@ -1142,14 +1285,47 @@
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Success message with booking reference
-                alert(`Booking successful!\n\nBooking Reference: ${result.booking_reference}\n\nWe will contact you shortly at ${bookingData.customer_email} with confirmation details.`);
+                // Success message with booking reference and account info
+                let successMessage;
+                
+                if (result.account_created) {
+                    successMessage = `🎉 Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details.`;
+                } else {
+                    successMessage = `🎉 Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details.`;
+                }
+                
+                alert(successMessage);
                 closeModal();
+                
+                // Refresh the page to show the updated header with user info
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
                 // Handle errors
                 if (result.errors) {
-                    const errorMessages = Object.values(result.errors).flat().join('\n');
-                    alert('Please fix the following errors:\n\n' + errorMessages);
+                    // Handle form validation errors
+                    let errorMessage = 'Please fix the following issues:\n\n';
+                    
+                    // Check for specific field errors
+                    if (result.errors.customer_email) {
+                        errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                    }
+                    if (result.errors.password) {
+                        errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                    }
+                    if (result.errors.customer_phone) {
+                        errorMessage += '📱 Phone: ' + result.errors.customer_phone.join(', ') + '\n';
+                    }
+                    
+                    // Add other field errors
+                    Object.keys(result.errors).forEach(field => {
+                        if (!['customer_email', 'password', 'customer_phone'].includes(field)) {
+                            errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                        }
+                    });
+                    
+                    alert(errorMessage);
                 } else {
                     alert(result.error || 'Sorry, there was an error processing your booking. Please try again.');
                 }

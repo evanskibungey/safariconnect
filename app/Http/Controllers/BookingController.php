@@ -7,9 +7,13 @@ use App\Models\City;
 use App\Models\TransportationService;
 use App\Models\ServicePricing;
 use App\Models\Booking;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 
 class BookingController extends Controller
 {
@@ -109,11 +113,72 @@ class BookingController extends Controller
                 'customer_name' => 'required|string|max:255',
                 'customer_email' => 'required|email|max:255',
                 'customer_phone' => 'required|string|max:20',
+                'password' => 'required|string|min:4|confirmed',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
+
+            // Handle user registration/authentication
+            $user = null;
+            $accountCreated = false;
+            
+            // Check if user already exists
+            $existingUser = User::where('email', $request->customer_email)->first();
+            
+            if ($existingUser) {
+                // User exists - verify the password matches
+                if (!Hash::check($request->password, $existingUser->password)) {
+                    return response()->json([
+                        'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
+                        'errors' => [
+                            'customer_email' => ['An account with this email already exists.'],
+                            'password' => ['Please enter your existing account password.']
+                        ]
+                    ], 422);
+                }
+                
+                // Update user info if they've changed their name or phone
+                $existingUser->update([
+                    'name' => $request->customer_name,
+                    'phone' => $request->customer_phone,
+                ]);
+                
+                $user = $existingUser;
+                
+                Log::info('Existing user logged in during booking', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            } else {
+                // Create new user account
+                try {
+                    $user = User::create([
+                        'name' => $request->customer_name,
+                        'email' => $request->customer_email,
+                        'phone' => $request->customer_phone,
+                        'password' => Hash::make($request->password),
+                    ]);
+                    
+                    $accountCreated = true;
+                    
+                    // Fire the registered event
+                    event(new Registered($user));
+                    
+                    Log::info('New user account created during booking', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'name' => $user->name
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error creating user account during booking: ' . $e->getMessage());
+                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                }
+            }
+            
+            // Authenticate the user
+            Auth::login($user);
 
             // Get shared ride service
             $sharedRideService = TransportationService::where('service_type', 'shared_ride')
@@ -165,7 +230,7 @@ class BookingController extends Controller
                 $booking = new Booking();
                 $booking->transportation_service_id = $sharedRideService->id;
                 $booking->service_pricing_id = $pricing->id;
-                $booking->user_id = auth()->id(); // Will be null if not logged in
+                $booking->user_id = $user->id; // Now always linked to authenticated user
                 $booking->customer_name = $request->customer_name;
                 $booking->customer_email = $request->customer_email;
                 $booking->customer_phone = $request->customer_phone;
@@ -179,6 +244,13 @@ class BookingController extends Controller
                 $booking->status = Booking::STATUS_PENDING;
                 $booking->payment_status = Booking::PAYMENT_STATUS_PENDING;
                 $booking->save();
+                
+                Log::info('Booking created successfully', [
+                    'booking_id' => $booking->id,
+                    'booking_reference' => $booking->booking_reference,
+                    'user_id' => $user->id,
+                    'account_created' => $accountCreated
+                ]);
             } catch (\Exception $e) {
                 Log::error('Error creating booking: ' . $e->getMessage());
                 Log::error('Stack trace: ' . $e->getTraceAsString());
@@ -194,7 +266,11 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'booking_reference' => $booking->booking_reference,
-                'message' => 'Booking successful! We will contact you shortly with confirmation details.',
+                'account_created' => $accountCreated,
+                'user_id' => $user->id,
+                'message' => $accountCreated 
+                    ? 'Booking successful! Your SafariConnect account has been created. We will contact you shortly with confirmation details.'
+                    : 'Booking successful! We will contact you shortly with confirmation details.',
                 'booking_details' => [
                     'service' => 'Shared Ride',
                     'route' => $pricing->route_description,
@@ -206,6 +282,11 @@ class BookingController extends Controller
                     'customer_name' => $request->customer_name,
                     'customer_email' => $request->customer_email,
                     'customer_phone' => $request->customer_phone,
+                ],
+                'account_info' => [
+                    'account_created' => $accountCreated,
+                    'login_email' => $user->email,
+                    'user_authenticated' => true
                 ]
             ]);
         } catch (\Exception $e) {
