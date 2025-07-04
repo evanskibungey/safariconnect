@@ -23,9 +23,19 @@ class DatabaseSeeder extends Seeder
         // Seed admin users
         $this->call(AdminSeeder::class);
         
-        // Seed transportation services (if exists)
-        if (class_exists('Database\\Seeders\\TransportationServiceSeeder')) {
-            $this->call(TransportationServiceSeeder::class);
+        // Seed transportation data in order
+        $seeders = [
+            'CitySeeder',
+            'VehicleTypeSeeder',
+            'TransportationServiceSeeder',
+            'DriverSeeder',
+        ];
+        
+        foreach ($seeders as $seeder) {
+            $seederClass = "Database\\Seeders\\{$seeder}";
+            if (class_exists($seederClass)) {
+                $this->call($seederClass);
+            }
         }
     }
 }

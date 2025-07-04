@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SafariConnect - Airport Transfers Made Easy</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -272,6 +273,7 @@
             <div class="flex flex-wrap justify-center gap-4 lg:gap-6">
                 <!-- Share Ride Card - Active -->
                 <div
+                    id="shared-ride-card"
                     class="group bg-brown-custom text-white px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl min-w-0 flex-shrink-0">
                     <div class="flex items-center space-x-3">
                         <div
@@ -760,6 +762,148 @@
         </div>
     </footer>
 
+    <!-- Shared Ride Booking Modal -->
+    <div id="shared-ride-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+
+            <!-- Modal panel -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-brown-custom to-amber-700 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Book Your Shared Ride</h3>
+                        <button id="close-modal" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="shared-ride-form" class="px-6 py-4">
+                    @csrf
+                    
+                    <!-- Route Selection -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="pickup_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pickup City <span class="text-red-500">*</span>
+                            </label>
+                            <select id="pickup_city" name="pickup_city_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                <option value="">Select pickup city</option>
+                                <!-- Options will be populated via AJAX -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="dropoff_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                Drop-off City <span class="text-red-500">*</span>
+                            </label>
+                            <select id="dropoff_city" name="dropoff_city_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                <option value="">Select drop-off city</option>
+                                <!-- Options will be populated via AJAX -->
+                            </select>
+                        </div>
+
+                        <!-- Travel Details -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="travel_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Travel Date <span class="text-red-500">*</span>
+                                </label>
+                                <input type="date" id="travel_date" name="travel_date" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                    required min="{{ date('Y-m-d') }}">
+                            </div>
+
+                            <div>
+                                <label for="travel_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Preferred Time <span class="text-red-500">*</span>
+                                </label>
+                                <input type="time" id="travel_time" name="travel_time" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                    required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="passengers" class="block text-sm font-medium text-gray-700 mb-2">
+                                Number of Passengers <span class="text-red-500">*</span>
+                            </label>
+                            <select id="passengers" name="passengers" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" required>
+                                <option value="1">1 Passenger</option>
+                                <option value="2">2 Passengers</option>
+                                <option value="3">3 Passengers</option>
+                                <option value="4">4 Passengers</option>
+                            </select>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Information</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="customer_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Full Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="customer_name" name="customer_name" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                        required>
+                                </div>
+
+                                <div>
+                                    <label for="customer_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Email Address <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="email" id="customer_email" name="customer_email" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                        required>
+                                </div>
+
+                                <div>
+                                    <label for="customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Phone Number <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="tel" id="customer_phone" name="customer_phone" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-custom focus:border-transparent" 
+                                        placeholder="+254 7XX XXX XXX" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Display -->
+                        <div id="price-display" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700 font-medium">Estimated Price:</span>
+                                <span id="price-amount" class="text-2xl font-bold text-orange-custom"></span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Price per passenger for shared ride</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-6 flex items-center justify-end space-x-4">
+                        <button type="button" id="cancel-booking" 
+                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-6 py-2 bg-gradient-to-r from-orange-custom to-red-500 text-white rounded-lg hover:from-red-500 hover:to-orange-custom transition-all transform hover:scale-105 shadow-lg">
+                            Book Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript for interactivity -->
     <script>
     // Mobile menu toggle
@@ -867,6 +1011,160 @@
             }
         });
     });
+
+    // Shared Ride Modal Functionality
+    const sharedRideCard = document.getElementById('shared-ride-card');
+    const sharedRideModal = document.getElementById('shared-ride-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelBookingBtn = document.getElementById('cancel-booking');
+    const sharedRideForm = document.getElementById('shared-ride-form');
+    const pickupCitySelect = document.getElementById('pickup_city');
+    const dropoffCitySelect = document.getElementById('dropoff_city');
+    const priceDisplay = document.getElementById('price-display');
+    const priceAmount = document.getElementById('price-amount');
+
+    // Open modal when shared ride card is clicked
+    sharedRideCard.addEventListener('click', () => {
+        sharedRideModal.classList.remove('hidden');
+        loadCities();
+    });
+
+    // Close modal
+    function closeModal() {
+        sharedRideModal.classList.add('hidden');
+        sharedRideForm.reset();
+        priceDisplay.classList.add('hidden');
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBookingBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    sharedRideModal.addEventListener('click', (e) => {
+        if (e.target === sharedRideModal) {
+            closeModal();
+        }
+    });
+
+    // Load cities for dropdowns
+    async function loadCities() {
+        try {
+            const response = await fetch('/api/cities');
+            if (response.ok) {
+                const cities = await response.json();
+                populateCityDropdowns(cities);
+            }
+        } catch (error) {
+            console.error('Error loading cities:', error);
+            // Fallback: populate with sample cities
+            const sampleCities = [
+                { id: 1, name: 'Nairobi' },
+                { id: 2, name: 'Mombasa' },
+                { id: 3, name: 'Kisumu' },
+                { id: 4, name: 'Nakuru' },
+                { id: 5, name: 'Eldoret' }
+            ];
+            populateCityDropdowns(sampleCities);
+        }
+    }
+
+    function populateCityDropdowns(cities) {
+        const cityOptions = cities.map(city => 
+            `<option value="${city.id}">${city.name}</option>`
+        ).join('');
+
+        pickupCitySelect.innerHTML = '<option value="">Select pickup city</option>' + cityOptions;
+        dropoffCitySelect.innerHTML = '<option value="">Select drop-off city</option>' + cityOptions;
+    }
+
+    // Check pricing when cities are selected
+    async function checkPricing() {
+        const pickupCityId = pickupCitySelect.value;
+        const dropoffCityId = dropoffCitySelect.value;
+
+        if (pickupCityId && dropoffCityId && pickupCityId !== dropoffCityId) {
+            try {
+                const response = await fetch(`/api/shared-ride/pricing?pickup_city_id=${pickupCityId}&dropoff_city_id=${dropoffCityId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.price) {
+                        priceAmount.textContent = `KSh ${data.price.toLocaleString()}`;
+                        priceDisplay.classList.remove('hidden');
+                    } else {
+                        priceDisplay.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking price:', error);
+                // Show sample price for demonstration
+                priceAmount.textContent = 'KSh 1,500';
+                priceDisplay.classList.remove('hidden');
+            }
+        } else {
+            priceDisplay.classList.add('hidden');
+        }
+    }
+
+    pickupCitySelect.addEventListener('change', checkPricing);
+    dropoffCitySelect.addEventListener('change', checkPricing);
+
+    // Handle form submission
+    sharedRideForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Validate same city selection
+        if (pickupCitySelect.value === dropoffCitySelect.value) {
+            alert('Please select different cities for pickup and drop-off.');
+            return;
+        }
+
+        // Collect form data
+        const formData = new FormData(sharedRideForm);
+        const bookingData = Object.fromEntries(formData);
+
+        // Show loading state
+        const submitBtn = sharedRideForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.disabled = true;
+
+        try {
+            // Make actual API call
+            const response = await fetch('/api/shared-ride/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Success message with booking reference
+                alert(`Booking successful!\n\nBooking Reference: ${result.booking_reference}\n\nWe will contact you shortly at ${bookingData.customer_email} with confirmation details.`);
+                closeModal();
+            } else {
+                // Handle errors
+                if (result.errors) {
+                    const errorMessages = Object.values(result.errors).flat().join('\n');
+                    alert('Please fix the following errors:\n\n' + errorMessages);
+                } else {
+                    alert(result.error || 'Sorry, there was an error processing your booking. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error('Booking error:', error);
+            alert('Sorry, there was an error processing your booking. Please try again.');
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Set minimum date to today
+    document.getElementById('travel_date').min = new Date().toISOString().split('T')[0];
     </script>
 
 </body>

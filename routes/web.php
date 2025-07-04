@@ -37,6 +37,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Public API Routes for Booking
+Route::prefix('api')->group(function () {
+    Route::get('/cities', [App\Http\Controllers\BookingController::class, 'getCities'])->name('api.cities');
+    Route::get('/shared-ride/pricing', [App\Http\Controllers\BookingController::class, 'getSharedRidePricing'])->name('api.shared-ride.pricing');
+    Route::post('/shared-ride/book', [App\Http\Controllers\BookingController::class, 'bookSharedRide'])->name('api.shared-ride.book');
+});
+
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     // Admin Guest Routes
@@ -116,6 +123,39 @@ Route::prefix('admin')->name('admin.')->group(function () {
             // Temporary debugging route
             Route::any('debug/pricing-form', [App\Http\Controllers\Admin\DebugController::class, 'debugPricingForm'])
                 ->name('debug.pricing-form');
+        });
+        
+        // ===================================
+        // Booking Management
+        // ===================================
+        Route::prefix('bookings')->name('bookings.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\BookingController::class, 'index'])->name('index');
+            Route::get('/{booking}', [App\Http\Controllers\Admin\BookingController::class, 'show'])->name('show');
+            Route::patch('/{booking}', [App\Http\Controllers\Admin\BookingController::class, 'update'])->name('update');
+            Route::delete('/{booking}', [App\Http\Controllers\Admin\BookingController::class, 'destroy'])->name('destroy');
+            
+            // Quick actions
+            Route::post('/{booking}/confirm', [App\Http\Controllers\Admin\BookingController::class, 'confirm'])->name('confirm');
+            Route::post('/{booking}/cancel', [App\Http\Controllers\Admin\BookingController::class, 'cancel'])->name('cancel');
+            
+            // Driver assignment
+            Route::post('/{booking}/assign-driver', [App\Http\Controllers\Admin\BookingController::class, 'assignDriver'])->name('assign-driver');
+            Route::post('/{booking}/remove-driver', [App\Http\Controllers\Admin\BookingController::class, 'removeDriver'])->name('remove-driver');
+        });
+        
+        // ===================================
+        // Driver Management
+        // ===================================
+        Route::prefix('drivers')->name('drivers.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\DriverController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\DriverController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\DriverController::class, 'store'])->name('store');
+            Route::get('/{driver}', [App\Http\Controllers\Admin\DriverController::class, 'show'])->name('show');
+            Route::get('/{driver}/edit', [App\Http\Controllers\Admin\DriverController::class, 'edit'])->name('edit');
+            Route::put('/{driver}', [App\Http\Controllers\Admin\DriverController::class, 'update'])->name('update');
+            Route::delete('/{driver}', [App\Http\Controllers\Admin\DriverController::class, 'destroy'])->name('destroy');
+            Route::patch('/{driver}/toggle', [App\Http\Controllers\Admin\DriverController::class, 'toggle'])->name('toggle');
+            Route::patch('/{driver}/status', [App\Http\Controllers\Admin\DriverController::class, 'updateStatus'])->name('update-status');
         });
     });
 });

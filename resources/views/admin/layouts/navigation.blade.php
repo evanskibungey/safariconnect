@@ -16,6 +16,18 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    <!-- Bookings Link -->
+                    <x-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        {{ __('Bookings') }}
+                    </x-nav-link>
+
+                    <!-- Drivers Link -->
+                    <x-nav-link :href="route('admin.drivers.index')" :active="request()->routeIs('admin.drivers.*')">
+                        <i class="fas fa-user-tie mr-2"></i>
+                        {{ __('Drivers') }}
+                    </x-nav-link>
+
                     <!-- Transportation Services Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = ! open" 
@@ -123,6 +135,14 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            <!-- Bookings & Drivers Mobile Menu -->
+            <x-responsive-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
+                <i class="fas fa-calendar-check mr-2"></i>{{ __('Bookings') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.drivers.index')" :active="request()->routeIs('admin.drivers.*')">
+                <i class="fas fa-user-tie mr-2"></i>{{ __('Drivers') }}
             </x-responsive-nav-link>
 
             <!-- Transportation Services Mobile Menu -->
