@@ -315,6 +315,7 @@
 
                 <!-- Solo Ride Card -->
                 <div
+                    id="solo-ride-card"
                     class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
                     <div class="flex items-center space-x-3">
                         <div
@@ -984,6 +985,239 @@
         </div>
     </div>
 
+    <!-- Solo Ride Booking Modal -->
+    <div id="solo-ride-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+
+            <!-- Modal panel -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-green-600 to-emerald-700 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Book Your Solo Ride</h3>
+                        <button id="close-solo-modal" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="solo-ride-form" class="px-6 py-6">
+                    @csrf
+                    
+                    <!-- Form Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- Left Column: Trip Details -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                    Trip Details
+                                </h4>
+                                
+                                <!-- Route Selection -->
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="solo_pickup_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Pickup City <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="solo_pickup_city" name="pickup_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" required>
+                                                <option value="">Select pickup city</option>
+                                                <!-- Options will be populated via AJAX -->
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="solo_dropoff_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Drop-off City <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="solo_dropoff_city" name="dropoff_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" required>
+                                                <option value="">Select drop-off city</option>
+                                                <!-- Options will be populated via AJAX -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Vehicle Type Selection -->
+                                    <div>
+                                        <label for="solo_vehicle_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Vehicle Type <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="solo_vehicle_type" name="vehicle_type_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" required>
+                                            <option value="">Select vehicle type</option>
+                                            <!-- Options will be populated via AJAX -->
+                                        </select>
+                                        <p class="text-xs text-gray-500 mt-1">Choose your preferred vehicle for your solo journey</p>
+                                    </div>
+
+                                    <!-- Travel Details -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="solo_travel_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Travel Date <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="solo_travel_date" name="travel_date" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                                required min="{{ date('Y-m-d') }}">
+                                        </div>
+
+                                        <div>
+                                            <label for="solo_travel_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Preferred Time <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="time" id="solo_travel_time" name="travel_time" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                                required>
+                                        </div>
+
+                                        <div>
+                                            <label for="solo_passengers" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Passengers <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="solo_passengers" name="passengers" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" required>
+                                                <option value="1">1 Passenger</option>
+                                                <option value="2">2 Passengers</option>
+                                                <option value="3">3 Passengers</option>
+                                                <option value="4">4 Passengers</option>
+                                                <option value="5">5 Passengers</option>
+                                                <option value="6">6+ Passengers</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Display -->
+                            <div id="solo-price-display" class="hidden p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Total Price:</span>
+                                    <span id="solo-price-amount" class="text-2xl font-bold text-green-600"></span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">Private vehicle for your exclusive use</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Contact & Account Information -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Contact Information
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="solo_customer_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Full Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="solo_customer_name" name="customer_name" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                            required>
+                                    </div>
+
+                                    <div>
+                                        <label for="solo_customer_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Email Address <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="email" id="solo_customer_email" name="customer_email" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                            required>
+                                        <p class="text-xs text-gray-500 mt-1">We'll use this for your account login and booking updates</p>
+                                    </div>
+
+                                    <div>
+                                        <label for="solo_customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Phone Number <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="tel" id="solo_customer_phone" name="customer_phone" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                            placeholder="+254 7XX XXX XXX" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Password Section -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Account Password
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="solo_password" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="solo_password" name="password" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Minimum 4 characters</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="solo_password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Confirm Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="solo_password_confirmation" name="password_confirmation" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Re-enter your password to confirm</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Special Requirements -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Special Requirements
+                                </h4>
+                                
+                                <div>
+                                    <label for="solo_special_requirements" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Additional Notes (Optional)
+                                    </label>
+                                    <textarea id="solo_special_requirements" name="special_requirements" rows="3"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" 
+                                        placeholder="Any special requirements, luggage details, or additional information..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-8 flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <button type="button" id="cancel-solo-booking" 
+                            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-green-600 transition-all transform hover:scale-105 shadow-lg font-medium">
+                            Complete Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript for interactivity -->
     <script>
     // Mobile menu toggle
@@ -1341,6 +1575,302 @@
 
     // Set minimum date to today
     document.getElementById('travel_date').min = new Date().toISOString().split('T')[0];
+    
+    // ===================================
+    // SOLO RIDE FUNCTIONALITY
+    // ===================================
+    
+    // Solo Ride Modal Elements
+    const soloRideCard = document.getElementById('solo-ride-card');
+    const soloRideModal = document.getElementById('solo-ride-modal');
+    const closeSoloModalBtn = document.getElementById('close-solo-modal');
+    const cancelSoloBookingBtn = document.getElementById('cancel-solo-booking');
+    const soloRideForm = document.getElementById('solo-ride-form');
+    const soloPickupCitySelect = document.getElementById('solo_pickup_city');
+    const soloDropoffCitySelect = document.getElementById('solo_dropoff_city');
+    const soloVehicleTypeSelect = document.getElementById('solo_vehicle_type');
+    const soloPriceDisplay = document.getElementById('solo-price-display');
+    const soloPriceAmount = document.getElementById('solo-price-amount');
+    
+    // Open solo ride modal when card is clicked
+    soloRideCard.addEventListener('click', () => {
+        soloRideModal.classList.remove('hidden');
+        loadSoloRideData();
+    });
+    
+    // Close solo ride modal
+    function closeSoloModal() {
+        soloRideModal.classList.add('hidden');
+        soloRideForm.reset();
+        soloPriceDisplay.classList.add('hidden');
+        
+        // Clear password validation errors
+        const passwordError = document.getElementById('solo-password-error');
+        if (passwordError) {
+            passwordError.remove();
+        }
+        
+        // Remove error styling from password fields
+        const passwordField = document.getElementById('solo_password');
+        const passwordConfirmField = document.getElementById('solo_password_confirmation');
+        if (passwordField) passwordField.classList.remove('border-red-500');
+        if (passwordConfirmField) passwordConfirmField.classList.remove('border-red-500');
+    }
+    
+    closeSoloModalBtn.addEventListener('click', closeSoloModal);
+    cancelSoloBookingBtn.addEventListener('click', closeSoloModal);
+    
+    // Close modal when clicking outside
+    soloRideModal.addEventListener('click', (e) => {
+        if (e.target === soloRideModal) {
+            closeSoloModal();
+        }
+    });
+    
+    // Load data for solo ride (cities and vehicle types)
+    async function loadSoloRideData() {
+        try {
+            // Load cities
+            const citiesResponse = await fetch('/api/cities');
+            if (citiesResponse.ok) {
+                const cities = await citiesResponse.json();
+                populateSoloCityDropdowns(cities);
+            }
+            
+            // Load vehicle types
+            const vehicleTypesResponse = await fetch('/api/vehicle-types');
+            if (vehicleTypesResponse.ok) {
+                const vehicleTypes = await vehicleTypesResponse.json();
+                populateSoloVehicleTypes(vehicleTypes);
+            } else {
+                // Fallback: populate with sample vehicle types
+                const sampleVehicleTypes = [
+                    { id: 1, name: 'Economy Car', description: 'Affordable and efficient' },
+                    { id: 2, name: 'Sedan', description: 'Comfortable mid-size vehicle' },
+                    { id: 3, name: 'SUV', description: 'Spacious and versatile' },
+                    { id: 4, name: 'Premium Car', description: 'Luxury and comfort' },
+                    { id: 5, name: 'Van', description: 'For large groups' }
+                ];
+                populateSoloVehicleTypes(sampleVehicleTypes);
+            }
+        } catch (error) {
+            console.error('Error loading solo ride data:', error);
+            // Fallback: populate with sample data
+            const sampleCities = [
+                { id: 1, name: 'Nairobi' },
+                { id: 2, name: 'Mombasa' },
+                { id: 3, name: 'Kisumu' },
+                { id: 4, name: 'Nakuru' },
+                { id: 5, name: 'Eldoret' }
+            ];
+            const sampleVehicleTypes = [
+                { id: 1, name: 'Economy Car', description: 'Affordable and efficient' },
+                { id: 2, name: 'Sedan', description: 'Comfortable mid-size vehicle' },
+                { id: 3, name: 'SUV', description: 'Spacious and versatile' },
+                { id: 4, name: 'Premium Car', description: 'Luxury and comfort' },
+                { id: 5, name: 'Van', description: 'For large groups' }
+            ];
+            populateSoloCityDropdowns(sampleCities);
+            populateSoloVehicleTypes(sampleVehicleTypes);
+        }
+    }
+    
+    function populateSoloCityDropdowns(cities) {
+        const cityOptions = cities.map(city => 
+            `<option value="${city.id}">${city.name}</option>`
+        ).join('');
+        
+        soloPickupCitySelect.innerHTML = '<option value="">Select pickup city</option>' + cityOptions;
+        soloDropoffCitySelect.innerHTML = '<option value="">Select drop-off city</option>' + cityOptions;
+    }
+    
+    function populateSoloVehicleTypes(vehicleTypes) {
+        const vehicleOptions = vehicleTypes.map(vehicle => 
+            `<option value="${vehicle.id}">${vehicle.name}${vehicle.description ? ' - ' + vehicle.description : ''}</option>`
+        ).join('');
+        
+        soloVehicleTypeSelect.innerHTML = '<option value="">Select vehicle type</option>' + vehicleOptions;
+    }
+    
+    // Check solo ride pricing when required fields are selected
+    async function checkSoloRidePricing() {
+        const pickupCityId = soloPickupCitySelect.value;
+        const dropoffCityId = soloDropoffCitySelect.value;
+        const vehicleTypeId = soloVehicleTypeSelect.value;
+        
+        if (pickupCityId && dropoffCityId && vehicleTypeId && pickupCityId !== dropoffCityId) {
+            try {
+                const response = await fetch(`/api/solo-ride/pricing?pickup_city_id=${pickupCityId}&dropoff_city_id=${dropoffCityId}&vehicle_type_id=${vehicleTypeId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.price) {
+                        soloPriceAmount.textContent = `KSh ${data.price.toLocaleString()}`;
+                        soloPriceDisplay.classList.remove('hidden');
+                    } else {
+                        soloPriceDisplay.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking solo ride price:', error);
+                // Show sample price for demonstration
+                const basePrices = { 1: 2500, 2: 3500, 3: 4500, 4: 6000, 5: 7000 };
+                const samplePrice = basePrices[vehicleTypeId] || 3000;
+                soloPriceAmount.textContent = `KSh ${samplePrice.toLocaleString()}`;
+                soloPriceDisplay.classList.remove('hidden');
+            }
+        } else {
+            soloPriceDisplay.classList.add('hidden');
+        }
+    }
+    
+    soloPickupCitySelect.addEventListener('change', checkSoloRidePricing);
+    soloDropoffCitySelect.addEventListener('change', checkSoloRidePricing);
+    soloVehicleTypeSelect.addEventListener('change', checkSoloRidePricing);
+    
+    // Solo ride password validation
+    const soloPasswordField = document.getElementById('solo_password');
+    const soloPasswordConfirmField = document.getElementById('solo_password_confirmation');
+    
+    function validateSoloPasswords() {
+        const password = soloPasswordField.value;
+        const passwordConfirm = soloPasswordConfirmField.value;
+        
+        // Remove any existing error styles
+        soloPasswordField.classList.remove('border-red-500');
+        soloPasswordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('solo-password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            soloPasswordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            soloPasswordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'solo-password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            soloPasswordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation for solo ride
+    soloPasswordField.addEventListener('input', validateSoloPasswords);
+    soloPasswordConfirmField.addEventListener('input', validateSoloPasswords);
+    
+    // Handle solo ride form submission
+    soloRideForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Validate same city selection
+        if (soloPickupCitySelect.value === soloDropoffCitySelect.value) {
+            alert('Please select different cities for pickup and drop-off.');
+            return;
+        }
+        
+        // Validate passwords
+        if (!validateSoloPasswords()) {
+            return;
+        }
+        
+        // Collect form data
+        const formData = new FormData(soloRideForm);
+        const bookingData = Object.fromEntries(formData);
+        
+        // Show loading state
+        const submitBtn = soloRideForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Make actual API call
+            const response = await fetch('/api/solo-ride/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify(bookingData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                // Success message with booking reference and account info
+                let successMessage;
+                
+                if (result.account_created) {
+                    successMessage = `🎉 Solo Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
+                } else {
+                    successMessage = `🎉 Solo Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
+                }
+                
+                alert(successMessage);
+                closeSoloModal();
+                
+                // Refresh the page to show the updated header with user info
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                // Handle errors
+                if (result.errors) {
+                    // Handle form validation errors
+                    let errorMessage = 'Please fix the following issues:\n\n';
+                    
+                    // Check for specific field errors
+                    if (result.errors.customer_email) {
+                        errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                    }
+                    if (result.errors.password) {
+                        errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                    }
+                    if (result.errors.customer_phone) {
+                        errorMessage += '📱 Phone: ' + result.errors.customer_phone.join(', ') + '\n';
+                    }
+                    if (result.errors.vehicle_type_id) {
+                        errorMessage += '🚗 Vehicle Type: ' + result.errors.vehicle_type_id.join(', ') + '\n';
+                    }
+                    
+                    // Add other field errors
+                    Object.keys(result.errors).forEach(field => {
+                        if (!['customer_email', 'password', 'customer_phone', 'vehicle_type_id'].includes(field)) {
+                            errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                        }
+                    });
+                    
+                    alert(errorMessage);
+                } else {
+                    alert(result.error || 'Sorry, there was an error processing your solo ride booking. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error('Solo ride booking error:', error);
+            alert('Sorry, there was an error processing your solo ride booking. Please try again.');
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Set minimum date to today for solo ride
+    document.getElementById('solo_travel_date').min = new Date().toISOString().split('T')[0];
     </script>
 
 </body>

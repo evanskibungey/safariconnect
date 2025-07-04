@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             'CitySeeder',
             'VehicleTypeSeeder',
             'TransportationServiceSeeder',
+            'SoloRidePricingSeeder',
             'DriverSeeder',
         ];
         

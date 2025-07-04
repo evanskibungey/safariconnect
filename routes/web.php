@@ -40,8 +40,19 @@ Route::middleware('auth')->group(function () {
 // Public API Routes for Booking
 Route::prefix('api')->group(function () {
     Route::get('/cities', [App\Http\Controllers\BookingController::class, 'getCities'])->name('api.cities');
+    Route::get('/vehicle-types', [App\Http\Controllers\BookingController::class, 'getVehicleTypes'])->name('api.vehicle-types');
+    
+    // Shared Ride Routes
     Route::get('/shared-ride/pricing', [App\Http\Controllers\BookingController::class, 'getSharedRidePricing'])->name('api.shared-ride.pricing');
     Route::post('/shared-ride/book', [App\Http\Controllers\BookingController::class, 'bookSharedRide'])->name('api.shared-ride.book');
+    
+    // Solo Ride Routes
+    Route::get('/solo-ride/pricing', [App\Http\Controllers\BookingController::class, 'getSoloRidePricing'])->name('api.solo-ride.pricing');
+    Route::post('/solo-ride/book', [App\Http\Controllers\BookingController::class, 'bookSoloRide'])->name('api.solo-ride.book');
+    
+    // Test Routes (for development only - remove in production)
+    Route::get('/test/solo-ride-data', [App\Http\Controllers\TestController::class, 'testSoloRideData'])->name('api.test.solo-ride-data');
+    Route::get('/test/solo-ride-pricing', [App\Http\Controllers\TestController::class, 'testSoloRidePricing'])->name('api.test.solo-ride-pricing');
 });
 
 // Admin Routes
