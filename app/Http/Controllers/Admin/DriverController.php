@@ -7,6 +7,7 @@ use App\Models\Driver;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class DriverController extends Controller
 {
@@ -64,8 +65,15 @@ class DriverController extends Controller
             'phone' => 'required|string|max:20|unique:drivers',
             'license_number' => 'required|string|max:50|unique:drivers',
             'license_expiry' => 'required|date|after:today',
-            'vehicle_registration' => 'nullable|string|max:50',
-            'vehicle_type_id' => 'nullable|exists:vehicle_types,id',
+            'vehicle_type_id' => 'required|exists:vehicle_types,id',
+            'vehicle_registration' => 'required|string|max:50',
+            'vehicle_make' => 'nullable|string|max:50',
+            'vehicle_model' => 'nullable|string|max:50',
+            'vehicle_year' => 'nullable|string|max:4',
+            'vehicle_color' => 'nullable|string|max:50',
+            'agreement_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120', // 5MB max
+            'agreement_date' => 'nullable|date',
+            'notes' => 'nullable|string',
             'status' => ['required', Rule::in(array_keys([
                 Driver::STATUS_AVAILABLE => 'Available',
                 Driver::STATUS_BUSY => 'Busy',
@@ -73,6 +81,17 @@ class DriverController extends Controller
             ]))],
             'is_active' => 'boolean',
         ]);
+
+        // Handle file upload
+        if ($request->hasFile('agreement_document')) {
+            $path = $request->file('agreement_document')->store('driver-agreements', 'public');
+            $validated['agreement_document'] = $path;
+        }
+
+        // Set default value for is_active if not provided
+        if (!isset($validated['is_active'])) {
+            $validated['is_active'] = true;
+        }
 
         Driver::create($validated);
 
@@ -113,8 +132,15 @@ class DriverController extends Controller
             'phone' => ['required', 'string', 'max:20', Rule::unique('drivers')->ignore($driver->id)],
             'license_number' => ['required', 'string', 'max:50', Rule::unique('drivers')->ignore($driver->id)],
             'license_expiry' => 'required|date|after:today',
-            'vehicle_registration' => 'nullable|string|max:50',
-            'vehicle_type_id' => 'nullable|exists:vehicle_types,id',
+            'vehicle_type_id' => 'required|exists:vehicle_types,id',
+            'vehicle_registration' => 'required|string|max:50',
+            'vehicle_make' => 'nullable|string|max:50',
+            'vehicle_model' => 'nullable|string|max:50',
+            'vehicle_year' => 'nullable|string|max:4',
+            'vehicle_color' => 'nullable|string|max:50',
+            'agreement_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            'agreement_date' => 'nullable|date',
+            'notes' => 'nullable|string',
             'status' => ['required', Rule::in(array_keys([
                 Driver::STATUS_AVAILABLE => 'Available',
                 Driver::STATUS_BUSY => 'Busy',
@@ -122,6 +148,22 @@ class DriverController extends Controller
             ]))],
             'is_active' => 'boolean',
         ]);
+
+        // Handle file upload
+        if ($request->hasFile('agreement_document')) {
+            // Delete old file if exists
+            if ($driver->agreement_document) {
+                Storage::disk('public')->delete($driver->agreement_document);
+            }
+            
+            $path = $request->file('agreement_document')->store('driver-agreements', 'public');
+            $validated['agreement_document'] = $path;
+        }
+
+        // Set default value for is_active if not provided
+        if (!isset($validated['is_active'])) {
+            $validated['is_active'] = $driver->is_active;
+        }
 
         $driver->update($validated);
 
@@ -134,6 +176,11 @@ class DriverController extends Controller
         // Check if driver has active bookings
         if ($driver->bookings()->whereIn('status', ['pending', 'confirmed', 'in_progress'])->exists()) {
             return back()->with('error', 'Cannot delete driver with active bookings.');
+        }
+
+        // Delete agreement document if exists
+        if ($driver->agreement_document) {
+            Storage::disk('public')->delete($driver->agreement_document);
         }
 
         $driver->delete();
@@ -182,5 +229,14 @@ class DriverController extends Controller
         $driver->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Driver status updated successfully.');
+    }
+
+    public function downloadDocument(Driver $driver)
+    {
+        if (!$driver->agreement_document || !Storage::disk('public')->exists($driver->agreement_document)) {
+            return back()->with('error', 'Agreement document not found.');
+        }
+
+        return Storage::disk('public')->download($driver->agreement_document, 'driver-agreement-' . $driver->id . '.pdf');
     }
 }

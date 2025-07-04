@@ -19,6 +19,13 @@ class Driver extends Model
         'license_expiry',
         'vehicle_registration',
         'vehicle_type_id',
+        'vehicle_make',
+        'vehicle_model',
+        'vehicle_year',
+        'vehicle_color',
+        'agreement_document',
+        'agreement_date',
+        'notes',
         'status',
         'is_active',
         'rating',
@@ -27,6 +34,7 @@ class Driver extends Model
 
     protected $casts = [
         'license_expiry' => 'date',
+        'agreement_date' => 'date',
         'is_active' => 'boolean',
         'rating' => 'decimal:2',
         'total_trips' => 'integer',
@@ -119,5 +127,22 @@ class Driver extends Model
         
         $this->total_trips++;
         $this->save();
+    }
+    
+    public function getVehicleDetailsAttribute()
+    {
+        $details = [];
+        
+        if ($this->vehicle_make) $details[] = $this->vehicle_make;
+        if ($this->vehicle_model) $details[] = $this->vehicle_model;
+        if ($this->vehicle_year) $details[] = $this->vehicle_year;
+        if ($this->vehicle_color) $details[] = $this->vehicle_color;
+        
+        return implode(' ', $details);
+    }
+    
+    public function hasAgreement()
+    {
+        return !empty($this->agreement_document);
     }
 }

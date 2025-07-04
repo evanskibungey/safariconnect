@@ -156,6 +156,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{driver}', [App\Http\Controllers\Admin\DriverController::class, 'destroy'])->name('destroy');
             Route::patch('/{driver}/toggle', [App\Http\Controllers\Admin\DriverController::class, 'toggle'])->name('toggle');
             Route::patch('/{driver}/status', [App\Http\Controllers\Admin\DriverController::class, 'updateStatus'])->name('update-status');
+            Route::get('/{driver}/download-document', [App\Http\Controllers\Admin\DriverController::class, 'downloadDocument'])->name('download-document');
         });
     });
 });
