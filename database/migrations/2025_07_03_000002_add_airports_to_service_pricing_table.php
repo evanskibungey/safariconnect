@@ -23,11 +23,16 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('service_pricing', function (Blueprint $table) {
+            // Drop foreign key constraints FIRST
+            $table->dropForeign(['pickup_airport_id']);
+            $table->dropForeign(['dropoff_airport_id']);
+            
+            // Then drop the indexes
             $table->dropIndex('sp_pickup_airport_active_idx');
             $table->dropIndex('sp_dropoff_airport_active_idx');
             $table->dropIndex('sp_transfer_vehicle_idx');
-            $table->dropForeign(['pickup_airport_id']);
-            $table->dropForeign(['dropoff_airport_id']);
+            
+            // Finally drop the columns
             $table->dropColumn(['pickup_airport_id', 'dropoff_airport_id']);
         });
     }

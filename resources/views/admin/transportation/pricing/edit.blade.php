@@ -497,7 +497,15 @@
                 needsVehicleType: false,
 
                 init() {
+                    console.log('Edit form initialized with:', {
+                        serviceType: this.serviceType,
+                        transferType: this.transferType
+                    });
                     this.updateServiceType();
+                    // Ensure form fields are properly enabled/disabled on init
+                    this.$nextTick(() => {
+                        this.updateFieldStates();
+                    });
                 },
 
                 updateServiceType() {
@@ -515,8 +523,70 @@
                     this.selectedDropoffAirport = '';
                     this.selectedPickupCity = '';
                     this.selectedDropoffCity = '';
+                },
+
+                updateFieldStates() {
+                    // This function ensures fields are properly enabled/disabled based on the current state
+                    if (this.serviceType === 'airport_transfer') {
+                        // Disable regular route fields
+                        const pickupCity = document.getElementById('pickup_city_id');
+                        const dropoffCity = document.getElementById('dropoff_city_id');
+                        if (pickupCity) pickupCity.disabled = true;
+                        if (dropoffCity) dropoffCity.disabled = true;
+
+                        // Enable/disable airport fields based on transfer type
+                        if (this.transferType === 'pickup') {
+                            // Enable pickup fields
+                            const pickupAirport = document.getElementById('pickup_airport_id');
+                            const dropoffCityPickup = document.getElementById('dropoff_city_id_pickup');
+                            if (pickupAirport) pickupAirport.disabled = false;
+                            if (dropoffCityPickup) dropoffCityPickup.disabled = false;
+
+                            // Disable dropoff fields
+                            const pickupCityDropoff = document.getElementById('pickup_city_id_dropoff');
+                            const dropoffAirport = document.getElementById('dropoff_airport_id');
+                            if (pickupCityDropoff) pickupCityDropoff.disabled = true;
+                            if (dropoffAirport) dropoffAirport.disabled = true;
+                        } else if (this.transferType === 'dropoff') {
+                            // Enable dropoff fields
+                            const pickupCityDropoff = document.getElementById('pickup_city_id_dropoff');
+                            const dropoffAirport = document.getElementById('dropoff_airport_id');
+                            if (pickupCityDropoff) pickupCityDropoff.disabled = false;
+                            if (dropoffAirport) dropoffAirport.disabled = false;
+
+                            // Disable pickup fields
+                            const pickupAirport = document.getElementById('pickup_airport_id');
+                            const dropoffCityPickup = document.getElementById('dropoff_city_id_pickup');
+                            if (pickupAirport) pickupAirport.disabled = true;
+                            if (dropoffCityPickup) dropoffCityPickup.disabled = true;
+                        }
+                    } else {
+                        // Enable regular route fields
+                        const pickupCity = document.getElementById('pickup_city_id');
+                        const dropoffCity = document.getElementById('dropoff_city_id');
+                        if (pickupCity) pickupCity.disabled = false;
+                        if (dropoffCity) dropoffCity.disabled = false;
+
+                        // Disable all airport fields
+                        const airportFields = [
+                            'pickup_airport_id',
+                            'dropoff_airport_id',
+                            'pickup_city_id_dropoff',
+                            'dropoff_city_id_pickup'
+                        ];
+                        airportFields.forEach(fieldId => {
+                            const field = document.getElementById(fieldId);
+                            if (field) field.disabled = true;
+                        });
+                    }
                 }
             }
         }
     </script>
+
+    <style>
+    [x-cloak] {
+        display: none !important;
+    }
+    </style>
 </x-admin.layouts.app>
