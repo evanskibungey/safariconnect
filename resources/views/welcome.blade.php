@@ -330,6 +330,7 @@
 
                 <!-- Airport Card -->
                 <div
+                    id="airport-transfer-card"
                     class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
                     <div class="flex items-center space-x-3">
                         <div
@@ -1218,6 +1219,330 @@
         </div>
     </div>
 
+    <!-- Airport Transfer Booking Modal -->
+    <div id="airport-transfer-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+
+            <!-- Modal panel -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-cyan-700 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">Book Your Airport Transfer</h3>
+                        <button id="close-airport-modal" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="airport-transfer-form" class="px-6 py-6">
+                    @csrf
+                    
+                    <!-- Transfer Type Selection -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                            </svg>
+                            Transfer Type
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="relative">
+                                <input type="radio" id="pickup_transfer" name="transfer_type" value="pickup" class="sr-only" required>
+                                <label for="pickup_transfer" class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-all transfer-type-option">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-lg font-semibold text-gray-800">Airport Pickup</h5>
+                                            <p class="text-sm text-gray-600">From airport to your destination</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="radio" id="dropoff_transfer" name="transfer_type" value="dropoff" class="sr-only" required>
+                                <label for="dropoff_transfer" class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-all transfer-type-option">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
+                                                <path d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-lg font-semibold text-gray-800">Airport Drop-off</h5>
+                                            <p class="text-sm text-gray-600">From your location to airport</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- Left Column: Trip Details -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Trip Details
+                                </h4>
+                                
+                                <!-- Route Selection -->
+                                <div class="space-y-4">
+                                    <!-- Airport Pickup Route -->
+                                    <div id="pickup-route" class="hidden route-section">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="pickup_airport" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Pickup Airport <span class="text-red-500">*</span>
+                                                </label>
+                                                <select id="pickup_airport" name="pickup_airport_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                                                    <option value="">Select pickup airport</option>
+                                                    <!-- Options will be populated via AJAX -->
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label for="destination_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Destination City <span class="text-red-500">*</span>
+                                                </label>
+                                                <select id="destination_city" name="dropoff_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                                                    <option value="">Select destination city</option>
+                                                    <!-- Options will be populated via AJAX -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Airport Drop-off Route -->
+                                    <div id="dropoff-route" class="hidden route-section">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="origin_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Origin City <span class="text-red-500">*</span>
+                                                </label>
+                                                <select id="origin_city" name="pickup_city_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                                                    <option value="">Select origin city</option>
+                                                    <!-- Options will be populated via AJAX -->
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label for="dropoff_airport" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Drop-off Airport <span class="text-red-500">*</span>
+                                                </label>
+                                                <select id="dropoff_airport" name="dropoff_airport_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                                                    <option value="">Select drop-off airport</option>
+                                                    <!-- Options will be populated via AJAX -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Vehicle Type Selection -->
+                                    <div>
+                                        <label for="airport_vehicle_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Vehicle Type <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="airport_vehicle_type" name="vehicle_type_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                                            <option value="">Select vehicle type</option>
+                                            <!-- Options will be populated via AJAX -->
+                                        </select>
+                                        <p class="text-xs text-gray-500 mt-1">Choose your preferred vehicle for airport transfer</p>
+                                    </div>
+
+                                    <!-- Travel Details -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="airport_travel_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Travel Date <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="airport_travel_date" name="travel_date" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                                required min="{{ date('Y-m-d') }}">
+                                        </div>
+
+                                        <div>
+                                            <label for="airport_travel_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Preferred Time <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="time" id="airport_travel_time" name="travel_time" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                                required>
+                                        </div>
+
+                                        <div>
+                                            <label for="airport_passengers" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Passengers <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="airport_passengers" name="passengers" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                                                <option value="1">1 Passenger</option>
+                                                <option value="2">2 Passengers</option>
+                                                <option value="3">3 Passengers</option>
+                                                <option value="4">4 Passengers</option>
+                                                <option value="5">5 Passengers</option>
+                                                <option value="6">6 Passengers</option>
+                                                <option value="7">7 Passengers</option>
+                                                <option value="8">8 Passengers</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Flight Details -->
+                                    <div>
+                                        <label for="flight_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Flight Number (Optional)
+                                        </label>
+                                        <input type="text" id="flight_number" name="flight_number" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            placeholder="e.g., KQ101">
+                                        <p class="text-xs text-gray-500 mt-1">Helps us track your flight and adjust pickup time if needed</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Display -->
+                            <div id="airport-price-display" class="hidden p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Total Price:</span>
+                                    <span id="airport-price-amount" class="text-2xl font-bold text-blue-600"></span>
+                                </div>
+                                <div id="airport-price-breakdown" class="text-sm text-gray-600 mt-2">
+                                    <!-- Price breakdown will be shown here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Contact & Account Information -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Contact Information
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="airport_customer_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Full Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="airport_customer_name" name="customer_name" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            required>
+                                    </div>
+
+                                    <div>
+                                        <label for="airport_customer_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Email Address <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="email" id="airport_customer_email" name="customer_email" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            required>
+                                        <p class="text-xs text-gray-500 mt-1">We'll use this for your account login and booking updates</p>
+                                    </div>
+
+                                    <div>
+                                        <label for="airport_customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Phone Number <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="tel" id="airport_customer_phone" name="customer_phone" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            placeholder="+254 7XX XXX XXX" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Password Section -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Account Password
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="airport_password" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="airport_password" name="password" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Minimum 4 characters</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="airport_password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Confirm Password <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="password" id="airport_password_confirmation" name="password_confirmation" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                            required minlength="4">
+                                        <p class="text-xs text-gray-500 mt-1">Re-enter your password to confirm</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Special Requirements -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Special Requirements
+                                </h4>
+                                
+                                <div>
+                                    <label for="airport_special_requirements" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Additional Notes (Optional)
+                                    </label>
+                                    <textarea id="airport_special_requirements" name="special_requirements" rows="3"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" 
+                                        placeholder="Any special requirements, luggage details, or additional information..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-8 flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <button type="button" id="cancel-airport-booking" 
+                            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-700 text-white rounded-lg hover:from-cyan-700 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg font-medium">
+                            Complete Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript for interactivity -->
     <script>
     // Mobile menu toggle
@@ -1871,6 +2196,441 @@
     
     // Set minimum date to today for solo ride
     document.getElementById('solo_travel_date').min = new Date().toISOString().split('T')[0];
+    
+    // ===================================
+    // AIRPORT TRANSFER FUNCTIONALITY
+    // ===================================
+    
+    // Airport Transfer Modal Elements
+    const airportTransferCard = document.getElementById('airport-transfer-card');
+    const airportTransferModal = document.getElementById('airport-transfer-modal');
+    const closeAirportModalBtn = document.getElementById('close-airport-modal');
+    const cancelAirportBookingBtn = document.getElementById('cancel-airport-booking');
+    const airportTransferForm = document.getElementById('airport-transfer-form');
+    const airportPriceDisplay = document.getElementById('airport-price-display');
+    const airportPriceAmount = document.getElementById('airport-price-amount');
+    const airportPriceBreakdown = document.getElementById('airport-price-breakdown');
+    
+    // Transfer type radio buttons
+    const pickupTransferRadio = document.getElementById('pickup_transfer');
+    const dropoffTransferRadio = document.getElementById('dropoff_transfer');
+    
+    // Route sections
+    const pickupRouteSection = document.getElementById('pickup-route');
+    const dropoffRouteSection = document.getElementById('dropoff-route');
+    
+    // Form elements
+    const pickupAirportSelect = document.getElementById('pickup_airport');
+    const destinationCitySelect = document.getElementById('destination_city');
+    const originCitySelect = document.getElementById('origin_city');
+    const dropoffAirportSelect = document.getElementById('dropoff_airport');
+    const airportVehicleTypeSelect = document.getElementById('airport_vehicle_type');
+    
+    // Open airport transfer modal when card is clicked
+    airportTransferCard.addEventListener('click', () => {
+        airportTransferModal.classList.remove('hidden');
+        loadAirportTransferData();
+    });
+    
+    // Close airport transfer modal
+    function closeAirportModal() {
+        airportTransferModal.classList.add('hidden');
+        airportTransferForm.reset();
+        airportPriceDisplay.classList.add('hidden');
+        
+        // Hide all route sections
+        pickupRouteSection.classList.add('hidden');
+        dropoffRouteSection.classList.add('hidden');
+        
+        // Clear transfer type selections
+        document.querySelectorAll('.transfer-type-option').forEach(option => {
+            option.classList.remove('border-blue-500', 'bg-blue-50');
+            option.classList.add('border-gray-200');
+        });
+        
+        // Clear password validation errors
+        const passwordError = document.getElementById('airport-password-error');
+        if (passwordError) {
+            passwordError.remove();
+        }
+        
+        // Remove error styling from password fields
+        const passwordField = document.getElementById('airport_password');
+        const passwordConfirmField = document.getElementById('airport_password_confirmation');
+        if (passwordField) passwordField.classList.remove('border-red-500');
+        if (passwordConfirmField) passwordConfirmField.classList.remove('border-red-500');
+    }
+    
+    closeAirportModalBtn.addEventListener('click', closeAirportModal);
+    cancelAirportBookingBtn.addEventListener('click', closeAirportModal);
+    
+    // Close modal when clicking outside
+    airportTransferModal.addEventListener('click', (e) => {
+        if (e.target === airportTransferModal) {
+            closeAirportModal();
+        }
+    });
+    
+    // Transfer type selection handling
+    pickupTransferRadio.addEventListener('change', function() {
+        if (this.checked) {
+            pickupRouteSection.classList.remove('hidden');
+            dropoffRouteSection.classList.add('hidden');
+            updateTransferTypeStyles(this);
+            checkAirportTransferPricing();
+        }
+    });
+    
+    dropoffTransferRadio.addEventListener('change', function() {
+        if (this.checked) {
+            dropoffRouteSection.classList.remove('hidden');
+            pickupRouteSection.classList.add('hidden');
+            updateTransferTypeStyles(this);
+            checkAirportTransferPricing();
+        }
+    });
+    
+    function updateTransferTypeStyles(selectedRadio) {
+        // Reset all styles
+        document.querySelectorAll('.transfer-type-option').forEach(option => {
+            option.classList.remove('border-blue-500', 'bg-blue-50');
+            option.classList.add('border-gray-200');
+        });
+        
+        // Apply selected styles
+        const selectedLabel = selectedRadio.nextElementSibling;
+        selectedLabel.classList.remove('border-gray-200');
+        selectedLabel.classList.add('border-blue-500', 'bg-blue-50');
+    }
+    
+    // Load data for airport transfer
+    async function loadAirportTransferData() {
+        try {
+            // Load cities
+            const citiesResponse = await fetch('/api/cities');
+            if (citiesResponse.ok) {
+                const cities = await citiesResponse.json();
+                populateAirportCityDropdowns(cities);
+            }
+            
+            // Load airports
+            const airportsResponse = await fetch('/api/airports');
+            if (airportsResponse.ok) {
+                const airports = await airportsResponse.json();
+                populateAirportDropdowns(airports);
+            }
+            
+            // Load vehicle types
+            const vehicleTypesResponse = await fetch('/api/vehicle-types');
+            if (vehicleTypesResponse.ok) {
+                const vehicleTypes = await vehicleTypesResponse.json();
+                populateAirportVehicleTypes(vehicleTypes);
+            } else {
+                // Fallback: populate with sample vehicle types
+                const sampleVehicleTypes = [
+                    { id: 1, name: 'Economy Car', description: 'Affordable and efficient' },
+                    { id: 2, name: 'Sedan', description: 'Comfortable mid-size vehicle' },
+                    { id: 3, name: 'SUV', description: 'Spacious and versatile' },
+                    { id: 4, name: 'Premium Car', description: 'Luxury and comfort' },
+                    { id: 5, name: 'Van', description: 'For large groups' }
+                ];
+                populateAirportVehicleTypes(sampleVehicleTypes);
+            }
+        } catch (error) {
+            console.error('Error loading airport transfer data:', error);
+            // Fallback with sample data
+            const sampleCities = [
+                { id: 1, name: 'Nairobi' },
+                { id: 2, name: 'Mombasa' },
+                { id: 3, name: 'Kisumu' },
+                { id: 4, name: 'Nakuru' },
+                { id: 5, name: 'Eldoret' }
+            ];
+            const sampleAirports = [
+                { id: 1, name: 'Jomo Kenyatta International Airport', code: 'NBO', city: { name: 'Nairobi' } },
+                { id: 2, name: 'Moi International Airport', code: 'MBA', city: { name: 'Mombasa' } },
+                { id: 3, name: 'Kisumu Airport', code: 'KIS', city: { name: 'Kisumu' } }
+            ];
+            const sampleVehicleTypes = [
+                { id: 1, name: 'Economy Car', description: 'Affordable and efficient' },
+                { id: 2, name: 'Sedan', description: 'Comfortable mid-size vehicle' },
+                { id: 3, name: 'SUV', description: 'Spacious and versatile' },
+                { id: 4, name: 'Premium Car', description: 'Luxury and comfort' },
+                { id: 5, name: 'Van', description: 'For large groups' }
+            ];
+            populateAirportCityDropdowns(sampleCities);
+            populateAirportDropdowns(sampleAirports);
+            populateAirportVehicleTypes(sampleVehicleTypes);
+        }
+    }
+    
+    function populateAirportCityDropdowns(cities) {
+        const cityOptions = cities.map(city => 
+            `<option value="${city.id}">${city.name}</option>`
+        ).join('');
+        
+        destinationCitySelect.innerHTML = '<option value="">Select destination city</option>' + cityOptions;
+        originCitySelect.innerHTML = '<option value="">Select origin city</option>' + cityOptions;
+    }
+    
+    function populateAirportDropdowns(airports) {
+        const airportOptions = airports.map(airport => 
+            `<option value="${airport.id}">${airport.name}${airport.code ? ' (' + airport.code + ')' : ''}</option>`
+        ).join('');
+        
+        pickupAirportSelect.innerHTML = '<option value="">Select pickup airport</option>' + airportOptions;
+        dropoffAirportSelect.innerHTML = '<option value="">Select drop-off airport</option>' + airportOptions;
+    }
+    
+    function populateAirportVehicleTypes(vehicleTypes) {
+        const vehicleOptions = vehicleTypes.map(vehicle => 
+            `<option value="${vehicle.id}">${vehicle.name}${vehicle.description ? ' - ' + vehicle.description : ''}</option>`
+        ).join('');
+        
+        airportVehicleTypeSelect.innerHTML = '<option value="">Select vehicle type</option>' + vehicleOptions;
+    }
+    
+    // Check airport transfer pricing when required fields are selected
+    async function checkAirportTransferPricing() {
+        const transferType = document.querySelector('input[name="transfer_type"]:checked')?.value;
+        const vehicleTypeId = airportVehicleTypeSelect.value;
+        
+        if (!transferType || !vehicleTypeId) {
+            airportPriceDisplay.classList.add('hidden');
+            return;
+        }
+        
+        let routeComplete = false;
+        let pickupAirportId, dropoffCityId, pickupCityId, dropoffAirportId;
+        
+        if (transferType === 'pickup') {
+            pickupAirportId = pickupAirportSelect.value;
+            dropoffCityId = destinationCitySelect.value;
+            routeComplete = pickupAirportId && dropoffCityId;
+        } else {
+            pickupCityId = originCitySelect.value;
+            dropoffAirportId = dropoffAirportSelect.value;
+            routeComplete = pickupCityId && dropoffAirportId;
+        }
+        
+        if (routeComplete) {
+            try {
+                const params = new URLSearchParams({
+                    transfer_type: transferType,
+                    vehicle_type_id: vehicleTypeId
+                });
+                
+                if (transferType === 'pickup') {
+                    params.append('pickup_airport_id', pickupAirportId);
+                    params.append('dropoff_city_id', dropoffCityId);
+                } else {
+                    params.append('pickup_city_id', pickupCityId);
+                    params.append('dropoff_airport_id', dropoffAirportId);
+                }
+                
+                const response = await fetch(`/api/airport-transfer/pricing?${params}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.price) {
+                        airportPriceAmount.textContent = `KSh ${data.price.toLocaleString()}`;
+                        
+                        // Show price breakdown
+                        let breakdown = `Base price: KSh ${data.base_price.toLocaleString()}`;
+                        if (data.airport_surcharge > 0) {
+                            breakdown += `<br>Airport surcharge: KSh ${data.airport_surcharge.toLocaleString()}`;
+                        }
+                        airportPriceBreakdown.innerHTML = breakdown;
+                        
+                        airportPriceDisplay.classList.remove('hidden');
+                    } else {
+                        airportPriceDisplay.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking airport transfer price:', error);
+                // Show sample price for demonstration
+                const basePrices = { 1: 3000, 2: 4000, 3: 5500, 4: 7000, 5: 8500 };
+                const basePrice = basePrices[vehicleTypeId] || 4000;
+                const surcharge = transferType === 'pickup' ? 500 : 300;
+                const totalPrice = basePrice + surcharge;
+                
+                airportPriceAmount.textContent = `KSh ${totalPrice.toLocaleString()}`;
+                airportPriceBreakdown.innerHTML = `Base price: KSh ${basePrice.toLocaleString()}<br>Airport surcharge: KSh ${surcharge.toLocaleString()}`;
+                airportPriceDisplay.classList.remove('hidden');
+            }
+        } else {
+            airportPriceDisplay.classList.add('hidden');
+        }
+    }
+    
+    // Add event listeners for pricing updates
+    pickupAirportSelect.addEventListener('change', checkAirportTransferPricing);
+    destinationCitySelect.addEventListener('change', checkAirportTransferPricing);
+    originCitySelect.addEventListener('change', checkAirportTransferPricing);
+    dropoffAirportSelect.addEventListener('change', checkAirportTransferPricing);
+    airportVehicleTypeSelect.addEventListener('change', checkAirportTransferPricing);
+    
+    // Airport transfer password validation
+    const airportPasswordField = document.getElementById('airport_password');
+    const airportPasswordConfirmField = document.getElementById('airport_password_confirmation');
+    
+    function validateAirportPasswords() {
+        const password = airportPasswordField.value;
+        const passwordConfirm = airportPasswordConfirmField.value;
+        
+        // Remove any existing error styles
+        airportPasswordField.classList.remove('border-red-500');
+        airportPasswordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('airport-password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            airportPasswordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            airportPasswordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'airport-password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            airportPasswordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation for airport transfer
+    airportPasswordField.addEventListener('input', validateAirportPasswords);
+    airportPasswordConfirmField.addEventListener('input', validateAirportPasswords);
+    
+    // Handle airport transfer form submission
+    airportTransferForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Validate transfer type selection
+        const transferType = document.querySelector('input[name="transfer_type"]:checked');
+        if (!transferType) {
+            alert('Please select a transfer type (pickup or drop-off).');
+            return;
+        }
+        
+        // Validate route completion
+        if (transferType.value === 'pickup') {
+            if (!pickupAirportSelect.value || !destinationCitySelect.value) {
+                alert('Please select both pickup airport and destination city.');
+                return;
+            }
+        } else {
+            if (!originCitySelect.value || !dropoffAirportSelect.value) {
+                alert('Please select both origin city and drop-off airport.');
+                return;
+            }
+        }
+        
+        // Validate passwords
+        if (!validateAirportPasswords()) {
+            return;
+        }
+        
+        // Collect form data
+        const formData = new FormData(airportTransferForm);
+        const bookingData = Object.fromEntries(formData);
+        
+        // Show loading state
+        const submitBtn = airportTransferForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Make actual API call
+            const response = await fetch('/api/airport-transfer/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify(bookingData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                // Success message with booking reference and account info
+                let successMessage;
+                
+                if (result.account_created) {
+                    successMessage = `🎉 Airport Transfer Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
+                } else {
+                    successMessage = `🎉 Airport Transfer Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
+                }
+                
+                alert(successMessage);
+                closeAirportModal();
+                
+                // Refresh the page to show the updated header with user info
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                // Handle errors
+                if (result.errors) {
+                    // Handle form validation errors
+                    let errorMessage = 'Please fix the following issues:\n\n';
+                    
+                    // Check for specific field errors
+                    if (result.errors.customer_email) {
+                        errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                    }
+                    if (result.errors.password) {
+                        errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                    }
+                    if (result.errors.customer_phone) {
+                        errorMessage += '📱 Phone: ' + result.errors.customer_phone.join(', ') + '\n';
+                    }
+                    if (result.errors.vehicle_type_id) {
+                        errorMessage += '🚗 Vehicle Type: ' + result.errors.vehicle_type_id.join(', ') + '\n';
+                    }
+                    if (result.errors.transfer_type) {
+                        errorMessage += '✈️ Transfer Type: ' + result.errors.transfer_type.join(', ') + '\n';
+                    }
+                    
+                    // Add other field errors
+                    Object.keys(result.errors).forEach(field => {
+                        if (!['customer_email', 'password', 'customer_phone', 'vehicle_type_id', 'transfer_type'].includes(field)) {
+                            errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                        }
+                    });
+                    
+                    alert(errorMessage);
+                } else {
+                    alert(result.error || 'Sorry, there was an error processing your airport transfer booking. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error('Airport transfer booking error:', error);
+            alert('Sorry, there was an error processing your airport transfer booking. Please try again.');
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Set minimum date to today for airport transfer
+    document.getElementById('airport_travel_date').min = new Date().toISOString().split('T')[0];
     </script>
 
 </body>

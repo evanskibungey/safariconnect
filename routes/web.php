@@ -50,6 +50,12 @@ Route::prefix('api')->group(function () {
     Route::get('/solo-ride/pricing', [App\Http\Controllers\BookingController::class, 'getSoloRidePricing'])->name('api.solo-ride.pricing');
     Route::post('/solo-ride/book', [App\Http\Controllers\BookingController::class, 'bookSoloRide'])->name('api.solo-ride.book');
     
+    // Airport Transfer Routes
+    Route::get('/airports', [App\Http\Controllers\BookingController::class, 'getAirports'])->name('api.airports');
+    Route::get('/airports-by-city', [App\Http\Controllers\BookingController::class, 'getAirportsByCity'])->name('api.airports-by-city');
+    Route::get('/airport-transfer/pricing', [App\Http\Controllers\BookingController::class, 'getAirportTransferPricing'])->name('api.airport-transfer.pricing');
+    Route::post('/airport-transfer/book', [App\Http\Controllers\BookingController::class, 'bookAirportTransfer'])->name('api.airport-transfer.book');
+    
     // Test Routes (for development only - remove in production)
     Route::get('/test/solo-ride-data', [App\Http\Controllers\TestController::class, 'testSoloRideData'])->name('api.test.solo-ride-data');
     Route::get('/test/solo-ride-pricing', [App\Http\Controllers\TestController::class, 'testSoloRidePricing'])->name('api.test.solo-ride-pricing');

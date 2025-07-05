@@ -35,6 +35,7 @@ class Booking extends Model
         'payment_status',
         'payment_method',
         'transaction_id',
+        'flight_number',
         'special_requirements',
         'admin_notes',
         'confirmed_at',
