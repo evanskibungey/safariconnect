@@ -220,6 +220,224 @@
     }
 
     // ===================================
+    // CAR HIRE FUNCTIONALITY
+    // ===================================
+    
+    // Car Hire Modal Elements
+    const carHireCard = document.getElementById('car-hire-card');
+    const carHireModal = document.getElementById('car-hire-modal');
+    const closeCarHireModalBtn = document.getElementById('close-car-hire-modal');
+    const cancelCarHireBookingBtn = document.getElementById('cancel-car-hire-booking');
+    const carHireForm = document.getElementById('car-hire-form');
+    const carHirePriceDisplay = document.getElementById('car-hire-price-display');
+    const carHirePricePerDay = document.getElementById('car-hire-price-per-day');
+    const carHireTotalPrice = document.getElementById('car-hire-total-price');
+    const carHireDuration = document.getElementById('car-hire-duration');
+    
+    // Open car hire modal when card is clicked
+    if (carHireCard) {
+        carHireCard.addEventListener('click', () => {
+            carHireModal.classList.remove('hidden');
+            loadCarHireData();
+        });
+    }
+    
+    // Close car hire modal
+    function closeCarHireModal() {
+        if (carHireModal) {
+            carHireModal.classList.add('hidden');
+            if (carHireForm) carHireForm.reset();
+            if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
+        }
+    }
+    
+    if (closeCarHireModalBtn) closeCarHireModalBtn.addEventListener('click', closeCarHireModal);
+    if (cancelCarHireBookingBtn) cancelCarHireBookingBtn.addEventListener('click', closeCarHireModal);
+
+    // Close modal when clicking outside
+    if (carHireModal) {
+        carHireModal.addEventListener('click', (e) => {
+            if (e.target === carHireModal) {
+                closeCarHireModal();
+            }
+        });
+    }
+
+    // Load car hire data
+    async function loadCarHireData() {
+        try {
+            // Load cities
+            const citiesResponse = await fetch('/api/cities');
+            if (citiesResponse.ok) {
+                const cities = await citiesResponse.json();
+                populateCarHireCityDropdown(cities);
+            }
+            
+            // Load vehicle types
+            const vehicleResponse = await fetch('/api/vehicle-types');
+            if (vehicleResponse.ok) {
+                const vehicleTypes = await vehicleResponse.json();
+                populateCarHireVehicleTypes(vehicleTypes);
+            } else {
+                // Fallback vehicle types
+                const sampleVehicleTypes = [
+                    { id: 1, name: 'Economy Car', description: 'Fuel efficient and affordable' },
+                    { id: 2, name: 'Compact Car', description: 'Perfect for city driving' },
+                    { id: 3, name: 'Sedan', description: 'Comfortable mid-size vehicle' },
+                    { id: 4, name: 'SUV', description: 'Spacious and versatile' },
+                    { id: 5, name: 'Premium Car', description: 'Luxury and comfort' },
+                    { id: 6, name: 'Van', description: 'For large groups or cargo' }
+                ];
+                populateCarHireVehicleTypes(sampleVehicleTypes);
+            }
+        } catch (error) {
+            console.error('Error loading car hire data:', error);
+        }
+    }
+
+    function populateCarHireCityDropdown(cities) {
+        const cityOptions = cities.map(city => 
+            `<option value="${city.id}">${city.name}</option>`
+        ).join('');
+        
+        const pickupLocationSelect = document.getElementById('pickup_location');
+        
+        if (pickupLocationSelect) {
+            pickupLocationSelect.innerHTML = '<option value="">Select pickup location</option>' + cityOptions;
+            // Add event listener for pricing updates
+            pickupLocationSelect.addEventListener('change', checkCarHirePricing);
+        }
+    }
+    
+    function populateCarHireVehicleTypes(vehicleTypes) {
+        const vehicleOptions = vehicleTypes.map(vehicle => 
+            `<option value="${vehicle.id}">${vehicle.name}${vehicle.description ? ' - ' + vehicle.description : ''}</option>`
+        ).join('');
+        
+        const vehicleSelect = document.getElementById('car_hire_vehicle_type');
+        if (vehicleSelect) {
+            vehicleSelect.innerHTML = '<option value="">Select vehicle type</option>' + vehicleOptions;
+            // Add event listener for pricing updates
+            vehicleSelect.addEventListener('change', checkCarHirePricing);
+        }
+    }
+
+    // Calculate hire duration and check pricing
+    function calculateHireDuration() {
+        const startDateInput = document.getElementById('hire_start_date');
+        const endDateInput = document.getElementById('hire_end_date');
+        
+        if (!startDateInput || !endDateInput || !startDateInput.value || !endDateInput.value) {
+            return 0;
+        }
+        
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (endDate <= startDate) {
+            return 0;
+        }
+        
+        // Calculate difference in days (including both start and end days)
+        const timeDiff = endDate.getTime() - startDate.getTime();
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        
+        return daysDiff;
+    }
+
+    // Check car hire pricing when required fields are selected
+    async function checkCarHirePricing() {
+        const vehicleTypeId = document.getElementById('car_hire_vehicle_type')?.value;
+        const pickupCityId = document.getElementById('pickup_location')?.value;
+        const hireDays = calculateHireDuration();
+        
+        console.log('Checking car hire pricing with:', { vehicleTypeId, pickupCityId, hireDays });
+        
+        if (!vehicleTypeId || hireDays <= 0) {
+            console.log('Missing required fields for pricing');
+            if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
+            return;
+        }
+        
+        try {
+            const params = new URLSearchParams({
+                vehicle_type_id: vehicleTypeId,
+                hire_days: hireDays
+            });
+            
+            // Add pickup city if selected
+            if (pickupCityId) {
+                params.append('pickup_city_id', pickupCityId);
+            }
+            
+            console.log('Making pricing request with params:', params.toString());
+            
+            const response = await fetch(`/api/car-hire/pricing?${params}`);
+            const data = await response.json();
+            
+            console.log('Pricing API response:', data);
+            
+            if (response.ok && data.success && data.price_per_day && data.total_price) {
+                // Update price display
+                carHirePricePerDay.textContent = `KSh ${data.price_per_day.toLocaleString()}`;
+                carHireTotalPrice.textContent = `KSh ${data.total_price.toLocaleString()}`;
+                carHireDuration.textContent = `${hireDays} day${hireDays > 1 ? 's' : ''}`;
+                
+                // Hide discount info since we removed discounts
+                carHirePriceDisplay.classList.remove('hidden');
+                console.log('Price display updated successfully');
+            } else {
+                console.log('Invalid response data:', data);
+                if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
+                
+                // Show error if available
+                if (data.error) {
+                    console.error('Pricing error:', data.error);
+                }
+            }
+        } catch (error) {
+            console.error('Error checking car hire price:', error);
+            
+            // Show sample price for demonstration only if we have the required fields
+            if (vehicleTypeId && hireDays > 0) {
+                const basePrices = { 1: 2500, 2: 3000, 3: 4000, 4: 6000, 5: 8000, 6: 10000 };
+                const pricePerDay = basePrices[vehicleTypeId] || 4000;
+                const totalPrice = pricePerDay * hireDays;
+                
+                carHirePricePerDay.textContent = `KSh ${pricePerDay.toLocaleString()}`;
+                carHireTotalPrice.textContent = `KSh ${totalPrice.toLocaleString()}`;
+                carHireDuration.textContent = `${hireDays} day${hireDays > 1 ? 's' : ''}`;
+                
+                carHirePriceDisplay.classList.remove('hidden');
+                console.log('Fallback pricing displayed');
+            } else {
+                if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
+            }
+        }
+    }
+
+    // Add event listeners for date changes
+    const hireStartDateInput = document.getElementById('hire_start_date');
+    const hireEndDateInput = document.getElementById('hire_end_date');
+    
+    if (hireStartDateInput) {
+        hireStartDateInput.addEventListener('change', () => {
+            // Update end date minimum to be after start date
+            if (hireEndDateInput && hireStartDateInput.value) {
+                const startDate = new Date(hireStartDateInput.value);
+                const nextDay = new Date(startDate);
+                nextDay.setDate(startDate.getDate() + 1);
+                hireEndDateInput.min = nextDay.toISOString().split('T')[0];
+            }
+            checkCarHirePricing();
+        });
+    }
+    
+    if (hireEndDateInput) {
+        hireEndDateInput.addEventListener('change', checkCarHirePricing);
+    }
+
+    // ===================================
     // AIRPORT TRANSFER FUNCTIONALITY
     // ===================================
     
@@ -832,6 +1050,103 @@
             } catch (error) {
                 console.error('Airport transfer booking error:', error);
                 alert('Sorry, there was an error processing your airport transfer booking. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Handle car hire form submission
+    if (carHireForm) {
+        carHireForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate dates
+            const startDate = document.getElementById('hire_start_date').value;
+            const endDate = document.getElementById('hire_end_date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates for your car hire.');
+                return;
+            }
+            
+            if (new Date(endDate) <= new Date(startDate)) {
+                alert('End date must be after the start date.');
+                return;
+            }
+            
+            // Collect form data
+            const formData = new FormData(carHireForm);
+            const bookingData = Object.fromEntries(formData);
+            
+            // Show loading state
+            const submitBtn = carHireForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Make booking request
+                const response = await fetch('/api/car-hire/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    let successMessage;
+                    
+                    if (result.account_created) {
+                        successMessage = `🎉 Car Hire Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and vehicle pickup instructions.\n\n🚗 Please bring your valid driver's license when picking up the vehicle.`;
+                    } else {
+                        successMessage = `🎉 Car Hire Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and vehicle pickup instructions.\n\n🚗 Please bring your valid driver's license when picking up the vehicle.`;
+                    }
+                    
+                    alert(successMessage);
+                    closeCarHireModal();
+                    
+                    // Refresh the page to show the updated header with user info
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Handle errors
+                    if (result.errors) {
+                        // Handle form validation errors
+                        let errorMessage = 'Please fix the following issues:\n\n';
+                        
+                        // Check for specific field errors
+                        if (result.errors.customer_email) {
+                            errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                        }
+                        if (result.errors.password) {
+                            errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                        }
+                        if (result.errors.drivers_license_number) {
+                            errorMessage += '🪪 Driver\'s License: ' + result.errors.drivers_license_number.join(', ') + '\n';
+                        }
+                        
+                        // Add other field errors
+                        Object.keys(result.errors).forEach(field => {
+                            if (!['customer_email', 'password', 'drivers_license_number'].includes(field)) {
+                                errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                            }
+                        });
+                        
+                        alert(errorMessage);
+                    } else {
+                        alert(result.error || 'Sorry, there was an error processing your car hire booking. Please try again.');
+                    }
+                }
+            } catch (error) {
+                console.error('Car hire booking error:', error);
+                alert('Sorry, there was an error processing your car hire booking. Please try again.');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;

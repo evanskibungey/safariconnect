@@ -951,4 +951,328 @@ class BookingController extends Controller
             return response()->json(['error' => 'Unable to process airport transfer booking. Please try again.'], 500);
         }
     }
+
+    /**
+     * Get pricing for car hire with specific vehicle type and duration
+     */
+    public function getCarHirePricing(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'vehicle_type_id' => 'required|exists:vehicle_types,id',
+                'hire_days' => 'required|integer|min:1|max:365',
+                'pickup_city_id' => 'nullable|exists:cities,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Get car hire service
+            $carHireService = TransportationService::where('service_type', 'car_hire')
+                ->where('is_active', true)
+                ->first();
+
+            if (!$carHireService) {
+                return response()->json(['error' => 'Car hire service not available'], 404);
+            }
+
+            // Try to find city-specific pricing first if pickup city is provided
+            $pricing = null;
+            if ($request->pickup_city_id) {
+                $pricing = ServicePricing::where('transportation_service_id', $carHireService->id)
+                    ->where('vehicle_type_id', $request->vehicle_type_id)
+                    ->where('pickup_city_id', $request->pickup_city_id)
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            // If no city-specific pricing found, get general pricing (where pickup_city_id is null)
+            if (!$pricing) {
+                $pricing = ServicePricing::where('transportation_service_id', $carHireService->id)
+                    ->where('vehicle_type_id', $request->vehicle_type_id)
+                    ->whereNull('pickup_city_id')
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            if (!$pricing) {
+                return response()->json(['error' => 'No pricing available for this vehicle type'], 404);
+            }
+
+            // Determine the daily rate - prioritize price_per_day, fallback to base_price
+            $pricePerDay = null;
+            if ($pricing->price_per_day && $pricing->price_per_day > 0) {
+                $pricePerDay = $pricing->price_per_day;
+            } elseif ($pricing->base_price && $pricing->base_price > 0) {
+                $pricePerDay = $pricing->base_price;
+            }
+            
+            if (!$pricePerDay || $pricePerDay <= 0) {
+                return response()->json([
+                    'error' => 'Invalid pricing configuration - both base_price and price_per_day are missing or zero'
+                ], 404);
+            }
+            
+            // Calculate total price (simple: daily_rate * number_of_days)
+            $hireDays = $request->hire_days;
+            $totalPrice = $pricePerDay * $hireDays;
+
+            // Log for debugging
+            Log::info('Car hire pricing calculation:', [
+                'vehicle_type_id' => $request->vehicle_type_id,
+                'pickup_city_id' => $request->pickup_city_id,
+                'hire_days' => $hireDays,
+                'base_price' => $pricing->base_price,
+                'price_per_day_field' => $pricing->price_per_day,
+                'calculated_daily_rate' => $pricePerDay,
+                'total_price' => $totalPrice,
+                'pricing_id' => $pricing->id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'price_per_day' => $pricePerDay,
+                'hire_days' => $hireDays,
+                'total_price' => $totalPrice,
+                'service_id' => $carHireService->id,
+                'pricing_id' => $pricing->id,
+                'vehicle_type_id' => $request->vehicle_type_id,
+                'pricing_details' => [
+                    'base_price' => $pricing->base_price ?? 0,
+                    'price_per_day_field' => $pricing->price_per_day ?? 0,
+                    'used_daily_rate' => $pricePerDay,
+                    'rate_source' => ($pricing->price_per_day && $pricing->price_per_day > 0) ? 'price_per_day' : 'base_price',
+                    'city_specific' => $pricing->pickup_city_id ? true : false
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching car hire pricing: ' . $e->getMessage());
+            Log::error('Request data: ' . json_encode($request->all()));
+            return response()->json(['error' => 'Unable to fetch pricing'], 500);
+        }
+    }
+
+    /**
+     * Book a car hire
+     */
+    public function bookCarHire(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'vehicle_type_id' => 'required|exists:vehicle_types,id',
+                'pickup_city_id' => 'required|exists:cities,id',
+                'hire_start_date' => 'required|date|after_or_equal:today',
+                'hire_end_date' => 'required|date|after:hire_start_date',
+                'pickup_time' => 'required|date_format:H:i',
+                'customer_name' => 'required|string|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_phone' => 'required|string|max:20',
+                'password' => 'required|string|min:4|confirmed',
+                'drivers_license_number' => 'required|string|max:50',
+                'special_requirements' => 'nullable|string|max:1000',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Handle user registration/authentication
+            $user = null;
+            $accountCreated = false;
+            
+            // Check if user already exists
+            $existingUser = User::where('email', $request->customer_email)->first();
+            
+            if ($existingUser) {
+                // User exists - verify the password matches
+                if (!Hash::check($request->password, $existingUser->password)) {
+                    return response()->json([
+                        'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
+                        'errors' => [
+                            'customer_email' => ['An account with this email already exists.'],
+                            'password' => ['Please enter your existing account password.']
+                        ]
+                    ], 422);
+                }
+                
+                // Update user info if they've changed their name or phone
+                $existingUser->update([
+                    'name' => $request->customer_name,
+                    'phone' => $request->customer_phone,
+                ]);
+                
+                $user = $existingUser;
+                
+                Log::info('Existing user logged in during car hire booking', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            } else {
+                // Create new user account
+                try {
+                    $user = User::create([
+                        'name' => $request->customer_name,
+                        'email' => $request->customer_email,
+                        'phone' => $request->customer_phone,
+                        'password' => Hash::make($request->password),
+                    ]);
+                    
+                    $accountCreated = true;
+                    
+                    // Fire the registered event
+                    event(new Registered($user));
+                    
+                    Log::info('New user account created during car hire booking', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'name' => $user->name
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error creating user account during car hire booking: ' . $e->getMessage());
+                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                }
+            }
+            
+            // Authenticate the user
+            Auth::login($user);
+
+            // Get car hire service
+            $carHireService = TransportationService::where('service_type', 'car_hire')
+                ->where('is_active', true)
+                ->first();
+
+            if (!$carHireService) {
+                return response()->json(['error' => 'Car hire service not available'], 404);
+            }
+
+            // Get pricing
+            $pricingQuery = ServicePricing::where('transportation_service_id', $carHireService->id)
+                ->where('vehicle_type_id', $request->vehicle_type_id)
+                ->where('is_active', true);
+
+            // Try city-specific pricing first
+            $pricing = $pricingQuery->where('pickup_city_id', $request->pickup_city_id)->first();
+
+            // If no city-specific pricing, get general pricing
+            if (!$pricing) {
+                $pricing = ServicePricing::where('transportation_service_id', $carHireService->id)
+                    ->where('vehicle_type_id', $request->vehicle_type_id)
+                    ->whereNull('pickup_city_id')
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            if (!$pricing) {
+                return response()->json(['error' => 'No pricing available for this vehicle type and location'], 404);
+            }
+
+            // Calculate hire duration and total price
+            $hireStartDate = \Carbon\Carbon::parse($request->hire_start_date);
+            $hireEndDate = \Carbon\Carbon::parse($request->hire_end_date);
+            $hireDays = $hireStartDate->diffInDays($hireEndDate) + 1; // Include both start and end days
+            
+            // Determine the daily rate - prioritize price_per_day, fallback to base_price
+            $pricePerDay = null;
+            if ($pricing->price_per_day && $pricing->price_per_day > 0) {
+                $pricePerDay = $pricing->price_per_day;
+            } elseif ($pricing->base_price && $pricing->base_price > 0) {
+                $pricePerDay = $pricing->base_price;
+            }
+            
+            if (!$pricePerDay || $pricePerDay <= 0) {
+                return response()->json([
+                    'error' => 'Invalid pricing configuration - both base_price and price_per_day are missing or zero for this vehicle type and location'
+                ], 404);
+            }
+            
+            $totalPrice = $pricePerDay * $hireDays;
+
+            // Debug: Log the data being saved
+            Log::info('Creating car hire booking with data:', [
+                'service_id' => $carHireService->id,
+                'pricing_id' => $pricing->id,
+                'vehicle_type_id' => $request->vehicle_type_id,
+                'customer' => $request->customer_name,
+                'pickup_city' => $request->pickup_city_id,
+                'hire_period' => $request->hire_start_date . ' to ' . $request->hire_end_date,
+                'hire_days' => $hireDays,
+                'price_per_day' => $pricePerDay,
+                'total_price' => $totalPrice
+            ]);
+
+            // Create booking record
+            try {
+                $booking = new Booking();
+                $booking->transportation_service_id = $carHireService->id;
+                $booking->service_pricing_id = $pricing->id;
+                $booking->user_id = $user->id;
+                $booking->customer_name = $request->customer_name;
+                $booking->customer_email = $request->customer_email;
+                $booking->customer_phone = $request->customer_phone;
+                $booking->pickup_city_id = $request->pickup_city_id;
+                $booking->dropoff_city_id = $request->pickup_city_id; // Same as pickup for car hire
+                $booking->vehicle_type_id = $request->vehicle_type_id;
+                $booking->travel_date = $request->hire_start_date;
+                $booking->travel_time = $request->pickup_time;
+                $booking->passengers = 1; // Default for car hire
+                $booking->price_per_unit = $pricePerDay;
+                $booking->total_price = $totalPrice;
+                $booking->special_requirements = $request->special_requirements . 
+                    "\n\nCar Hire Details:\n" .
+                    "- Hire Duration: {$hireDays} days\n" .
+                    "- Start Date: {$request->hire_start_date}\n" .
+                    "- End Date: {$request->hire_end_date}\n" .
+                    "- Driver's License: {$request->drivers_license_number}";
+                $booking->status = Booking::STATUS_PENDING;
+                $booking->payment_status = Booking::PAYMENT_STATUS_PENDING;
+                $booking->save();
+                
+                Log::info('Car hire booking created successfully', [
+                    'booking_id' => $booking->id,
+                    'booking_reference' => $booking->booking_reference,
+                    'user_id' => $user->id,
+                    'account_created' => $accountCreated
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error creating car hire booking: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                throw $e;
+            }
+
+            return response()->json([
+                'success' => true,
+                'booking_reference' => $booking->booking_reference,
+                'account_created' => $accountCreated,
+                'user_id' => $user->id,
+                'message' => $accountCreated 
+                    ? 'Car hire booking successful! Your SafariConnect account has been created. We will contact you shortly with confirmation details and vehicle pickup instructions.'
+                    : 'Car hire booking successful! We will contact you shortly with confirmation details and vehicle pickup instructions.',
+                'booking_details' => [
+                    'service' => 'Car Hire',
+                    'vehicle_type' => $request->vehicle_type_id,
+                    'pickup_location' => $request->pickup_city_id,
+                    'hire_start_date' => $request->hire_start_date,
+                    'hire_end_date' => $request->hire_end_date,
+                    'pickup_time' => $request->pickup_time,
+                    'hire_days' => $hireDays,
+                    'price_per_day' => $pricePerDay,
+                    'total_price' => $totalPrice,
+                    'customer_name' => $request->customer_name,
+                    'customer_email' => $request->customer_email,
+                    'customer_phone' => $request->customer_phone,
+                    'drivers_license_number' => $request->drivers_license_number,
+                    'special_requirements' => $request->special_requirements,
+                ],
+                'account_info' => [
+                    'account_created' => $accountCreated,
+                    'login_email' => $user->email,
+                    'user_authenticated' => true
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error booking car hire: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to process car hire booking. Please try again.'], 500);
+        }
+    }
 }

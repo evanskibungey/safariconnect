@@ -56,6 +56,7 @@
 
             <!-- Car Hire Card -->
             <div
+                id="car-hire-card"
                 class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
                 <div class="flex items-center space-x-3">
                     <div

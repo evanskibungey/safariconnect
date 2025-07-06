@@ -23,6 +23,8 @@
 
     @include('components.modals.airport-transfer-modal')
 
+    @include('components.modals.car-hire-modal')
+
     @include('components.partials.scripts-enhanced')
 
 </body>

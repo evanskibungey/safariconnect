@@ -105,6 +105,62 @@ class ServicePricingController extends Controller
             // Validate airport-specific rules
             $airportValidated = $request->validate($airportRules, $airportMessages);
             $validated = array_merge($validated, $airportValidated);
+        } elseif ($service && $service->service_type === 'car_hire') {
+            // Validate car hire specific fields
+            $carHireRules = [
+                'vehicle_type_id' => 'required|exists:vehicle_types,id',
+            ];
+            $carHireMessages = [
+                'vehicle_type_id.required' => 'Vehicle type is required for car hire service.',
+            ];
+            
+            // Ensure either price_per_day or base_price has a meaningful value
+            $customValidator = \Validator::make($request->all(), $carHireRules, $carHireMessages);
+            
+            $customValidator->after(function ($validator) use ($request) {
+                $pricePerDay = $request->input('price_per_day', 0);
+                $basePrice = $request->input('base_price', 0);
+                
+                if ((!$pricePerDay || $pricePerDay <= 0) && (!$basePrice || $basePrice <= 0)) {
+                    $validator->errors()->add('price_per_day', 'Either price per day or base price must be greater than zero for car hire.');
+                    $validator->errors()->add('base_price', 'Either price per day or base price must be greater than zero for car hire.');
+                }
+            });
+            
+            if ($customValidator->fails()) {
+                return redirect()->back()->withErrors($customValidator)->withInput();
+            }
+            
+            $carHireValidated = $request->validate($carHireRules, $carHireMessages);
+            $validated = array_merge($validated, $carHireValidated);
+        } elseif ($service && $service->service_type === 'car_hire') {
+            // Validate car hire specific fields
+            $carHireRules = [
+                'vehicle_type_id' => 'required|exists:vehicle_types,id',
+            ];
+            $carHireMessages = [
+                'vehicle_type_id.required' => 'Vehicle type is required for car hire service.',
+            ];
+            
+            // Ensure either price_per_day or base_price has a meaningful value
+            $customValidator = \Validator::make($request->all(), $carHireRules, $carHireMessages);
+            
+            $customValidator->after(function ($validator) use ($request) {
+                $pricePerDay = $request->input('price_per_day', 0);
+                $basePrice = $request->input('base_price', 0);
+                
+                if ((!$pricePerDay || $pricePerDay <= 0) && (!$basePrice || $basePrice <= 0)) {
+                    $validator->errors()->add('price_per_day', 'Either price per day or base price must be greater than zero for car hire.');
+                    $validator->errors()->add('base_price', 'Either price per day or base price must be greater than zero for car hire.');
+                }
+            });
+            
+            if ($customValidator->fails()) {
+                return redirect()->back()->withErrors($customValidator)->withInput();
+            }
+            
+            $carHireValidated = $request->validate($carHireRules, $carHireMessages);
+            $validated = array_merge($validated, $carHireValidated);
         } else {
             // For non-airport services, validate regular route fields if needed
             $routeRules = [];

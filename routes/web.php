@@ -56,6 +56,10 @@ Route::prefix('api')->group(function () {
     Route::get('/airport-transfer/pricing', [App\Http\Controllers\BookingController::class, 'getAirportTransferPricing'])->name('api.airport-transfer.pricing');
     Route::post('/airport-transfer/book', [App\Http\Controllers\BookingController::class, 'bookAirportTransfer'])->name('api.airport-transfer.book');
     
+    // Car Hire Routes
+    Route::get('/car-hire/pricing', [App\Http\Controllers\BookingController::class, 'getCarHirePricing'])->name('api.car-hire.pricing');
+    Route::post('/car-hire/book', [App\Http\Controllers\BookingController::class, 'bookCarHire'])->name('api.car-hire.book');
+    
     // Test Routes (for development only - remove in production)
     Route::get('/test/solo-ride-data', [App\Http\Controllers\TestController::class, 'testSoloRideData'])->name('api.test.solo-ride-data');
     Route::get('/test/solo-ride-pricing', [App\Http\Controllers\TestController::class, 'testSoloRidePricing'])->name('api.test.solo-ride-pricing');
