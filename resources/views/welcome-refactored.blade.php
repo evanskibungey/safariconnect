@@ -23,7 +23,7 @@
 
     @include('components.modals.airport-transfer-modal')
 
-    @include('components.partials.scripts-enhanced')
+    @include('components.partials.scripts')
 
 </body>
 
