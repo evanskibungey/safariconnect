@@ -1057,6 +1057,460 @@
         });
     }
 
+    // ===================================
+    // PARCEL DELIVERY FUNCTIONALITY
+    // ===================================
+    
+    // Parcel Delivery Modal Elements
+    const parcelDeliveryCard = document.getElementById('parcel-delivery-card');
+    const parcelDeliveryModal = document.getElementById('parcel-delivery-modal');
+    const closeParcelModalBtn = document.getElementById('close-parcel-modal');
+    const cancelParcelBookingBtn = document.getElementById('cancel-parcel-booking');
+    const parcelDeliveryForm = document.getElementById('parcel-delivery-form');
+    const parcelPriceDisplay = document.getElementById('parcel-price-display');
+    const parcelPriceAmount = document.getElementById('parcel-price-amount');
+    const parcelPriceBreakdown = document.getElementById('parcel-price-breakdown');
+    
+    // Open parcel delivery modal when card is clicked
+    if (parcelDeliveryCard) {
+        parcelDeliveryCard.addEventListener('click', () => {
+            parcelDeliveryModal.classList.remove('hidden');
+            loadParcelDeliveryData();
+        });
+    }
+    
+    // Close parcel delivery modal
+    function closeParcelModal() {
+        if (parcelDeliveryModal) {
+            parcelDeliveryModal.classList.add('hidden');
+            if (parcelDeliveryForm) parcelDeliveryForm.reset();
+            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
+        }
+    }
+    
+    if (closeParcelModalBtn) closeParcelModalBtn.addEventListener('click', closeParcelModal);
+    if (cancelParcelBookingBtn) cancelParcelBookingBtn.addEventListener('click', closeParcelModal);
+
+    // Close modal when clicking outside
+    if (parcelDeliveryModal) {
+        parcelDeliveryModal.addEventListener('click', (e) => {
+            if (e.target === parcelDeliveryModal) {
+                closeParcelModal();
+            }
+        });
+    }
+
+    // Load parcel delivery data
+    async function loadParcelDeliveryData() {
+        try {
+            // Load cities
+            const citiesResponse = await fetch('/api/cities');
+            if (citiesResponse.ok) {
+                const cities = await citiesResponse.json();
+                populateParcelCityDropdowns(cities);
+            } else {
+                console.error('Failed to load cities:', citiesResponse.status);
+                showError('Unable to load cities. Please refresh the page.');
+                return;
+            }
+            
+            // Load parcel types from admin-configured database ONLY
+            console.log('Loading parcel types from admin configuration...');
+            const parcelTypesResponse = await fetch('/api/parcel-types');
+            
+            if (parcelTypesResponse.ok) {
+                const parcelTypes = await parcelTypesResponse.json();
+                console.log('Parcel types loaded from admin panel:', parcelTypes);
+                
+                if (parcelTypes && parcelTypes.length > 0) {
+                    populateParcelTypes(parcelTypes);
+                } else {
+                    console.warn('No parcel types found in admin configuration');
+                    showParcelTypeEmptyState();
+                }
+            } else {
+                console.error('Failed to load parcel types from admin panel:', parcelTypesResponse.status);
+                const errorData = await parcelTypesResponse.json().catch(() => ({}));
+                console.error('Error details:', errorData);
+                showParcelTypeError('Unable to load parcel types. Please check your admin configuration.');
+            }
+        } catch (error) {
+            console.error('Error loading parcel delivery data:', error);
+            showParcelTypeError('Unable to load parcel types. Please check your connection and try again.');
+        }
+    }
+
+    // Show empty state when no parcel types are configured in admin
+    function showParcelTypeEmptyState() {
+        const parcelTypeSelect = document.getElementById('parcel_type');
+        if (parcelTypeSelect) {
+            parcelTypeSelect.innerHTML = `
+                <option value="">No parcel types available</option>
+                <option value="" disabled>Please configure parcel types in admin panel</option>
+            `;
+            parcelTypeSelect.disabled = true;
+            
+            // Show helpful message to admin
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm';
+            messageDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                    <span class="text-yellow-800">
+                        No parcel types configured. 
+                        <a href="/admin/transportation/parcel-types" target="_blank" 
+                           class="underline hover:text-yellow-900">Configure in Admin Panel</a>
+                    </span>
+                </div>
+            `;
+            parcelTypeSelect.parentNode.appendChild(messageDiv);
+        }
+    }
+
+    // Show error message for parcel type loading
+    function showParcelTypeError(message) {
+        const parcelTypeSelect = document.getElementById('parcel_type');
+        if (parcelTypeSelect) {
+            parcelTypeSelect.innerHTML = `<option value="">${message}</option>`;
+            parcelTypeSelect.disabled = true;
+        }
+    }
+    
+    // Show general error message
+    function showError(message) {
+        console.error(message);
+        // Could be enhanced to show user-friendly error notifications
+    }
+
+    function populateParcelCityDropdowns(cities) {
+        const cityOptions = cities.map(city => 
+            `<option value="${city.id}">${city.name}</option>`
+        ).join('');
+        
+        const parcelPickupCitySelect = document.getElementById('parcel_pickup_city');
+        const parcelDropoffCitySelect = document.getElementById('parcel_dropoff_city');
+        
+        if (parcelPickupCitySelect) {
+            parcelPickupCitySelect.innerHTML = '<option value="">Select pickup city</option>' + cityOptions;
+            // Add event listener for pricing updates
+            parcelPickupCitySelect.addEventListener('change', checkParcelDeliveryPricing);
+        }
+        if (parcelDropoffCitySelect) {
+            parcelDropoffCitySelect.innerHTML = '<option value="">Select delivery city</option>' + cityOptions;
+            // Add event listener for pricing updates
+            parcelDropoffCitySelect.addEventListener('change', checkParcelDeliveryPricing);
+        }
+    }
+    
+    function populateParcelTypes(parcelTypes) {
+        console.log('Populating parcel types:', parcelTypes);
+        
+        if (!parcelTypes || parcelTypes.length === 0) {
+            showParcelTypeError('No parcel types available');
+            return;
+        }
+        
+        const parcelOptions = parcelTypes.map(parcel => {
+            const maxWeight = parseFloat(parcel.max_weight_kg) || 0;
+            const baseRate = parseFloat(parcel.base_rate) || 0;
+            const description = parcel.description ? ` - ${parcel.description}` : '';
+            const rateInfo = baseRate > 0 ? ` (Base: KSh ${baseRate.toLocaleString()})` : '';
+            
+            return `<option value="${parcel.id}" 
+                            data-max-weight="${maxWeight}" 
+                            data-base-rate="${baseRate}" 
+                            data-name="${parcel.name}">
+                        ${parcel.name} (max ${maxWeight}kg)${description}${rateInfo}
+                    </option>`;
+        }).join('');
+        
+        const parcelTypeSelect = document.getElementById('parcel_type');
+        if (parcelTypeSelect) {
+            // Enable the select if it was disabled due to error
+            parcelTypeSelect.disabled = false;
+            parcelTypeSelect.innerHTML = '<option value="">Select parcel type</option>' + parcelOptions;
+            
+            // Remove any existing event listeners to avoid duplicates
+            parcelTypeSelect.removeEventListener('change', handleParcelTypeChange);
+            // Add event listener for pricing updates and weight validation
+            parcelTypeSelect.addEventListener('change', handleParcelTypeChange);
+        }
+    }
+
+    // Handle parcel type change
+    function handleParcelTypeChange() {
+        const parcelTypeSelect = document.getElementById('parcel_type');
+        const selectedOption = parcelTypeSelect.options[parcelTypeSelect.selectedIndex];
+        
+        if (selectedOption && selectedOption.value) {
+            const maxWeight = parseFloat(selectedOption.dataset.maxWeight) || 0;
+            const parcelName = selectedOption.dataset.name || '';
+            
+            console.log(`Selected parcel type: ${parcelName}, Max weight: ${maxWeight}kg`);
+            
+            // Update weight field placeholder and max attribute
+            const weightInput = document.getElementById('parcel_weight');
+            if (weightInput && maxWeight > 0) {
+                weightInput.placeholder = `Max ${maxWeight}kg`;
+                weightInput.max = maxWeight;
+                weightInput.step = maxWeight > 1 ? "0.1" : "0.01";
+            }
+        }
+        
+        validateParcelWeight();
+        checkParcelDeliveryPricing();
+    }
+
+    // Validate parcel weight against selected parcel type
+    function validateParcelWeight() {
+        const parcelTypeSelect = document.getElementById('parcel_type');
+        const parcelWeightInput = document.getElementById('parcel_weight');
+        
+        if (!parcelTypeSelect || !parcelWeightInput) return;
+        
+        const selectedOption = parcelTypeSelect.options[parcelTypeSelect.selectedIndex];
+        const maxWeight = selectedOption ? parseFloat(selectedOption.dataset.maxWeight) : null;
+        const currentWeight = parseFloat(parcelWeightInput.value);
+        
+        if (maxWeight && currentWeight && currentWeight > maxWeight) {
+            parcelWeightInput.setCustomValidity(`Weight cannot exceed ${maxWeight}kg for this parcel type`);
+            parcelWeightInput.reportValidity();
+        } else {
+            parcelWeightInput.setCustomValidity('');
+        }
+    }
+
+    // Add weight validation event listener
+    const parcelWeightInput = document.getElementById('parcel_weight');
+    if (parcelWeightInput) {
+        parcelWeightInput.addEventListener('input', validateParcelWeight);
+    }
+
+    // Check parcel delivery pricing when required fields are selected
+    async function checkParcelDeliveryPricing() {
+        const pickupCityId = document.getElementById('parcel_pickup_city')?.value;
+        const dropoffCityId = document.getElementById('parcel_dropoff_city')?.value;
+        const parcelTypeId = document.getElementById('parcel_type')?.value;
+        const weight = document.getElementById('parcel_weight')?.value;
+        const urgentDelivery = document.querySelector('input[name="urgent_delivery"]')?.checked;
+        const insuranceRequired = document.querySelector('input[name="insurance_required"]')?.checked;
+        
+        console.log('Checking pricing with:', {
+            pickupCityId, dropoffCityId, parcelTypeId, weight, urgentDelivery, insuranceRequired
+        });
+        
+        if (!pickupCityId || !dropoffCityId || !parcelTypeId || !weight || pickupCityId === dropoffCityId) {
+            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
+            return;
+        }
+        
+        // Validate weight first
+        const weightNum = parseFloat(weight);
+        if (weightNum <= 0) {
+            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
+            return;
+        }
+        
+        try {
+            const params = new URLSearchParams({
+                pickup_city_id: pickupCityId,
+                dropoff_city_id: dropoffCityId,
+                parcel_type_id: parcelTypeId,
+                weight: weight,
+                urgent_delivery: urgentDelivery ? '1' : '0',
+                insurance_required: insuranceRequired ? '1' : '0'
+            });
+            
+            console.log('Making pricing API call with params:', params.toString());
+            
+            const response = await fetch(`/api/parcel-delivery/pricing?${params}`);
+            const data = await response.json();
+            
+            console.log('Pricing API response:', data);
+            
+            if (response.ok && data.success && data.total_price) {
+                // Update price display
+                parcelPriceAmount.textContent = `KSh ${Math.round(data.total_price).toLocaleString()}`;
+                
+                // Show detailed price breakdown
+                let breakdown = '';
+                if (data.breakdown) {
+                    if (data.breakdown.base_rate > 0) {
+                        breakdown += `Base rate: KSh ${Math.round(data.breakdown.base_rate).toLocaleString()}`;
+                    }
+                    if (data.breakdown.distance_surcharge > 0) {
+                        breakdown += `<br>Distance: KSh ${Math.round(data.breakdown.distance_surcharge).toLocaleString()}`;
+                    }
+                    if (data.breakdown.weight_surcharge > 0) {
+                        breakdown += `<br>Weight (${weight}kg): KSh ${Math.round(data.breakdown.weight_surcharge).toLocaleString()}`;
+                    }
+                    if (data.breakdown.urgent_delivery > 0) {
+                        breakdown += `<br>Urgent delivery: KSh ${Math.round(data.breakdown.urgent_delivery).toLocaleString()}`;
+                    }
+                    if (data.breakdown.insurance > 0) {
+                        breakdown += `<br>Insurance: KSh ${Math.round(data.breakdown.insurance).toLocaleString()}`;
+                    }
+                } else {
+                    // Fallback breakdown
+                    breakdown = `Total for ${data.parcel_type || 'parcel'}: KSh ${Math.round(data.total_price).toLocaleString()}`;
+                }
+                
+                parcelPriceBreakdown.innerHTML = breakdown;
+                parcelPriceDisplay.classList.remove('hidden');
+            } else {
+                if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
+                
+                // Show error if available
+                if (data.error) {
+                    console.error('Parcel pricing error:', data.error);
+                    
+                    // Check if admin configuration is needed
+                    if (data.admin_config_needed) {
+                        const configNotice = document.getElementById('parcel-config-notice');
+                        const configMessage = document.getElementById('parcel-config-message');
+                        const configLink = document.getElementById('parcel-config-link');
+                        
+                        if (configNotice && configMessage) {
+                            configMessage.textContent = data.error;
+                            if (configLink && data.admin_url) {
+                                configLink.href = data.admin_url;
+                            }
+                            configNotice.classList.remove('hidden');
+                        }
+                    } else if (data.error.includes('exceeds maximum')) {
+                        // Show weight error in price display
+                        parcelPriceBreakdown.innerHTML = `<span class="text-red-600">${data.error}</span>`;
+                        parcelPriceDisplay.classList.remove('hidden');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error checking parcel delivery price:', error);
+            
+            // Show error message - no fallback pricing
+            if (parcelPriceDisplay) {
+                parcelPriceDisplay.classList.add('hidden');
+            }
+            
+            // Show configuration notice if admin config is needed
+            const configNotice = document.getElementById('parcel-config-notice');
+            const configMessage = document.getElementById('parcel-config-message');
+            const configLink = document.getElementById('parcel-config-link');
+            
+            if (configNotice && configMessage) {
+                configMessage.textContent = 'Unable to calculate price. The administrator needs to configure pricing for this route and parcel type.';
+                if (configLink) {
+                    configLink.href = '/admin/transportation/pricing';
+                }
+                configNotice.classList.remove('hidden');
+            }
+        }
+    }
+
+    // Add event listeners for delivery options to update pricing
+    const urgentDeliveryCheckbox = document.querySelector('input[name="urgent_delivery"]');
+    const insuranceCheckbox = document.querySelector('input[name="insurance_required"]');
+    
+    if (urgentDeliveryCheckbox) {
+        urgentDeliveryCheckbox.addEventListener('change', checkParcelDeliveryPricing);
+    }
+    
+    if (insuranceCheckbox) {
+        insuranceCheckbox.addEventListener('change', checkParcelDeliveryPricing);
+    }
+
+    // Handle parcel delivery form submission
+    if (parcelDeliveryForm) {
+        parcelDeliveryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate parcel weight one more time
+            validateParcelWeight();
+            if (!parcelWeightInput.checkValidity()) {
+                return;
+            }
+            
+            // Collect form data
+            const formData = new FormData(parcelDeliveryForm);
+            const bookingData = Object.fromEntries(formData);
+            
+            // Show loading state
+            const submitBtn = parcelDeliveryForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Make booking request
+                const response = await fetch('/api/parcel-delivery/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    let successMessage;
+                    
+                    if (result.account_created) {
+                        successMessage = `🎉 Parcel Delivery Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your parcel delivery from your dashboard.\n\nWe will contact you shortly with pickup confirmation and tracking details.`;
+                    } else {
+                        successMessage = `🎉 Parcel Delivery Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this parcel delivery from your dashboard.\n\nWe will contact you shortly with pickup confirmation and tracking details.`;
+                    }
+                    
+                    alert(successMessage);
+                    closeParcelModal();
+                    
+                    // Refresh the page to show the updated header with user info
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Handle errors
+                    if (result.errors) {
+                        // Handle form validation errors
+                        let errorMessage = 'Please fix the following issues:\n\n';
+                        
+                        // Check for specific field errors
+                        if (result.errors.customer_email) {
+                            errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                        }
+                        if (result.errors.password) {
+                            errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                        }
+                        if (result.errors.parcel_weight) {
+                            errorMessage += '⚖️ Weight: ' + result.errors.parcel_weight.join(', ') + '\n';
+                        }
+                        
+                        // Add other field errors
+                        Object.keys(result.errors).forEach(field => {
+                            if (!['customer_email', 'password', 'parcel_weight'].includes(field)) {
+                                errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                            }
+                        });
+                        
+                        alert(errorMessage);
+                    } else if (result.admin_config_needed) {
+                        // Show admin configuration needed error
+                        alert(`❌ Booking Failed\n\n${result.error}\n\nThe administrator needs to configure pricing for this route and parcel type in the admin panel.\n\nPlease contact support or try a different route.`);
+                    } else {
+                        alert(result.error || 'Sorry, there was an error processing your parcel delivery booking. Please try again.');
+                    }
+                }
+            } catch (error) {
+                console.error('Parcel delivery booking error:', error);
+                alert('Sorry, there was an error processing your parcel delivery booking. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
     // Handle car hire form submission
     if (carHireForm) {
         carHireForm.addEventListener('submit', async (e) => {

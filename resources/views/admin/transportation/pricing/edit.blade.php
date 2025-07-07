@@ -312,18 +312,16 @@
                                         name="parcel_type" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parcel_type') border-red-500 @enderror">
                                     <option value="">Select Parcel Type</option>
-                                    <option value="documents" {{ old('parcel_type', $pricing->parcel_type) === 'documents' ? 'selected' : '' }}>
-                                        Documents
-                                    </option>
-                                    <option value="small" {{ old('parcel_type', $pricing->parcel_type) === 'small' ? 'selected' : '' }}>
-                                        Small Package
-                                    </option>
-                                    <option value="medium" {{ old('parcel_type', $pricing->parcel_type) === 'medium' ? 'selected' : '' }}>
-                                        Medium Package
-                                    </option>
-                                    <option value="large" {{ old('parcel_type', $pricing->parcel_type) === 'large' ? 'selected' : '' }}>
-                                        Large Package
-                                    </option>
+                                    @foreach($parcelTypeOptions as $option)
+                                        <option value="{{ $option['value'] }}" 
+                                                data-max-weight="{{ $option['max_weight'] }}"
+                                                {{ old('parcel_type', $pricing->parcel_type) === $option['value'] ? 'selected' : '' }}>
+                                            {{ $option['label'] }} (max {{ $option['max_weight'] }}kg)
+                                            @if($option['description'])
+                                                - {{ Str::limit($option['description'], 30) }}
+                                            @endif
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('parcel_type')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

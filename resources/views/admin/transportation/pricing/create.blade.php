@@ -665,18 +665,19 @@
                                         Parcel Type
                                     </label>
                                     <select id="parcel_type" name="parcel_type"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('parcel_type') border-red-300 bg-red-50 @enderror">
-                                        <option value="">Select parcel type...</option>
-                                        <option value="documents"
-                                            {{ old('parcel_type') === 'documents' ? 'selected' : '' }}>Documents
-                                        </option>
-                                        <option value="small" {{ old('parcel_type') === 'small' ? 'selected' : '' }}>
-                                            Small Package</option>
-                                        <option value="medium" {{ old('parcel_type') === 'medium' ? 'selected' : '' }}>
-                                            Medium Package</option>
-                                        <option value="large" {{ old('parcel_type') === 'large' ? 'selected' : '' }}>
-                                            Large Package</option>
-                                    </select>
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('parcel_type') border-red-300 bg-red-50 @enderror">
+                                    <option value="">Select parcel type...</option>
+                                    @foreach($parcelTypeOptions as $option)
+                                    <option value="{{ $option['value'] }}" 
+                                                data-max-weight="{{ $option['max_weight'] }}"
+                                                {{ old('parcel_type') === $option['value'] ? 'selected' : '' }}>
+                                        {{ $option['label'] }} (max {{ $option['max_weight'] }}kg)
+                                            @if($option['description'])
+                                            - {{ Str::limit($option['description'], 30) }}
+                                            @endif
+                                    </option>
+                                        @endforeach
+                                </select>
                                     @error('parcel_type')
                                     <div class="flex items-center mt-2 text-sm text-red-600">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">

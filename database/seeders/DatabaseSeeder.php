@@ -26,9 +26,12 @@ class DatabaseSeeder extends Seeder
         // Seed transportation data in order
         $seeders = [
             'CitySeeder',
+            'AirportSeeder',
             'VehicleTypeSeeder',
+            'ParcelTypeSeeder',
             'TransportationServiceSeeder',
             'SoloRidePricingSeeder',
+            'ParcelDeliveryPricingSeeder',
             'DriverSeeder',
         ];
         

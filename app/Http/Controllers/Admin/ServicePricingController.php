@@ -16,6 +16,33 @@ use Illuminate\Http\Request;
 
 class ServicePricingController extends Controller
 {
+    /**
+     * Get parcel type options mapped for dropdown
+     */
+    private function getParcelTypeOptions()
+    {
+        $parcelTypes = ParcelType::active()->get();
+        
+        return $parcelTypes->map(function ($parcelType) {
+            // Map parcel type names to pricing strings
+            $mapping = [
+                'Documents' => 'documents',
+                'Small Package' => 'small',
+                'Medium Package' => 'medium',
+                'Large Package' => 'large',
+                'Extra Large' => 'extra_large',
+            ];
+            
+            $value = $mapping[$parcelType->name] ?? strtolower(str_replace(' ', '_', $parcelType->name));
+            
+            return [
+                'value' => $value,
+                'label' => $parcelType->name,
+                'max_weight' => $parcelType->max_weight_kg,
+                'description' => $parcelType->description,
+            ];
+        });
+    }
     public function index(Request $request)
     {
         $query = ServicePricing::with(['transportationService', 'pickupCity', 'dropoffCity', 'pickupAirport', 'dropoffAirport', 'vehicleType']);
@@ -52,8 +79,11 @@ class ServicePricingController extends Controller
         $airports = Airport::active()->with('city')->get();
         $vehicleTypes = VehicleType::active()->get();
         $parcelTypes = ParcelType::active()->get();
+        
+        // Map parcel types for dropdown
+        $parcelTypeOptions = $this->getParcelTypeOptions();
 
-        return view('admin.transportation.pricing.create', compact('services', 'cities', 'airports', 'vehicleTypes', 'parcelTypes'));
+        return view('admin.transportation.pricing.create', compact('services', 'cities', 'airports', 'vehicleTypes', 'parcelTypes', 'parcelTypeOptions'));
     }
 
     public function store(Request $request)
@@ -68,7 +98,14 @@ class ServicePricingController extends Controller
             'airport_pickup_surcharge' => ['nullable', 'numeric', 'min:0'],
             'airport_dropoff_surcharge' => ['nullable', 'numeric', 'min:0'],
             'transfer_type' => ['nullable', 'string', 'in:pickup,dropoff'],
-            'parcel_type' => ['nullable', 'string', 'in:documents,small,medium,large'],
+            'parcel_type' => ['nullable', 'string', 
+                function ($attribute, $value, $fail) {
+                    $validTypes = $this->getParcelTypeOptions()->pluck('value')->toArray();
+                    if ($value && !in_array($value, $validTypes)) {
+                        $fail('The selected parcel type is invalid.');
+                    }
+                }
+            ],
             'weight_limit' => ['nullable', 'numeric', 'min:0'],
             'distance_km' => ['nullable', 'integer', 'min:0'],
             'weekend_surcharge_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -194,8 +231,11 @@ class ServicePricingController extends Controller
         $airports = Airport::active()->with('city')->get();
         $vehicleTypes = VehicleType::active()->get();
         $parcelTypes = ParcelType::active()->get();
+        
+        // Map parcel types for dropdown
+        $parcelTypeOptions = $this->getParcelTypeOptions();
 
-        return view('admin.transportation.pricing.edit', compact('pricing', 'services', 'cities', 'airports', 'vehicleTypes', 'parcelTypes'));
+        return view('admin.transportation.pricing.edit', compact('pricing', 'services', 'cities', 'airports', 'vehicleTypes', 'parcelTypes', 'parcelTypeOptions'));
     }
 
     public function update(Request $request, ServicePricing $pricing)
@@ -210,7 +250,14 @@ class ServicePricingController extends Controller
             'airport_pickup_surcharge' => ['nullable', 'numeric', 'min:0'],
             'airport_dropoff_surcharge' => ['nullable', 'numeric', 'min:0'],
             'transfer_type' => ['nullable', 'string', 'in:pickup,dropoff'],
-            'parcel_type' => ['nullable', 'string', 'in:documents,small,medium,large'],
+            'parcel_type' => ['nullable', 'string', 
+                function ($attribute, $value, $fail) {
+                    $validTypes = $this->getParcelTypeOptions()->pluck('value')->toArray();
+                    if ($value && !in_array($value, $validTypes)) {
+                        $fail('The selected parcel type is invalid.');
+                    }
+                }
+            ],
             'weight_limit' => ['nullable', 'numeric', 'min:0'],
             'distance_km' => ['nullable', 'integer', 'min:0'],
             'weekend_surcharge_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],

@@ -1054,6 +1054,450 @@ class BookingController extends Controller
     }
 
     /**
+     * Get all active parcel types for dropdown
+     */
+    public function getParcelTypes()
+    {
+        try {
+            $parcelTypes = \App\Models\ParcelType::active()
+                ->orderBy('max_weight_kg')
+                ->select('id', 'name', 'description', 'max_weight_kg', 'base_rate')
+                ->get();
+
+            return response()->json($parcelTypes);
+        } catch (\Exception $e) {
+            Log::error('Error fetching parcel types: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to fetch parcel types'], 500);
+        }
+    }
+
+    /**
+     * Get pricing for parcel delivery between two cities with specific parcel type
+     * ONLY uses admin-configured pricing rules - no fallbacks
+     */
+    public function getParcelDeliveryPricing(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'pickup_city_id' => 'required|exists:cities,id',
+                'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
+                'parcel_type_id' => 'required|exists:parcel_types,id',
+                'weight' => 'required|numeric|min:0.1',
+                'urgent_delivery' => 'boolean',
+                'insurance_required' => 'boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Get parcel delivery service
+            $parcelDeliveryService = TransportationService::where('service_type', 'parcel_delivery')
+                ->where('is_active', true)
+                ->first();
+
+            if (!$parcelDeliveryService) {
+                return response()->json(['error' => 'Parcel delivery service not available'], 404);
+            }
+
+            // Get parcel type to validate weight
+            $parcelType = \App\Models\ParcelType::find($request->parcel_type_id);
+            if (!$parcelType) {
+                return response()->json(['error' => 'Invalid parcel type'], 404);
+            }
+
+            // Validate weight against parcel type limits
+            if ($request->weight > $parcelType->max_weight_kg) {
+                return response()->json([
+                    'error' => "Weight {$request->weight}kg exceeds maximum {$parcelType->max_weight_kg}kg for {$parcelType->name}"
+                ], 422);
+            }
+
+            // Get cities for response
+            $pickupCity = City::find($request->pickup_city_id);
+            $dropoffCity = City::find($request->dropoff_city_id);
+
+            // ONLY use admin-configured pricing - no fallbacks
+            $pricing = ServicePricing::where('transportation_service_id', $parcelDeliveryService->id)
+                ->where('pickup_city_id', $request->pickup_city_id)
+                ->where('dropoff_city_id', $request->dropoff_city_id)
+                ->where('parcel_type', $this->mapParcelTypeToString($parcelType->name))
+                ->where('is_active', true)
+                ->first();
+
+            if (!$pricing) {
+                // Try reverse route
+                $pricing = ServicePricing::where('transportation_service_id', $parcelDeliveryService->id)
+                    ->where('pickup_city_id', $request->dropoff_city_id)
+                    ->where('dropoff_city_id', $request->pickup_city_id)
+                    ->where('parcel_type', $this->mapParcelTypeToString($parcelType->name))
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            if (!$pricing) {
+                // No pricing configuration found - admin must configure
+                return response()->json([
+                    'error' => 'No pricing configuration found for this route and parcel type. Please configure pricing in the admin panel.',
+                    'admin_config_needed' => true,
+                    'route' => ($pickupCity ? $pickupCity->name : 'Unknown') . ' to ' . ($dropoffCity ? $dropoffCity->name : 'Unknown'),
+                    'parcel_type' => $parcelType->name,
+                    'admin_url' => '/admin/transportation/pricing'
+                ], 404);
+            }
+
+            // Use admin-configured pricing
+            $basePrice = $pricing->base_price;
+
+            // Calculate weight-based surcharge (if weight exceeds 1kg)
+            $weightSurcharge = 0;
+            if ($request->weight > 1.0) {
+                $weightSurcharge = ($request->weight - 1.0) * 100; // KSh 100 per additional kg
+            }
+
+            // Calculate total base price
+            $totalBasePrice = $basePrice + $weightSurcharge;
+
+            // Calculate additional fees
+            $urgentSurcharge = 0;
+            if ($request->urgent_delivery) {
+                $urgentSurcharge = $totalBasePrice * 0.5; // 50% surcharge for urgent delivery
+            }
+
+            $insuranceFee = 0;
+            if ($request->insurance_required) {
+                $insuranceFee = $totalBasePrice * 0.02; // 2% insurance fee
+            }
+
+            $totalPrice = $totalBasePrice + $urgentSurcharge + $insuranceFee;
+
+            return response()->json([
+                'success' => true,
+                'base_price' => $totalBasePrice,
+                'urgent_surcharge' => $urgentSurcharge,
+                'insurance_fee' => $insuranceFee,
+                'total_price' => $totalPrice,
+                'parcel_type' => $parcelType->name,
+                'max_weight' => $parcelType->max_weight_kg,
+                'service_id' => $parcelDeliveryService->id,
+                'pricing_id' => $pricing->id,
+                'breakdown' => [
+                    'base_rate' => $basePrice,
+                    'distance_surcharge' => 0, // All distance costs included in base_price
+                    'weight_surcharge' => $weightSurcharge,
+                    'urgent_delivery' => $urgentSurcharge,
+                    'insurance' => $insuranceFee
+                ],
+                'route_info' => [
+                    'pickup_city' => $pickupCity ? $pickupCity->name : 'Unknown',
+                    'dropoff_city' => $dropoffCity ? $dropoffCity->name : 'Unknown',
+                    'has_specific_pricing' => true
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching parcel delivery pricing: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to fetch pricing'], 500);
+        }
+    }
+
+    /**
+     * Book a parcel delivery
+     */
+    public function bookParcelDelivery(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'pickup_city_id' => 'required|exists:cities,id',
+                'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
+                'parcel_type_id' => 'required|exists:parcel_types,id',
+                'parcel_weight' => 'required|numeric|min:0.1|max:100',
+                'pickup_date' => 'required|date|after_or_equal:today',
+                'pickup_time' => 'required|date_format:H:i',
+                'parcel_description' => 'required|string|max:1000',
+                'customer_name' => 'required|string|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_phone' => 'required|string|max:20',
+                'password' => 'required|string|min:4|confirmed',
+                'sender_address' => 'required|string|max:500',
+                'recipient_name' => 'required|string|max:255',
+                'recipient_phone' => 'required|string|max:20',
+                'recipient_address' => 'required|string|max:500',
+                'urgent_delivery' => 'boolean',
+                'signature_required' => 'boolean',
+                'insurance_required' => 'boolean',
+                'special_instructions' => 'nullable|string|max:1000',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Validate parcel weight against parcel type
+            $parcelType = \App\Models\ParcelType::find($request->parcel_type_id);
+            if (!$parcelType) {
+                return response()->json(['error' => 'Invalid parcel type'], 404);
+            }
+
+            if ($request->parcel_weight > $parcelType->max_weight_kg) {
+                return response()->json([
+                    'error' => "Weight {$request->parcel_weight}kg exceeds maximum {$parcelType->max_weight_kg}kg for {$parcelType->name}",
+                    'errors' => [
+                        'parcel_weight' => ["Weight cannot exceed {$parcelType->max_weight_kg}kg for {$parcelType->name}"]
+                    ]
+                ], 422);
+            }
+
+            // Handle user registration/authentication
+            $user = null;
+            $accountCreated = false;
+            
+            // Check if user already exists
+            $existingUser = User::where('email', $request->customer_email)->first();
+            
+            if ($existingUser) {
+                // User exists - verify the password matches
+                if (!Hash::check($request->password, $existingUser->password)) {
+                    return response()->json([
+                        'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
+                        'errors' => [
+                            'customer_email' => ['An account with this email already exists.'],
+                            'password' => ['Please enter your existing account password.']
+                        ]
+                    ], 422);
+                }
+                
+                // Update user info if they've changed their name or phone
+                $existingUser->update([
+                    'name' => $request->customer_name,
+                    'phone' => $request->customer_phone,
+                ]);
+                
+                $user = $existingUser;
+                
+                Log::info('Existing user logged in during parcel delivery booking', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            } else {
+                // Create new user account
+                try {
+                    $user = User::create([
+                        'name' => $request->customer_name,
+                        'email' => $request->customer_email,
+                        'phone' => $request->customer_phone,
+                        'password' => Hash::make($request->password),
+                    ]);
+                    
+                    $accountCreated = true;
+                    
+                    // Fire the registered event
+                    event(new \Illuminate\Auth\Events\Registered($user));
+                    
+                    Log::info('New user account created during parcel delivery booking', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'name' => $user->name
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error creating user account during parcel delivery booking: ' . $e->getMessage());
+                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                }
+            }
+            
+            // Authenticate the user
+            Auth::login($user);
+
+            // Get parcel delivery service
+            $parcelDeliveryService = TransportationService::where('service_type', 'parcel_delivery')
+                ->where('is_active', true)
+                ->first();
+
+            if (!$parcelDeliveryService) {
+                return response()->json(['error' => 'Parcel delivery service not available'], 404);
+            }
+
+            // Get pricing
+            $pricing = ServicePricing::where('transportation_service_id', $parcelDeliveryService->id)
+                ->where('pickup_city_id', $request->pickup_city_id)
+                ->where('dropoff_city_id', $request->dropoff_city_id)
+                ->where('parcel_type', $this->mapParcelTypeToString($parcelType->name))
+                ->where('is_active', true)
+                ->first();
+
+            if (!$pricing) {
+                // Try reverse route
+                $pricing = ServicePricing::where('transportation_service_id', $parcelDeliveryService->id)
+                    ->where('pickup_city_id', $request->dropoff_city_id)
+                    ->where('dropoff_city_id', $request->pickup_city_id)
+                    ->where('parcel_type', $this->mapParcelTypeToString($parcelType->name))
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            // Require admin-configured pricing - no fallbacks
+            if (!$pricing) {
+                $pickupCity = City::find($request->pickup_city_id);
+                $dropoffCity = City::find($request->dropoff_city_id);
+                
+                return response()->json([
+                    'error' => 'No pricing configuration found for this route and parcel type. Please contact support or try a different route.',
+                    'admin_config_needed' => true,
+                    'route' => ($pickupCity ? $pickupCity->name : 'Unknown') . ' to ' . ($dropoffCity ? $dropoffCity->name : 'Unknown'),
+                    'parcel_type' => $parcelType->name
+                ], 404);
+            }
+            
+            $basePrice = $pricing->base_price;
+            $distanceSurcharge = 0;
+
+            // Calculate weight-based surcharge
+            $weightSurcharge = 0;
+            if ($request->parcel_weight > 1.0) {
+                $weightSurcharge = ($request->parcel_weight - 1.0) * 100; // KSh 100 per additional kg
+            }
+
+            $totalBasePrice = $basePrice + $distanceSurcharge + $weightSurcharge;
+
+            // Calculate additional fees
+            $urgentSurcharge = 0;
+            if ($request->urgent_delivery) {
+                $urgentSurcharge = $totalBasePrice * 0.5;
+            }
+
+            $insuranceFee = 0;
+            if ($request->insurance_required) {
+                $insuranceFee = $totalBasePrice * 0.02;
+            }
+
+            $totalPrice = $totalBasePrice + $urgentSurcharge + $insuranceFee;
+
+            // Prepare special requirements
+            $specialRequirements = collect([
+                "Parcel Description: {$request->parcel_description}",
+                "Parcel Weight: {$request->parcel_weight}kg",
+                "Parcel Type: {$parcelType->name}",
+                "Sender Address: {$request->sender_address}",
+                "Recipient: {$request->recipient_name}",
+                "Recipient Phone: {$request->recipient_phone}",
+                "Recipient Address: {$request->recipient_address}",
+            ]);
+
+            if ($request->urgent_delivery) {
+                $specialRequirements->push('URGENT DELIVERY REQUESTED');
+            }
+            if ($request->signature_required) {
+                $specialRequirements->push('SIGNATURE REQUIRED');
+            }
+            if ($request->insurance_required) {
+                $specialRequirements->push('INSURANCE COVERAGE REQUESTED');
+            }
+            if ($request->special_instructions) {
+                $specialRequirements->push("Special Instructions: {$request->special_instructions}");
+            }
+
+            // Debug: Log the data being saved
+            Log::info('Creating parcel delivery booking with data:', [
+                'service_id' => $parcelDeliveryService->id,
+                'pricing_id' => $pricing ? $pricing->id : null,
+                'parcel_type' => $parcelType->name,
+                'customer' => $request->customer_name,
+                'route' => $request->pickup_city_id . ' to ' . $request->dropoff_city_id,
+                'pickup' => $request->pickup_date . ' ' . $request->pickup_time,
+                'weight' => $request->parcel_weight,
+                'total_price' => $totalPrice
+            ]);
+
+            // Create booking record
+            try {
+                $booking = new Booking();
+                $booking->transportation_service_id = $parcelDeliveryService->id;
+                $booking->service_pricing_id = $pricing ? $pricing->id : null;
+                $booking->user_id = $user->id;
+                $booking->customer_name = $request->customer_name;
+                $booking->customer_email = $request->customer_email;
+                $booking->customer_phone = $request->customer_phone;
+                $booking->pickup_city_id = $request->pickup_city_id;
+                $booking->dropoff_city_id = $request->dropoff_city_id;
+                $booking->travel_date = $request->pickup_date;
+                $booking->travel_time = $request->pickup_time;
+                $booking->passengers = 1; // Default for parcel delivery
+                $booking->price_per_unit = $totalBasePrice;
+                $booking->total_price = $totalPrice;
+                $booking->surcharge_amount = $urgentSurcharge + $insuranceFee;
+                $booking->special_requirements = $specialRequirements->join("\n");
+                $booking->status = Booking::STATUS_PENDING;
+                $booking->payment_status = Booking::PAYMENT_STATUS_PENDING;
+                $booking->save();
+                
+                Log::info('Parcel delivery booking created successfully', [
+                    'booking_id' => $booking->id,
+                    'booking_reference' => $booking->booking_reference,
+                    'user_id' => $user->id,
+                    'account_created' => $accountCreated
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error creating parcel delivery booking: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                throw $e;
+            }
+
+            return response()->json([
+                'success' => true,
+                'booking_reference' => $booking->booking_reference,
+                'account_created' => $accountCreated,
+                'user_id' => $user->id,
+                'message' => $accountCreated 
+                    ? 'Parcel delivery booking successful! Your SafariConnect account has been created. We will contact you shortly with pickup confirmation and tracking details.'
+                    : 'Parcel delivery booking successful! We will contact you shortly with pickup confirmation and tracking details.',
+                'booking_details' => [
+                    'service' => 'Parcel Delivery',
+                    'parcel_type' => $parcelType->name,
+                    'weight' => $request->parcel_weight . 'kg',
+                    'route' => ($pricing ? $pricing->route_description : 'Custom Route'),
+                    'pickup_date' => $request->pickup_date,
+                    'pickup_time' => $request->pickup_time,
+                    'base_price' => $totalBasePrice,
+                    'urgent_surcharge' => $urgentSurcharge,
+                    'insurance_fee' => $insuranceFee,
+                    'total_price' => $totalPrice,
+                    'customer_name' => $request->customer_name,
+                    'customer_email' => $request->customer_email,
+                    'customer_phone' => $request->customer_phone,
+                    'sender_address' => $request->sender_address,
+                    'recipient_name' => $request->recipient_name,
+                    'recipient_phone' => $request->recipient_phone,
+                    'recipient_address' => $request->recipient_address,
+                    'parcel_description' => $request->parcel_description,
+                ],
+                'account_info' => [
+                    'account_created' => $accountCreated,
+                    'login_email' => $user->email,
+                    'user_authenticated' => true
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error booking parcel delivery: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to process parcel delivery booking. Please try again.'], 500);
+        }
+    }
+
+    /**
+     * Map parcel type name to parcel_type string used in ServicePricing
+     */
+    private function mapParcelTypeToString($parcelTypeName)
+    {
+        $mapping = [
+            'Documents' => 'documents',
+            'Small Package' => 'small',
+            'Medium Package' => 'medium',
+            'Large Package' => 'large',
+            'Extra Large' => 'extra_large',
+        ];
+
+        return $mapping[$parcelTypeName] ?? strtolower(str_replace(' ', '_', $parcelTypeName));
+    }
+
+    /**
      * Book a car hire
      */
     public function bookCarHire(Request $request)

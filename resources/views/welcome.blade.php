@@ -25,6 +25,8 @@
 
     @include('components.modals.car-hire-modal')
 
+    @include('components.modals.parcel-delivery-modal')
+
     @include('components.partials.scripts-enhanced')
 
 </body>

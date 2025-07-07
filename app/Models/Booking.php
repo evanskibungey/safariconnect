@@ -150,6 +150,37 @@ class Booking extends Model
             }
         }
 
+        if ($this->transportationService && $this->transportationService->service_type === 'parcel_delivery') {
+            $route = '';
+            if ($this->pickupCity && $this->dropoffCity) {
+                $route = $this->pickupCity->name . ' → ' . $this->dropoffCity->name;
+            }
+            
+            // Extract parcel weight and type from special_requirements if available
+            if ($this->special_requirements) {
+                $lines = explode("\n", $this->special_requirements);
+                $weight = '';
+                $type = '';
+                
+                foreach ($lines as $line) {
+                    if (str_contains($line, 'Parcel Weight:')) {
+                        $weight = trim(str_replace('Parcel Weight:', '', $line));
+                    }
+                    if (str_contains($line, 'Parcel Type:')) {
+                        $type = trim(str_replace('Parcel Type:', '', $line));
+                    }
+                }
+                
+                if ($weight && $type) {
+                    $route .= " ({$weight}, {$type})";
+                } elseif ($weight) {
+                    $route .= " ({$weight})";
+                }
+            }
+            
+            return $route ?: 'Parcel delivery route';
+        }
+
         if ($this->pickupCity && $this->dropoffCity) {
             return $this->pickupCity->name . ' → ' . $this->dropoffCity->name;
         }
@@ -240,6 +271,58 @@ class Booking extends Model
         };
 
         return $prefix . date('Ymd') . strtoupper(substr(md5(uniqid()), 0, 6));
+    }
+
+    /**
+     * Extract parcel information from special_requirements for parcel delivery bookings
+     */
+    public function getParcelInfoAttribute()
+    {
+        if ($this->transportationService && $this->transportationService->service_type !== 'parcel_delivery') {
+            return null;
+        }
+
+        if (!$this->special_requirements) {
+            return null;
+        }
+
+        $lines = explode("\n", $this->special_requirements);
+        $info = [];
+
+        foreach ($lines as $line) {
+            if (str_contains($line, 'Parcel Description:')) {
+                $info['description'] = trim(str_replace('Parcel Description:', '', $line));
+            }
+            if (str_contains($line, 'Parcel Weight:')) {
+                $info['weight'] = trim(str_replace('Parcel Weight:', '', $line));
+            }
+            if (str_contains($line, 'Parcel Type:')) {
+                $info['type'] = trim(str_replace('Parcel Type:', '', $line));
+            }
+            if (str_contains($line, 'Sender Address:')) {
+                $info['sender_address'] = trim(str_replace('Sender Address:', '', $line));
+            }
+            if (str_contains($line, 'Recipient:')) {
+                $info['recipient_name'] = trim(str_replace('Recipient:', '', $line));
+            }
+            if (str_contains($line, 'Recipient Phone:')) {
+                $info['recipient_phone'] = trim(str_replace('Recipient Phone:', '', $line));
+            }
+            if (str_contains($line, 'Recipient Address:')) {
+                $info['recipient_address'] = trim(str_replace('Recipient Address:', '', $line));
+            }
+            if (str_contains($line, 'URGENT DELIVERY')) {
+                $info['urgent'] = true;
+            }
+            if (str_contains($line, 'SIGNATURE REQUIRED')) {
+                $info['signature_required'] = true;
+            }
+            if (str_contains($line, 'INSURANCE COVERAGE')) {
+                $info['insurance'] = true;
+            }
+        }
+
+        return (object) $info;
     }
 
     // Boot method

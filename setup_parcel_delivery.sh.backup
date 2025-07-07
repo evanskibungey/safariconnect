@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Parcel Delivery Setup Script
+# Run this script to set up parcel delivery data in the database
+
+echo "Setting up Parcel Delivery System..."
+echo "====================================="
+
+# Navigate to Laravel project directory
+cd "$(dirname "$0")"
+
+# Run specific seeders for parcel delivery
+echo "🔄 Seeding Parcel Types..."
+php artisan db:seed --class=ParcelTypeSeeder
+
+echo "🔄 Seeding Parcel Delivery Pricing..."
+php artisan db:seed --class=ParcelDeliveryPricingSeeder
+
+echo "✅ Parcel Delivery setup complete!"
+echo ""
+echo "The following parcel types have been added:"
+echo "- Documents (up to 2kg)"
+echo "- Small Package (up to 5kg)"
+echo "- Medium Package (up to 15kg)"
+echo "- Large Package (up to 30kg)"
+echo "- Extra Large (up to 50kg)"
+echo ""
+echo "Pricing has been configured for major city routes."
+echo "The frontend will now fetch parcel types dynamically from the database."

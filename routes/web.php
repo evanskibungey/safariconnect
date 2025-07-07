@@ -60,6 +60,11 @@ Route::prefix('api')->group(function () {
     Route::get('/car-hire/pricing', [App\Http\Controllers\BookingController::class, 'getCarHirePricing'])->name('api.car-hire.pricing');
     Route::post('/car-hire/book', [App\Http\Controllers\BookingController::class, 'bookCarHire'])->name('api.car-hire.book');
     
+    // Parcel Delivery Routes
+    Route::get('/parcel-types', [App\Http\Controllers\BookingController::class, 'getParcelTypes'])->name('api.parcel-types');
+    Route::get('/parcel-delivery/pricing', [App\Http\Controllers\BookingController::class, 'getParcelDeliveryPricing'])->name('api.parcel-delivery.pricing');
+    Route::post('/parcel-delivery/book', [App\Http\Controllers\BookingController::class, 'bookParcelDelivery'])->name('api.parcel-delivery.book');
+    
     // Test Routes (for development only - remove in production)
     Route::get('/test/solo-ride-data', [App\Http\Controllers\TestController::class, 'testSoloRideData'])->name('api.test.solo-ride-data');
     Route::get('/test/solo-ride-pricing', [App\Http\Controllers\TestController::class, 'testSoloRidePricing'])->name('api.test.solo-ride-pricing');
