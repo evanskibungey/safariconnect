@@ -16,16 +16,24 @@
                 },
                 animation: {
                     'float': 'float 6s ease-in-out infinite',
+                    'float-slow': 'float 8s ease-in-out infinite',
+                    'float-medium': 'float 6s ease-in-out infinite',
+                    'float-fast': 'float 4s ease-in-out infinite',
                     'slide-up': 'slideUp 0.5s ease-out',
                     'fade-in': 'fadeIn 0.6s ease-out',
+                    'fade-in-up': 'fadeInUp 0.8s ease-out',
+                    'bounce-slow': 'bounce 3s ease-in-out infinite',
                 },
                 keyframes: {
                     float: {
                         '0%, 100%': {
-                            transform: 'translateY(0px)'
+                            transform: 'translateY(0px) translateX(0px)'
                         },
-                        '50%': {
-                            transform: 'translateY(-20px)'
+                        '33%': {
+                            transform: 'translateY(-20px) translateX(10px)'
+                        },
+                        '66%': {
+                            transform: 'translateY(10px) translateX(-10px)'
                         },
                     },
                     slideUp: {
@@ -45,6 +53,24 @@
                         '100%': {
                             opacity: '1'
                         },
+                    },
+                    fadeInUp: {
+                        '0%': {
+                            opacity: '0',
+                            transform: 'translateY(30px)'
+                        },
+                        '100%': {
+                            opacity: '1',
+                            transform: 'translateY(0)'
+                        },
+                    },
+                    bounce: {
+                        '0%, 100%': {
+                            transform: 'translateY(0)'
+                        },
+                        '50%': {
+                            transform: 'translateY(-10px)'
+                        },
                     }
                 }
             }
@@ -59,13 +85,21 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    /* Carousel indicator styles */
+    .carousel-indicator.active {
+        background: linear-gradient(to right, #FF6B35, #ef4444);
+        width: 1rem;
+        box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+    }
+
     .hero-gradient {
         background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
     }
 
-    /* Smooth transitions */
-    * {
-        transition: all 0.3s ease;
+    /* Remove global transition to prevent conflicts */
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
     }
 
     /* Custom scrollbar */

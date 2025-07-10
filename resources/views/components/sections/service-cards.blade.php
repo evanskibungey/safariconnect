@@ -1,5 +1,5 @@
 <!-- Service Cards Section -->
-<section class="relative -mt-16 z-30 pb-16">
+<section id="service-cards" class="relative -mt-16 z-30 pb-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-wrap justify-center gap-4 lg:gap-6">
             <!-- Share Ride Card - Active -->

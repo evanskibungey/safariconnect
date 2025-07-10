@@ -1,5 +1,5 @@
 <!-- Features Section -->
-<section class="py-20 bg-gray-50">
+<section id="features" class="py-20 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose SafariConnect?</h2>

@@ -1,5 +1,5 @@
 <!-- Footer -->
-<footer class="bg-gradient-to-br from-slate-900 via-slate-800 to-dark-blue text-white relative overflow-hidden">
+<footer id="footer" class="bg-gradient-to-br from-slate-900 via-slate-800 to-dark-blue text-white relative overflow-hidden">
     <!-- Background Elements -->
     <div class="absolute inset-0">
         <div class="absolute top-20 left-20 w-40 h-40 bg-orange-custom/5 rounded-full animate-float"></div>
