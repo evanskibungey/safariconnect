@@ -20,28 +20,68 @@
     
     const header = document.getElementById('header');
     const headerBg = header.querySelector('.header-bg');
+    const heroSection = document.getElementById('hero-section');
     
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
+    // Function to check if header needs background
+    function updateHeaderBackground() {
+        const scrollY = window.scrollY;
+        
+        // Show background when scrolled past 50px
+        if (scrollY > 50) {
             headerBg.style.opacity = '1';
+            header.classList.add('header-scrolled');
         } else {
             headerBg.style.opacity = '0';
+            header.classList.remove('header-scrolled');
         }
-    });
+    }
+    
+    // Initial check
+    updateHeaderBackground();
+    
+    // Update on scroll with throttling for performance
+    let ticking = false;
+    function requestTick() {
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeaderBackground);
+            ticking = true;
+            setTimeout(() => { ticking = false; }, 100);
+        }
+    }
+    window.addEventListener('scroll', requestTick);
 
     // ===================================
     // HERO CAROUSEL FUNCTIONALITY
     // ===================================
     
     let currentSlide = 0;
-    const slides = document.querySelectorAll('.carousel-slide');
-    const contents = document.querySelectorAll('.hero-content');
-    const indicators = document.querySelectorAll('.carousel-indicator');
-    const totalSlides = slides.length;
+    let slides, contents, indicators, totalSlides;
     let carouselInterval;
     
     // Initialize carousel
     function initCarousel() {
+        // Query elements inside init to ensure they exist
+        slides = document.querySelectorAll('.carousel-slide');
+        contents = document.querySelectorAll('.hero-content');
+        indicators = document.querySelectorAll('.carousel-indicator');
+        totalSlides = slides.length;
+        
+        // Debug carousel elements
+        console.log('Carousel initialized:', {
+            slides: slides.length,
+            contents: contents.length,
+            indicators: indicators.length
+        });
+        
+        if (slides.length === 0) {
+            console.error('No carousel slides found!');
+            return;
+        }
+        
+        // Set up event listeners
+        setupCarouselEventListeners();
+        
+        // Show first slide and start
         showSlide(0);
         startAutoPlay();
     }
@@ -51,18 +91,22 @@
         // Hide all slides and contents
         slides.forEach((slide, i) => {
             slide.style.opacity = i === index ? '1' : '0';
+            slide.style.zIndex = i === index ? '1' : '0';
         });
         
         contents.forEach((content, i) => {
             content.style.opacity = i === index ? '1' : '0';
+            content.style.visibility = i === index ? 'visible' : 'hidden';
         });
         
         // Update indicators
         indicators.forEach((indicator, i) => {
             if (i === index) {
-                indicator.classList.add('active');
+                indicator.classList.add('active', 'bg-white');
+                indicator.classList.remove('bg-white/50');
             } else {
-                indicator.classList.remove('active');
+                indicator.classList.remove('active', 'bg-white');
+                indicator.classList.add('bg-white/50');
             }
         });
         
@@ -88,47 +132,68 @@
         clearInterval(carouselInterval);
     }
     
-    // Event listeners for carousel controls
-    const prevBtn = document.getElementById('carousel-prev');
-    const nextBtn = document.getElementById('carousel-next');
-    
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            stopAutoPlay();
-            prevSlide();
-            startAutoPlay();
+    // Setup carousel event listeners
+    function setupCarouselEventListeners() {
+        // Event listeners for carousel controls
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
+            });
+        }
+        
+        // Indicator clicks
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', (e) => {
+                e.preventDefault();
+                stopAutoPlay();
+                showSlide(index);
+                startAutoPlay();
+            });
         });
-    }
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            stopAutoPlay();
-            nextSlide();
-            startAutoPlay();
-        });
-    }
-    
-    // Indicator clicks
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', () => {
-            stopAutoPlay();
-            showSlide(index);
-            startAutoPlay();
-        });
-    });
-    
-    // Pause on hover
-    const heroSection = document.getElementById('hero-section');
-    if (heroSection) {
-        heroSection.addEventListener('mouseenter', stopAutoPlay);
-        heroSection.addEventListener('mouseleave', startAutoPlay);
+        
+        // Pause on hover (only on desktop)
+        const heroSection = document.getElementById('hero-section');
+        if (heroSection && window.innerWidth > 768) {
+            heroSection.addEventListener('mouseenter', stopAutoPlay);
+            heroSection.addEventListener('mouseleave', startAutoPlay);
+        }
     }
     
     // Initialize carousel when DOM is ready
+    function ensureCarouselInit() {
+        const checkElements = () => {
+            const slides = document.querySelectorAll('.carousel-slide');
+            const contents = document.querySelectorAll('.hero-content');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            
+            if (slides.length > 0 && contents.length > 0 && indicators.length > 0) {
+                console.log('Carousel elements ready, initializing...');
+                initCarousel();
+            } else {
+                console.log('Waiting for carousel elements...');
+                setTimeout(checkElements, 100);
+            }
+        };
+        checkElements();
+    }
+    
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initCarousel);
+        document.addEventListener('DOMContentLoaded', ensureCarouselInit);
     } else {
-        initCarousel();
+        ensureCarouselInit();
     }
 
     // ===================================

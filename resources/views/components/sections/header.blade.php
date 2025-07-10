@@ -1,6 +1,6 @@
 <!-- Header -->
-<header class="fixed top-0 left-0 w-full z-50 transition-all duration-500" id="header">
-    <div class="header-bg absolute inset-0 bg-black/10 backdrop-blur-lg border-b border-white/10 opacity-0 transition-opacity duration-300"></div>
+<header class="fixed top-0 left-0 w-full z-50 transition-all duration-500 bg-gradient-to-b from-black/30 to-transparent" id="header">
+    <div class="header-bg absolute inset-0 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-xl border-b border-white/10 opacity-0 transition-all duration-300 shadow-2xl"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
@@ -14,8 +14,8 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="text-2xl font-bold text-white drop-shadow-lg">SafariConnect</span>
-                    <p class="text-xs text-white/70 -mt-1">Your Journey, Our Priority</p>
+                    <span class="text-2xl font-bold text-white drop-shadow-lg tracking-tight">SafariConnect</span>
+                    <p class="text-xs text-white/80 -mt-1 tracking-wide">Your Journey, Our Priority</p>
                 </div>
             </div>
 

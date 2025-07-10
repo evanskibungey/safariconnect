@@ -1,5 +1,5 @@
 <!-- Hero Section -->
-<section class="relative h-screen overflow-hidden" id="hero-section">
+<section class="relative h-screen overflow-hidden pt-20" id="hero-section">
     <!-- Background Image Carousel -->
     <div class="absolute inset-0" id="carousel-container">
         <!-- Slide 1: Modern City Transport -->
@@ -39,10 +39,10 @@
     </div>
 
     <!-- 24/7 Service Badge -->
-    <div class="absolute top-32 left-1/2 transform -translate-x-1/2 z-30 animate-bounce-slow">
+    <div class="absolute top-28 sm:top-32 left-1/2 transform -translate-x-1/2 z-30 animate-bounce-slow">
         <div
-            class="bg-gradient-to-r from-orange-custom to-red-500 text-white px-8 py-4 rounded-full font-bold flex items-center shadow-2xl backdrop-blur-sm border border-white/20">
-            <svg class="w-6 h-6 mr-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+            class="bg-gradient-to-r from-orange-custom to-red-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-full font-bold flex items-center shadow-2xl backdrop-blur-sm border border-white/20 text-sm sm:text-base">
+            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
                     d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
                     clip-rule="evenodd"></path>
@@ -52,10 +52,10 @@
     </div>
 
     <!-- Main Content -->
-    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center">
+    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center -mt-20">
         <div class="text-center animate-fade-in-up">
             <!-- Dynamic Heading Container -->
-            <div class="mb-8" id="hero-heading-container">
+            <div class="mb-8 relative min-h-[200px]" id="hero-heading-container">
                 <!-- Slide 1 Content -->
                 <div class="hero-content transition-all duration-500 opacity-100" data-content="0">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
@@ -68,7 +68,7 @@
                 </div>
 
                 <!-- Slide 2 Content -->
-                <div class="hero-content absolute inset-0 transition-all duration-500 opacity-0" data-content="1">
+                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0" data-content="1">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                         Travel Your Way, <span class="text-orange-custom">Every Day</span>
                     </h1>
@@ -78,7 +78,7 @@
                 </div>
 
                 <!-- Slide 3 Content -->
-                <div class="hero-content absolute inset-0 transition-all duration-500 opacity-0" data-content="2">
+                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0" data-content="2">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                         Adventure Awaits, <span class="text-orange-custom">Let's Go</span>
                     </h1>
@@ -89,9 +89,9 @@
             </div>
 
             <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10 mb-16">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8 sm:mt-10 mb-12 sm:mb-16 px-4">
                 <a href="#service-cards"
-                    class="bg-gradient-to-r from-orange-custom to-red-500 hover:from-red-500 hover:to-orange-custom text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
+                    class="bg-gradient-to-r from-orange-custom to-red-500 hover:from-red-500 hover:to-orange-custom text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
                     <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path
                             d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8z" />
@@ -99,7 +99,7 @@
                     Get Started Now
                 </a>
                 <a href="#features"
-                    class="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
+                    class="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
                     Learn More
                 </a>
             </div>
@@ -120,16 +120,16 @@
     </div>
 
     <!-- Navigation Arrows -->
-    <button id="carousel-prev"
-        class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-30 border border-white/20 shadow-xl group">
-        <svg class="w-7 h-7 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
+    <button id="carousel-prev" type="button"
+        class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-40 border border-white/20 shadow-xl group">
+        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
             viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
         </svg>
     </button>
-    <button id="carousel-next"
-        class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-30 border border-white/20 shadow-xl group">
-        <svg class="w-7 h-7 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+    <button id="carousel-next" type="button"
+        class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-40 border border-white/20 shadow-xl group">
+        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
             viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
         </svg>

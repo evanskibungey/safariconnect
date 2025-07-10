@@ -1,3 +1,116 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom animations and utilities */
+@layer utilities {
+    /* Ensure proper z-index layering */
+    .z-header {
+        z-index: 50;
+    }
+    
+    .z-hero-content {
+        z-index: 20;
+    }
+    
+    .z-hero-bg {
+        z-index: 10;
+    }
+    
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Prevent text selection on carousel navigation */
+    .carousel-indicator,
+    #carousel-prev,
+    #carousel-next {
+        user-select: none;
+    }
+    
+    /* Ensure hero content doesn't overflow on mobile */
+    @media (max-width: 640px) {
+        .hero-content h1 {
+            font-size: clamp(1.875rem, 5vw, 2.5rem);
+        }
+        
+        .hero-content p {
+            font-size: clamp(0.875rem, 3vw, 1.125rem);
+        }
+    }
+    
+    /* Add enhanced effects to header when scrolled */
+    .header-scrolled {
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3), 0 5px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .header-scrolled .header-bg {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    
+    /* Active carousel indicator */
+    .carousel-indicator.active {
+        transform: scale(1.3);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Custom gradient overlay for better text readability */
+    .hero-gradient-overlay {
+        background: linear-gradient(to bottom, 
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.2) 50%,
+            rgba(0, 0, 0, 0.4) 100%);
+    }
+    
+    /* Ensure carousel slides are properly positioned */
+    .carousel-slide {
+        will-change: opacity;
+    }
+    
+    /* Fix hero content visibility */
+    .hero-content {
+        pointer-events: none;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    }
+    
+    .hero-content[data-content="0"] {
+        position: relative;
+    }
+    
+    /* Header initial state for better visibility */
+    #header {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+    }
+    
+    #header.header-scrolled {
+        background: transparent;
+    }
+    
+    /* Ensure proper layering */
+    .carousel-slide {
+        transition: opacity 1s ease-in-out;
+    }
+    
+    /* Smooth transitions for navbar links */
+    nav a {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        transition: left 0.3s ease;
+    }
+    
+    nav a:hover::before {
+        left: 0;
+    }
+}

@@ -28,6 +28,9 @@
     @include('components.modals.parcel-delivery-modal')
 
     @include('components.partials.scripts-enhanced')
+    
+    <!-- Temporary debug script - remove after testing -->
+    <script src="{{ asset('js/carousel-debug.js') }}"></script>
 
 </body>
 
