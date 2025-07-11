@@ -21,11 +21,11 @@
 
     @include('components.forms.airport-transfer-form')
 
-    @include('components.modals.solo-ride-modal')
+    @include('components.forms.solo-ride-form')
 
-    @include('components.modals.car-hire-modal')
+    @include('components.forms.car-hire-form')
 
-    @include('components.modals.parcel-delivery-modal')
+    @include('components.forms.parcel-delivery-form')
 
     @include('components.modals.booking-success-modal')
 

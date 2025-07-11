@@ -62,6 +62,9 @@
         closeAllBookingModals();
         closeSharedRideForm();
         closeAirportTransferForm();
+        closeSoloRideForm();
+        closeCarHireForm();
+        closeParcelDeliveryForm();
     }
     
     function closeBookingSuccessModal() {
@@ -71,12 +74,8 @@
     }
     
     function closeAllBookingModals() {
-        // Close all booking modals
-        const modals = [
-            'solo-ride-modal', 
-            'car-hire-modal',
-            'parcel-delivery-modal'
-        ];
+        // Close all booking modals (now only login and booking success modals remain)
+        const modals = [];
         
         modals.forEach(modalId => {
             const modal = document.getElementById(modalId);
@@ -93,13 +92,19 @@
         
         // Also hide inline forms
         hideAllForms();
+        closeSoloRideForm();
+        closeCarHireForm();
+        closeParcelDeliveryForm();
     }
     
     // Hide all inline forms
     function hideAllForms() {
         const forms = [
             'shared-ride-form-container',
-            'airport-transfer-form-container'
+            'airport-transfer-form-container',
+            'solo-ride-form-container',
+            'car-hire-form-container',
+            'parcel-delivery-form-container'
         ];
         
         forms.forEach(formId => {
@@ -503,47 +508,117 @@
     // SOLO RIDE FUNCTIONALITY  
     // ===================================
     
-    // Solo Ride Modal Elements
+    // Solo Ride Form Elements
     const soloRideCard = document.getElementById('solo-ride-card');
-    const soloRideModal = document.getElementById('solo-ride-modal');
-    const closeSoloModalBtn = document.getElementById('close-solo-modal');
-    const cancelSoloBookingBtn = document.getElementById('cancel-solo-booking');
+    const soloRideFormContainer = document.getElementById('solo-ride-form-container');
+    const closeSoloRideFormBtn = document.getElementById('close-solo-ride-form');
+    const cancelSoloRideBookingBtn = document.getElementById('cancel-solo-ride-booking');
     const soloRideForm = document.getElementById('solo-ride-form');
     const soloPriceDisplay = document.getElementById('solo-price-display');
     const soloPriceAmount = document.getElementById('solo-price-amount');
     
-    // Open solo ride modal when card is clicked
+    // Open solo ride form when card is clicked
     if (soloRideCard) {
         soloRideCard.addEventListener('click', () => {
-            // Hide any open inline forms first
+            // Hide all other forms first
             hideAllForms();
-            resetCardStyling();
             
-            soloRideModal.classList.remove('hidden');
-            loadSoloRideData();
-        });
-    }
-    
-    // Close solo ride modal
-    function closeSoloModal() {
-        if (soloRideModal) {
-            soloRideModal.classList.add('hidden');
-            if (soloRideForm) soloRideForm.reset();
-            if (soloPriceDisplay) soloPriceDisplay.classList.add('hidden');
-        }
-    }
-    
-    if (closeSoloModalBtn) closeSoloModalBtn.addEventListener('click', closeSoloModal);
-    if (cancelSoloBookingBtn) cancelSoloBookingBtn.addEventListener('click', closeSoloModal);
-
-    // Close modal when clicking outside
-    if (soloRideModal) {
-        soloRideModal.addEventListener('click', (e) => {
-            if (e.target === soloRideModal) {
-                closeSoloModal();
+            // Show solo ride form
+            if (soloRideFormContainer) {
+                // Move form to dynamic area and show it
+                if (dynamicFormsArea && !dynamicFormsArea.contains(soloRideFormContainer)) {
+                    dynamicFormsArea.appendChild(soloRideFormContainer);
+                }
+                soloRideFormContainer.classList.remove('hidden');
+                
+                // Scroll to form
+                soloRideFormContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest'
+                });
+                
+                // Load solo ride data
+                loadSoloRideData();
+                
+                // Update card styling
+                updateActiveCard('solo-ride-card');
             }
         });
     }
+    
+    // Close solo ride form
+    function closeSoloRideForm() {
+        if (soloRideFormContainer) {
+            soloRideFormContainer.classList.add('hidden');
+            if (soloRideForm) soloRideForm.reset();
+            if (soloPriceDisplay) soloPriceDisplay.classList.add('hidden');
+            
+            // Clear password validation errors
+            const soloPasswordError = document.getElementById('solo-password-error');
+            if (soloPasswordError) soloPasswordError.remove();
+            
+            // Remove error styling from password fields
+            const soloPasswordField = document.getElementById('solo_password');
+            const soloPasswordConfirmField = document.getElementById('solo_password_confirmation');
+            if (soloPasswordField) soloPasswordField.classList.remove('border-red-500');
+            if (soloPasswordConfirmField) soloPasswordConfirmField.classList.remove('border-red-500');
+            
+            // Reset card styling
+            resetCardStyling();
+        }
+    }
+    
+    if (closeSoloRideFormBtn) closeSoloRideFormBtn.addEventListener('click', closeSoloRideForm);
+    if (cancelSoloRideBookingBtn) cancelSoloRideBookingBtn.addEventListener('click', closeSoloRideForm);
+
+    // Solo ride password validation
+    const soloPasswordField = document.getElementById('solo_password');
+    const soloPasswordConfirmField = document.getElementById('solo_password_confirmation');
+    
+    function validateSoloPasswords() {
+        if (!soloPasswordField || !soloPasswordConfirmField) return true;
+        
+        const password = soloPasswordField.value;
+        const passwordConfirm = soloPasswordConfirmField.value;
+        
+        // Remove any existing error styles
+        soloPasswordField.classList.remove('border-red-500');
+        soloPasswordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('solo-password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            soloPasswordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            soloPasswordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'solo-password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            soloPasswordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation for solo ride
+    if (soloPasswordField) soloPasswordField.addEventListener('input', validateSoloPasswords);
+    if (soloPasswordConfirmField) soloPasswordConfirmField.addEventListener('input', validateSoloPasswords);
 
     // Load solo ride data
     async function loadSoloRideData() {
@@ -580,10 +655,10 @@
     // CAR HIRE FUNCTIONALITY
     // ===================================
     
-    // Car Hire Modal Elements
+    // Car Hire Form Elements
     const carHireCard = document.getElementById('car-hire-card');
-    const carHireModal = document.getElementById('car-hire-modal');
-    const closeCarHireModalBtn = document.getElementById('close-car-hire-modal');
+    const carHireFormContainer = document.getElementById('car-hire-form-container');
+    const closeCarHireFormBtn = document.getElementById('close-car-hire-form');
     const cancelCarHireBookingBtn = document.getElementById('cancel-car-hire-booking');
     const carHireForm = document.getElementById('car-hire-form');
     const carHirePriceDisplay = document.getElementById('car-hire-price-display');
@@ -591,38 +666,108 @@
     const carHireTotalPrice = document.getElementById('car-hire-total-price');
     const carHireDuration = document.getElementById('car-hire-duration');
     
-    // Open car hire modal when card is clicked
+    // Open car hire form when card is clicked
     if (carHireCard) {
         carHireCard.addEventListener('click', () => {
-            // Hide any open inline forms first
+            // Hide all other forms first
             hideAllForms();
-            resetCardStyling();
             
-            carHireModal.classList.remove('hidden');
-            loadCarHireData();
-        });
-    }
-    
-    // Close car hire modal
-    function closeCarHireModal() {
-        if (carHireModal) {
-            carHireModal.classList.add('hidden');
-            if (carHireForm) carHireForm.reset();
-            if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
-        }
-    }
-    
-    if (closeCarHireModalBtn) closeCarHireModalBtn.addEventListener('click', closeCarHireModal);
-    if (cancelCarHireBookingBtn) cancelCarHireBookingBtn.addEventListener('click', closeCarHireModal);
-
-    // Close modal when clicking outside
-    if (carHireModal) {
-        carHireModal.addEventListener('click', (e) => {
-            if (e.target === carHireModal) {
-                closeCarHireModal();
+            // Show car hire form
+            if (carHireFormContainer) {
+                // Move form to dynamic area and show it
+                if (dynamicFormsArea && !dynamicFormsArea.contains(carHireFormContainer)) {
+                    dynamicFormsArea.appendChild(carHireFormContainer);
+                }
+                carHireFormContainer.classList.remove('hidden');
+                
+                // Scroll to form
+                carHireFormContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest'
+                });
+                
+                // Load car hire data
+                loadCarHireData();
+                
+                // Update card styling
+                updateActiveCard('car-hire-card');
             }
         });
     }
+    
+    // Close car hire form
+    function closeCarHireForm() {
+        if (carHireFormContainer) {
+            carHireFormContainer.classList.add('hidden');
+            if (carHireForm) carHireForm.reset();
+            if (carHirePriceDisplay) carHirePriceDisplay.classList.add('hidden');
+            
+            // Clear password validation errors
+            const carHirePasswordError = document.getElementById('car-hire-password-error');
+            if (carHirePasswordError) carHirePasswordError.remove();
+            
+            // Remove error styling from password fields
+            const carHirePasswordField = document.getElementById('car_hire_password');
+            const carHirePasswordConfirmField = document.getElementById('car_hire_password_confirmation');
+            if (carHirePasswordField) carHirePasswordField.classList.remove('border-red-500');
+            if (carHirePasswordConfirmField) carHirePasswordConfirmField.classList.remove('border-red-500');
+            
+            // Reset card styling
+            resetCardStyling();
+        }
+    }
+    
+    if (closeCarHireFormBtn) closeCarHireFormBtn.addEventListener('click', closeCarHireForm);
+    if (cancelCarHireBookingBtn) cancelCarHireBookingBtn.addEventListener('click', closeCarHireForm);
+
+    // Car hire password validation
+    const carHirePasswordField = document.getElementById('car_hire_password');
+    const carHirePasswordConfirmField = document.getElementById('car_hire_password_confirmation');
+    
+    function validateCarHirePasswords() {
+        if (!carHirePasswordField || !carHirePasswordConfirmField) return true;
+        
+        const password = carHirePasswordField.value;
+        const passwordConfirm = carHirePasswordConfirmField.value;
+        
+        // Remove any existing error styles
+        carHirePasswordField.classList.remove('border-red-500');
+        carHirePasswordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('car-hire-password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            carHirePasswordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            carHirePasswordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'car-hire-password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            carHirePasswordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation for car hire
+    if (carHirePasswordField) carHirePasswordField.addEventListener('input', validateCarHirePasswords);
+    if (carHirePasswordConfirmField) carHirePasswordConfirmField.addEventListener('input', validateCarHirePasswords);
 
     // Load car hire data
     async function loadCarHireData() {
@@ -1342,6 +1487,11 @@
         soloRideForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Validate passwords
+            if (!validateSoloPasswords()) {
+                return;
+            }
+            
             // Collect form data
             const formData = new FormData(soloRideForm);
             const bookingData = Object.fromEntries(formData);
@@ -1369,7 +1519,33 @@
                     // Show success modal instead of alert
                     showBookingSuccess(result, bookingData);
                 } else {
-                    alert(result.error || 'Sorry, there was an error processing your solo ride booking. Please try again.');
+                    // Handle errors
+                    if (result.errors) {
+                        // Handle form validation errors
+                        let errorMessage = 'Please fix the following issues:\n\n';
+                        
+                        // Check for specific field errors
+                        if (result.errors.customer_email) {
+                            errorMessage += '📧 Email: ' + result.errors.customer_email.join(', ') + '\n';
+                        }
+                        if (result.errors.password) {
+                            errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
+                        }
+                        if (result.errors.customer_phone) {
+                            errorMessage += '📱 Phone: ' + result.errors.customer_phone.join(', ') + '\n';
+                        }
+                        
+                        // Add other field errors
+                        Object.keys(result.errors).forEach(field => {
+                            if (!['customer_email', 'password', 'customer_phone'].includes(field)) {
+                                errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
+                            }
+                        });
+                        
+                        alert(errorMessage);
+                    } else {
+                        alert(result.error || 'Sorry, there was an error processing your solo ride booking. Please try again.');
+                    }
                 }
             } catch (error) {
                 console.error('Solo ride booking error:', error);
@@ -1436,48 +1612,118 @@
     // PARCEL DELIVERY FUNCTIONALITY
     // ===================================
     
-    // Parcel Delivery Modal Elements
+    // Parcel Delivery Form Elements
     const parcelDeliveryCard = document.getElementById('parcel-delivery-card');
-    const parcelDeliveryModal = document.getElementById('parcel-delivery-modal');
-    const closeParcelModalBtn = document.getElementById('close-parcel-modal');
-    const cancelParcelBookingBtn = document.getElementById('cancel-parcel-booking');
+    const parcelDeliveryFormContainer = document.getElementById('parcel-delivery-form-container');
+    const closeParcelDeliveryFormBtn = document.getElementById('close-parcel-delivery-form');
+    const cancelParcelDeliveryBookingBtn = document.getElementById('cancel-parcel-delivery-booking');
     const parcelDeliveryForm = document.getElementById('parcel-delivery-form');
     const parcelPriceDisplay = document.getElementById('parcel-price-display');
     const parcelPriceAmount = document.getElementById('parcel-price-amount');
     const parcelPriceBreakdown = document.getElementById('parcel-price-breakdown');
     
-    // Open parcel delivery modal when card is clicked
+    // Open parcel delivery form when card is clicked
     if (parcelDeliveryCard) {
         parcelDeliveryCard.addEventListener('click', () => {
-            // Hide any open inline forms first
+            // Hide all other forms first
             hideAllForms();
-            resetCardStyling();
             
-            parcelDeliveryModal.classList.remove('hidden');
-            loadParcelDeliveryData();
-        });
-    }
-    
-    // Close parcel delivery modal
-    function closeParcelModal() {
-        if (parcelDeliveryModal) {
-            parcelDeliveryModal.classList.add('hidden');
-            if (parcelDeliveryForm) parcelDeliveryForm.reset();
-            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
-        }
-    }
-    
-    if (closeParcelModalBtn) closeParcelModalBtn.addEventListener('click', closeParcelModal);
-    if (cancelParcelBookingBtn) cancelParcelBookingBtn.addEventListener('click', closeParcelModal);
-
-    // Close modal when clicking outside
-    if (parcelDeliveryModal) {
-        parcelDeliveryModal.addEventListener('click', (e) => {
-            if (e.target === parcelDeliveryModal) {
-                closeParcelModal();
+            // Show parcel delivery form
+            if (parcelDeliveryFormContainer) {
+                // Move form to dynamic area and show it
+                if (dynamicFormsArea && !dynamicFormsArea.contains(parcelDeliveryFormContainer)) {
+                    dynamicFormsArea.appendChild(parcelDeliveryFormContainer);
+                }
+                parcelDeliveryFormContainer.classList.remove('hidden');
+                
+                // Scroll to form
+                parcelDeliveryFormContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest'
+                });
+                
+                // Load parcel delivery data
+                loadParcelDeliveryData();
+                
+                // Update card styling
+                updateActiveCard('parcel-delivery-card');
             }
         });
     }
+    
+    // Close parcel delivery form
+    function closeParcelDeliveryForm() {
+        if (parcelDeliveryFormContainer) {
+            parcelDeliveryFormContainer.classList.add('hidden');
+            if (parcelDeliveryForm) parcelDeliveryForm.reset();
+            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
+            
+            // Clear password validation errors
+            const parcelPasswordError = document.getElementById('parcel-password-error');
+            if (parcelPasswordError) parcelPasswordError.remove();
+            
+            // Remove error styling from password fields
+            const parcelPasswordField = document.getElementById('parcel_password');
+            const parcelPasswordConfirmField = document.getElementById('parcel_password_confirmation');
+            if (parcelPasswordField) parcelPasswordField.classList.remove('border-red-500');
+            if (parcelPasswordConfirmField) parcelPasswordConfirmField.classList.remove('border-red-500');
+            
+            // Reset card styling
+            resetCardStyling();
+        }
+    }
+    
+    if (closeParcelDeliveryFormBtn) closeParcelDeliveryFormBtn.addEventListener('click', closeParcelDeliveryForm);
+    if (cancelParcelDeliveryBookingBtn) cancelParcelDeliveryBookingBtn.addEventListener('click', closeParcelDeliveryForm);
+
+    // Parcel delivery password validation
+    const parcelPasswordField = document.getElementById('parcel_password');
+    const parcelPasswordConfirmField = document.getElementById('parcel_password_confirmation');
+    
+    function validateParcelPasswords() {
+        if (!parcelPasswordField || !parcelPasswordConfirmField) return true;
+        
+        const password = parcelPasswordField.value;
+        const passwordConfirm = parcelPasswordConfirmField.value;
+        
+        // Remove any existing error styles
+        parcelPasswordField.classList.remove('border-red-500');
+        parcelPasswordConfirmField.classList.remove('border-red-500');
+        
+        // Remove any existing error messages
+        const existingError = document.getElementById('parcel-password-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        if (password.length < 4) {
+            errorMessage = 'Password must be at least 4 characters long.';
+            parcelPasswordField.classList.add('border-red-500');
+            isValid = false;
+        } else if (password !== passwordConfirm) {
+            errorMessage = 'Passwords do not match.';
+            parcelPasswordConfirmField.classList.add('border-red-500');
+            isValid = false;
+        }
+        
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'parcel-password-error';
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            parcelPasswordConfirmField.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Add real-time password validation for parcel delivery
+    if (parcelPasswordField) parcelPasswordField.addEventListener('input', validateParcelPasswords);
+    if (parcelPasswordConfirmField) parcelPasswordConfirmField.addEventListener('input', validateParcelPasswords);
 
     // Load parcel delivery data
     async function loadParcelDeliveryData() {
@@ -1640,12 +1886,18 @@
         checkParcelDeliveryPricing();
     }
 
-    // Validate parcel weight against selected parcel type
+    // Validate parcel weight against selected parcel type (now optional)
     function validateParcelWeight() {
         const parcelTypeSelect = document.getElementById('parcel_type');
         const parcelWeightInput = document.getElementById('parcel_weight');
         
         if (!parcelTypeSelect || !parcelWeightInput) return;
+        
+        // If no weight is entered, that's okay now
+        if (!parcelWeightInput.value) {
+            parcelWeightInput.setCustomValidity('');
+            return;
+        }
         
         const selectedOption = parcelTypeSelect.options[parcelTypeSelect.selectedIndex];
         const maxWeight = selectedOption ? parseFloat(selectedOption.dataset.maxWeight) : null;
@@ -1659,33 +1911,27 @@
         }
     }
 
-    // Add weight validation event listener
+    // Weight input event listener (now optional)
     const parcelWeightInput = document.getElementById('parcel_weight');
     if (parcelWeightInput) {
-        parcelWeightInput.addEventListener('input', validateParcelWeight);
+        parcelWeightInput.addEventListener('input', () => {
+            validateParcelWeight();
+            checkParcelDeliveryPricing(); // Update pricing when weight changes
+        });
     }
 
-    // Check parcel delivery pricing when required fields are selected
+    // Check parcel delivery pricing when required fields are selected (simplified to use only base price)
     async function checkParcelDeliveryPricing() {
         const pickupCityId = document.getElementById('parcel_pickup_city')?.value;
         const dropoffCityId = document.getElementById('parcel_dropoff_city')?.value;
         const parcelTypeId = document.getElementById('parcel_type')?.value;
-        const weight = document.getElementById('parcel_weight')?.value;
-        const urgentDelivery = document.querySelector('input[name="urgent_delivery"]')?.checked;
-        const insuranceRequired = document.querySelector('input[name="insurance_required"]')?.checked;
+        const parcelWeight = document.getElementById('parcel_weight')?.value || '1.0'; // Default weight if not provided
         
         console.log('Checking pricing with:', {
-            pickupCityId, dropoffCityId, parcelTypeId, weight, urgentDelivery, insuranceRequired
+            pickupCityId, dropoffCityId, parcelTypeId, weight: parcelWeight
         });
         
-        if (!pickupCityId || !dropoffCityId || !parcelTypeId || !weight || pickupCityId === dropoffCityId) {
-            if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
-            return;
-        }
-        
-        // Validate weight first
-        const weightNum = parseFloat(weight);
-        if (weightNum <= 0) {
+        if (!pickupCityId || !dropoffCityId || !parcelTypeId || pickupCityId === dropoffCityId) {
             if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
             return;
         }
@@ -1695,9 +1941,9 @@
                 pickup_city_id: pickupCityId,
                 dropoff_city_id: dropoffCityId,
                 parcel_type_id: parcelTypeId,
-                weight: weight,
-                urgent_delivery: urgentDelivery ? '1' : '0',
-                insurance_required: insuranceRequired ? '1' : '0'
+                weight: parcelWeight, // Include weight parameter (default 1.0 if not provided)
+                urgent_delivery: '0', // Default to false since you removed delivery options
+                insurance_required: '0' // Default to false since you removed delivery options
             });
             
             console.log('Making pricing API call with params:', params.toString());
@@ -1708,34 +1954,28 @@
             console.log('Pricing API response:', data);
             
             if (response.ok && data.success && data.total_price) {
-                // Update price display
+                // Update price display with base price only
                 parcelPriceAmount.textContent = `KSh ${Math.round(data.total_price).toLocaleString()}`;
                 
-                // Show detailed price breakdown
+                // Show simplified price breakdown (base price only)
                 let breakdown = '';
-                if (data.breakdown) {
-                    if (data.breakdown.base_rate > 0) {
-                        breakdown += `Base rate: KSh ${Math.round(data.breakdown.base_rate).toLocaleString()}`;
-                    }
-                    if (data.breakdown.distance_surcharge > 0) {
-                        breakdown += `<br>Distance: KSh ${Math.round(data.breakdown.distance_surcharge).toLocaleString()}`;
-                    }
-                    if (data.breakdown.weight_surcharge > 0) {
-                        breakdown += `<br>Weight (${weight}kg): KSh ${Math.round(data.breakdown.weight_surcharge).toLocaleString()}`;
-                    }
-                    if (data.breakdown.urgent_delivery > 0) {
-                        breakdown += `<br>Urgent delivery: KSh ${Math.round(data.breakdown.urgent_delivery).toLocaleString()}`;
-                    }
-                    if (data.breakdown.insurance > 0) {
-                        breakdown += `<br>Insurance: KSh ${Math.round(data.breakdown.insurance).toLocaleString()}`;
-                    }
+                if (data.base_price) {
+                    breakdown = `Base rate: KSh ${Math.round(data.base_price).toLocaleString()}`;
+                } else if (data.breakdown && data.breakdown.base_rate > 0) {
+                    breakdown = `Base rate: KSh ${Math.round(data.breakdown.base_rate).toLocaleString()}`;
                 } else {
                     // Fallback breakdown
-                    breakdown = `Total for ${data.parcel_type || 'parcel'}: KSh ${Math.round(data.total_price).toLocaleString()}`;
+                    breakdown = `Base price for ${data.parcel_type || 'parcel'}: KSh ${Math.round(data.total_price).toLocaleString()}`;
                 }
                 
                 parcelPriceBreakdown.innerHTML = breakdown;
                 parcelPriceDisplay.classList.remove('hidden');
+                
+                // Hide config notice if it was shown
+                const configNotice = document.getElementById('parcel-config-notice');
+                if (configNotice) {
+                    configNotice.classList.add('hidden');
+                }
             } else {
                 if (parcelPriceDisplay) parcelPriceDisplay.classList.add('hidden');
                 
@@ -1756,10 +1996,6 @@
                             }
                             configNotice.classList.remove('hidden');
                         }
-                    } else if (data.error.includes('exceeds maximum')) {
-                        // Show weight error in price display
-                        parcelPriceBreakdown.innerHTML = `<span class="text-red-600">${data.error}</span>`;
-                        parcelPriceDisplay.classList.remove('hidden');
                     }
                 }
             }
@@ -1786,32 +2022,37 @@
         }
     }
 
-    // Add event listeners for delivery options to update pricing
-    const urgentDeliveryCheckbox = document.querySelector('input[name="urgent_delivery"]');
-    const insuranceCheckbox = document.querySelector('input[name="insurance_required"]');
-    
-    if (urgentDeliveryCheckbox) {
-        urgentDeliveryCheckbox.addEventListener('change', checkParcelDeliveryPricing);
-    }
-    
-    if (insuranceCheckbox) {
-        insuranceCheckbox.addEventListener('change', checkParcelDeliveryPricing);
-    }
-
     // Handle parcel delivery form submission
     if (parcelDeliveryForm) {
         parcelDeliveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validate parcel weight one more time
-            validateParcelWeight();
-            if (!parcelWeightInput.checkValidity()) {
+            // Validate passwords
+            if (!validateParcelPasswords()) {
                 return;
+            }
+            
+            // Optional weight validation (only if weight is provided)
+            if (parcelWeightInput && parcelWeightInput.value) {
+                validateParcelWeight();
+                if (!parcelWeightInput.checkValidity()) {
+                    return;
+                }
             }
             
             // Collect form data
             const formData = new FormData(parcelDeliveryForm);
             const bookingData = Object.fromEntries(formData);
+            
+            // Ensure weight has a default value if not provided
+            if (!bookingData.parcel_weight || bookingData.parcel_weight === '') {
+                bookingData.parcel_weight = '1.0';
+            }
+            
+            // Set default values for removed delivery options
+            bookingData.urgent_delivery = false;
+            bookingData.signature_required = false;
+            bookingData.insurance_required = false;
             
             // Show loading state
             const submitBtn = parcelDeliveryForm.querySelector('button[type="submit"]');
@@ -1848,13 +2089,10 @@
                         if (result.errors.password) {
                             errorMessage += '🔒 Password: ' + result.errors.password.join(', ') + '\n';
                         }
-                        if (result.errors.parcel_weight) {
-                            errorMessage += '⚖️ Weight: ' + result.errors.parcel_weight.join(', ') + '\n';
-                        }
                         
                         // Add other field errors
                         Object.keys(result.errors).forEach(field => {
-                            if (!['customer_email', 'password', 'parcel_weight'].includes(field)) {
+                            if (!['customer_email', 'password'].includes(field)) {
                                 errorMessage += `${field}: ${result.errors[field].join(', ')}\n`;
                             }
                         });
@@ -1881,6 +2119,11 @@
     if (carHireForm) {
         carHireForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Validate passwords
+            if (!validateCarHirePasswords()) {
+                return;
+            }
             
             // Validate dates
             const startDate = document.getElementById('hire_start_date').value;
