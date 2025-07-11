@@ -38,18 +38,7 @@
         <div class="absolute w-4 h-4 bg-white/10 rounded-full animate-float-slow" style="top: 40%; left: 70%;"></div>
     </div>
 
-    <!-- 24/7 Service Badge -->
-    <div class="absolute top-28 sm:top-32 left-1/2 transform -translate-x-1/2 z-30 animate-bounce-slow">
-        <div
-            class="bg-gradient-to-r from-orange-custom to-red-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-full font-bold flex items-center shadow-2xl backdrop-blur-sm border border-white/20 text-sm sm:text-base">
-            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                    clip-rule="evenodd"></path>
-            </svg>
-            24/7 Service Available
-        </div>
-    </div>
+
 
     <!-- Main Content -->
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center -mt-20">
@@ -68,7 +57,8 @@
                 </div>
 
                 <!-- Slide 2 Content -->
-                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0" data-content="1">
+                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0"
+                    data-content="1">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                         Travel Your Way, <span class="text-orange-custom">Every Day</span>
                     </h1>
@@ -78,7 +68,8 @@
                 </div>
 
                 <!-- Slide 3 Content -->
-                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0" data-content="2">
+                <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0"
+                    data-content="2">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                         Adventure Awaits, <span class="text-orange-custom">Let's Go</span>
                     </h1>
@@ -122,15 +113,15 @@
     <!-- Navigation Arrows -->
     <button id="carousel-prev" type="button"
         class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-40 border border-white/20 shadow-xl group">
-        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
+        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:-translate-x-1 transition-transform" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
         </svg>
     </button>
     <button id="carousel-next" type="button"
         class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-40 border border-white/20 shadow-xl group">
-        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
+        <svg class="w-6 h-6 md:w-7 md:h-7 transform group-hover:translate-x-1 transition-transform" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
         </svg>
     </button>

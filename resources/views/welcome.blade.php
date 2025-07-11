@@ -29,6 +29,8 @@
 
     @include('components.modals.booking-success-modal')
 
+    @include('components.modals.login-modal')
+
     @include('components.partials.scripts-enhanced')
     
     <!-- Temporary debug script - remove after testing -->
