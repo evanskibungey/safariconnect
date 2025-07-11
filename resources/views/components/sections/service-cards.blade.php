@@ -5,7 +5,7 @@
             <!-- Share Ride Card - Active -->
             <div
                 id="shared-ride-card"
-                class="group bg-brown-custom text-white px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl min-w-0 flex-shrink-0">
+                class="group bg-brown-custom text-white px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl min-w-0 flex-shrink-0 service-card-transition">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all">
@@ -25,7 +25,7 @@
             <!-- Solo Ride Card -->
             <div
                 id="solo-ride-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-all">
@@ -40,7 +40,7 @@
             <!-- Airport Card -->
             <div
                 id="airport-transfer-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:bg-blue-500/30 transition-all">
@@ -57,7 +57,7 @@
             <!-- Car Hire Card -->
             <div
                 id="car-hire-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-teal-500/20 rounded-full flex items-center justify-center group-hover:bg-teal-500/30 transition-all">
@@ -77,7 +77,7 @@
             <!-- Parcel Card -->
             <div
                 id="parcel-delivery-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0">
+                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center group-hover:bg-orange-500/30 transition-all">
@@ -91,5 +91,10 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Dynamic Forms Area -->
+    <div id="dynamic-forms-area" class="mt-8">
+        <!-- Forms will be dynamically inserted here -->
     </div>
 </section>

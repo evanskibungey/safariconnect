@@ -58,8 +58,10 @@
         // Show the modal
         bookingSuccessModal.classList.remove('hidden');
         
-        // Close any open booking modals
+        // Close any open booking modals and forms
         closeAllBookingModals();
+        closeSharedRideForm();
+        closeAirportTransferForm();
     }
     
     function closeBookingSuccessModal() {
@@ -71,9 +73,7 @@
     function closeAllBookingModals() {
         // Close all booking modals
         const modals = [
-            'shared-ride-modal',
             'solo-ride-modal', 
-            'airport-transfer-modal',
             'car-hire-modal',
             'parcel-delivery-modal'
         ];
@@ -88,6 +88,52 @@
                 // Hide price displays
                 const priceDisplay = modal.querySelector('[id*="price-display"]');
                 if (priceDisplay) priceDisplay.classList.add('hidden');
+            }
+        });
+        
+        // Also hide inline forms
+        hideAllForms();
+    }
+    
+    // Hide all inline forms
+    function hideAllForms() {
+        const forms = [
+            'shared-ride-form-container',
+            'airport-transfer-form-container'
+        ];
+        
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Update active card styling
+    function updateActiveCard(activeCardId) {
+        // Reset all cards
+        resetCardStyling();
+        
+        // Highlight active card
+        const activeCard = document.getElementById(activeCardId);
+        if (activeCard) {
+            activeCard.classList.remove('bg-white', 'text-gray-800');
+            activeCard.classList.add('bg-brown-custom', 'text-white');
+        }
+    }
+    
+    // Reset card styling
+    function resetCardStyling() {
+        const allCards = document.querySelectorAll('[id$="-card"]');
+        allCards.forEach(card => {
+            if (card.id === 'shared-ride-card') {
+                // Shared ride card is default active
+                card.classList.remove('bg-white', 'text-gray-800');
+                card.classList.add('bg-brown-custom', 'text-white');
+            } else {
+                card.classList.remove('bg-brown-custom', 'text-white');
+                card.classList.add('bg-white', 'text-gray-800');
             }
         });
     }
@@ -307,27 +353,50 @@
     // SHARED RIDE FUNCTIONALITY
     // ===================================
     
-    // Shared Ride Modal Elements
+    // Shared Ride Form Elements
     const sharedRideCard = document.getElementById('shared-ride-card');
-    const sharedRideModal = document.getElementById('shared-ride-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const cancelBookingBtn = document.getElementById('cancel-booking');
+    const sharedRideFormContainer = document.getElementById('shared-ride-form-container');
+    const closeSharedRideFormBtn = document.getElementById('close-shared-ride-form');
+    const cancelSharedRideBookingBtn = document.getElementById('cancel-shared-ride-booking');
     const sharedRideForm = document.getElementById('shared-ride-form');
     const priceDisplay = document.getElementById('price-display');
     const priceAmount = document.getElementById('price-amount');
+    const dynamicFormsArea = document.getElementById('dynamic-forms-area');
     
-    // Open shared ride modal when card is clicked
+    // Open shared ride form when card is clicked
     if (sharedRideCard) {
         sharedRideCard.addEventListener('click', () => {
-            sharedRideModal.classList.remove('hidden');
-            loadSharedRideData();
+            // Hide all other forms first
+            hideAllForms();
+            
+            // Show shared ride form
+            if (sharedRideFormContainer) {
+                // Move form to dynamic area and show it
+                if (dynamicFormsArea && !dynamicFormsArea.contains(sharedRideFormContainer)) {
+                    dynamicFormsArea.appendChild(sharedRideFormContainer);
+                }
+                sharedRideFormContainer.classList.remove('hidden');
+                
+                // Scroll to form
+                sharedRideFormContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest'
+                });
+                
+                // Load shared ride data
+                loadSharedRideData();
+                
+                // Update card styling
+                updateActiveCard('shared-ride-card');
+            }
         });
     }
     
-    // Close shared ride modal
-    function closeSharedModal() {
-        if (sharedRideModal) {
-            sharedRideModal.classList.add('hidden');
+    // Close shared ride form
+    function closeSharedRideForm() {
+        if (sharedRideFormContainer) {
+            sharedRideFormContainer.classList.add('hidden');
             if (sharedRideForm) sharedRideForm.reset();
             if (priceDisplay) priceDisplay.classList.add('hidden');
             
@@ -340,20 +409,14 @@
             const passwordConfirmField = document.getElementById('password_confirmation');
             if (passwordField) passwordField.classList.remove('border-red-500');
             if (passwordConfirmField) passwordConfirmField.classList.remove('border-red-500');
+            
+            // Reset card styling
+            resetCardStyling();
         }
     }
     
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeSharedModal);
-    if (cancelBookingBtn) cancelBookingBtn.addEventListener('click', closeSharedModal);
-    
-    // Close modal when clicking outside
-    if (sharedRideModal) {
-        sharedRideModal.addEventListener('click', (e) => {
-            if (e.target === sharedRideModal) {
-                closeSharedModal();
-            }
-        });
-    }
+    if (closeSharedRideFormBtn) closeSharedRideFormBtn.addEventListener('click', closeSharedRideForm);
+    if (cancelSharedRideBookingBtn) cancelSharedRideBookingBtn.addEventListener('click', closeSharedRideForm);
 
     // Load shared ride data (cities and pricing)
     async function loadSharedRideData() {
@@ -452,6 +515,10 @@
     // Open solo ride modal when card is clicked
     if (soloRideCard) {
         soloRideCard.addEventListener('click', () => {
+            // Hide any open inline forms first
+            hideAllForms();
+            resetCardStyling();
+            
             soloRideModal.classList.remove('hidden');
             loadSoloRideData();
         });
@@ -527,6 +594,10 @@
     // Open car hire modal when card is clicked
     if (carHireCard) {
         carHireCard.addEventListener('click', () => {
+            // Hide any open inline forms first
+            hideAllForms();
+            resetCardStyling();
+            
             carHireModal.classList.remove('hidden');
             loadCarHireData();
         });
@@ -731,11 +802,11 @@
     // AIRPORT TRANSFER FUNCTIONALITY
     // ===================================
     
-    // Airport Transfer Modal Elements  
+    // Airport Transfer Form Elements  
     const airportTransferCard = document.getElementById('airport-transfer-card');
-    const airportTransferModal = document.getElementById('airport-transfer-modal');
-    const closeAirportModalBtn = document.getElementById('close-airport-modal');
-    const cancelAirportBookingBtn = document.getElementById('cancel-airport-booking');
+    const airportTransferFormContainer = document.getElementById('airport-transfer-form-container');
+    const closeAirportTransferFormBtn = document.getElementById('close-airport-transfer-form');
+    const cancelAirportTransferBookingBtn = document.getElementById('cancel-airport-transfer-booking');
     const airportTransferForm = document.getElementById('airport-transfer-form');
     const airportPriceDisplay = document.getElementById('airport-price-display');
     const airportPriceAmount = document.getElementById('airport-price-amount');
@@ -749,18 +820,40 @@
     const pickupRouteSection = document.getElementById('pickup-route');
     const dropoffRouteSection = document.getElementById('dropoff-route');
     
-    // Open airport transfer modal when card is clicked
+    // Open airport transfer form when card is clicked
     if (airportTransferCard) {
         airportTransferCard.addEventListener('click', () => {
-            airportTransferModal.classList.remove('hidden');
-            loadAirportTransferData();
+            // Hide all other forms first
+            hideAllForms();
+            
+            // Show airport transfer form
+            if (airportTransferFormContainer) {
+                // Move form to dynamic area and show it
+                if (dynamicFormsArea && !dynamicFormsArea.contains(airportTransferFormContainer)) {
+                    dynamicFormsArea.appendChild(airportTransferFormContainer);
+                }
+                airportTransferFormContainer.classList.remove('hidden');
+                
+                // Scroll to form
+                airportTransferFormContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest'
+                });
+                
+                // Load airport transfer data
+                loadAirportTransferData();
+                
+                // Update card styling
+                updateActiveCard('airport-transfer-card');
+            }
         });
     }
     
-    // Close airport transfer modal
-    function closeAirportModal() {
-        if (airportTransferModal) {
-            airportTransferModal.classList.add('hidden');
+    // Close airport transfer form
+    function closeAirportTransferForm() {
+        if (airportTransferFormContainer) {
+            airportTransferFormContainer.classList.add('hidden');
             if (airportTransferForm) airportTransferForm.reset();
             if (airportPriceDisplay) airportPriceDisplay.classList.add('hidden');
             
@@ -773,20 +866,14 @@
                 option.classList.remove('border-blue-500', 'bg-blue-50');
                 option.classList.add('border-gray-200');
             });
+            
+            // Reset card styling
+            resetCardStyling();
         }
     }
     
-    if (closeAirportModalBtn) closeAirportModalBtn.addEventListener('click', closeAirportModal);
-    if (cancelAirportBookingBtn) cancelAirportBookingBtn.addEventListener('click', closeAirportModal);
-
-    // Close modal when clicking outside
-    if (airportTransferModal) {
-        airportTransferModal.addEventListener('click', (e) => {
-            if (e.target === airportTransferModal) {
-                closeAirportModal();
-            }
-        });
-    }
+    if (closeAirportTransferFormBtn) closeAirportTransferFormBtn.addEventListener('click', closeAirportTransferForm);
+    if (cancelAirportTransferBookingBtn) cancelAirportTransferBookingBtn.addEventListener('click', closeAirportTransferForm);
 
     // Transfer type selection handling
     if (pickupTransferRadio) {
@@ -1087,6 +1174,12 @@
             // Add event listener for pricing updates
             airportVehicleSelect.addEventListener('change', checkAirportTransferPricing);
         }
+        
+        // Add event listener for passengers field
+        const airportPassengersSelect = document.getElementById('airport_passengers');
+        if (airportPassengersSelect) {
+            airportPassengersSelect.addEventListener('change', checkAirportTransferPricing);
+        }
     }
 
     // Check airport transfer pricing when required fields are selected
@@ -1356,6 +1449,10 @@
     // Open parcel delivery modal when card is clicked
     if (parcelDeliveryCard) {
         parcelDeliveryCard.addEventListener('click', () => {
+            // Hide any open inline forms first
+            hideAllForms();
+            resetCardStyling();
+            
             parcelDeliveryModal.classList.remove('hidden');
             loadParcelDeliveryData();
         });

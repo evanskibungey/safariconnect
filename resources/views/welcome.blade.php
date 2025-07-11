@@ -17,11 +17,11 @@
 
     @include('components.sections.footer')
 
-    @include('components.modals.shared-ride-modal')
+    @include('components.forms.shared-ride-form')
+
+    @include('components.forms.airport-transfer-form')
 
     @include('components.modals.solo-ride-modal')
-
-    @include('components.modals.airport-transfer-modal')
 
     @include('components.modals.car-hire-modal')
 
