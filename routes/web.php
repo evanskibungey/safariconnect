@@ -35,6 +35,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Customer Booking Management Routes
+    Route::get('/booking/{booking}', [App\Http\Controllers\CustomerBookingController::class, 'show'])->name('booking.details');
+    Route::get('/bookings/history', [App\Http\Controllers\CustomerBookingController::class, 'history'])->name('booking.history');
+    Route::post('/booking/{booking}/cancel', [App\Http\Controllers\CustomerBookingController::class, 'cancel'])->name('booking.cancel');
 });
 
 // Public API Routes for Booking
@@ -68,6 +73,7 @@ Route::prefix('api')->group(function () {
     // Test Routes (for development only - remove in production)
     Route::get('/test/solo-ride-data', [App\Http\Controllers\TestController::class, 'testSoloRideData'])->name('api.test.solo-ride-data');
     Route::get('/test/solo-ride-pricing', [App\Http\Controllers\TestController::class, 'testSoloRidePricing'])->name('api.test.solo-ride-pricing');
+    Route::get('/test/booking-success', [App\Http\Controllers\TestController::class, 'testBookingSuccess'])->name('api.test.booking-success');
 });
 
 // Admin Routes

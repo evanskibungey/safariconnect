@@ -15,15 +15,122 @@
     }
 
     // ===================================
+    // BOOKING SUCCESS MODAL FUNCTIONALITY
+    // ===================================
+    
+    const bookingSuccessModal = document.getElementById('booking-success-modal');
+    const viewDashboardBtn = document.getElementById('view-dashboard-btn');
+    const bookAnotherBtn = document.getElementById('book-another-btn');
+    
+    function showBookingSuccess(result, bookingData) {
+        // Populate modal with booking details
+        document.getElementById('booking-reference').textContent = result.booking_reference;
+        document.getElementById('service-type').textContent = result.booking_details?.service || 'Transportation Service';
+        document.getElementById('route-info').textContent = result.booking_details?.route || 'Route information';
+        
+        // Use travel_info if available, otherwise construct from separate fields
+        const travelInfo = result.booking_details?.travel_info || 
+            ((result.booking_details?.travel_date || result.booking_details?.pickup_date || result.booking_details?.hire_start_date) + 
+            ' at ' + 
+            (result.booking_details?.travel_time || result.booking_details?.pickup_time));
+        document.getElementById('travel-info').textContent = travelInfo;
+        
+        document.getElementById('total-amount').textContent = 
+            'KSh ' + (result.booking_details?.total_price || 0).toLocaleString();
+        
+        // Handle account status
+        const accountStatus = document.getElementById('account-status');
+        const accountMessage = document.getElementById('account-message');
+        const accountEmail = document.getElementById('account-email');
+        
+        if (result.account_created) {
+            accountMessage.textContent = 'Your SafariConnect account has been created!';
+            accountEmail.textContent = 'Login email: ' + (bookingData.customer_email || result.account_info?.login_email || 'N/A');
+            accountStatus.classList.remove('hidden');
+            document.getElementById('success-subtitle').textContent = 'Your account has been created and booking confirmed';
+        } else {
+            accountMessage.textContent = 'Welcome back! You are now logged in.';
+            accountEmail.textContent = 'Login email: ' + (bookingData.customer_email || result.account_info?.login_email || 'N/A');
+            accountStatus.classList.remove('hidden');
+            document.getElementById('success-subtitle').textContent = 'Your booking has been confirmed';
+        }
+        
+        // Show the modal
+        bookingSuccessModal.classList.remove('hidden');
+        
+        // Close any open booking modals
+        closeAllBookingModals();
+    }
+    
+    function closeBookingSuccessModal() {
+        if (bookingSuccessModal) {
+            bookingSuccessModal.classList.add('hidden');
+        }
+    }
+    
+    function closeAllBookingModals() {
+        // Close all booking modals
+        const modals = [
+            'shared-ride-modal',
+            'solo-ride-modal', 
+            'airport-transfer-modal',
+            'car-hire-modal',
+            'parcel-delivery-modal'
+        ];
+        
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                // Reset form if it exists
+                const form = modal.querySelector('form');
+                if (form) form.reset();
+                // Hide price displays
+                const priceDisplay = modal.querySelector('[id*="price-display"]');
+                if (priceDisplay) priceDisplay.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Event listeners for success modal
+    if (viewDashboardBtn) {
+        viewDashboardBtn.addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+    }
+    
+    if (bookAnotherBtn) {
+        bookAnotherBtn.addEventListener('click', () => {
+            closeBookingSuccessModal();
+            // Optionally scroll to service cards
+            const serviceCards = document.getElementById('service-cards-section');
+            if (serviceCards) {
+                serviceCards.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    // Close modal when clicking outside
+    if (bookingSuccessModal) {
+        bookingSuccessModal.addEventListener('click', (e) => {
+            if (e.target === bookingSuccessModal) {
+                closeBookingSuccessModal();
+            }
+        });
+    }
+
+    // ===================================
     // HEADER SCROLL EFFECT
     // ===================================
     
     const header = document.getElementById('header');
-    const headerBg = header.querySelector('.header-bg');
+    const headerBg = header?.querySelector('.header-bg');
     const heroSection = document.getElementById('hero-section');
     
     // Function to check if header needs background
     function updateHeaderBackground() {
+        if (!header || !headerBg) return;
+        
         const scrollY = window.scrollY;
         
         // Show background when scrolled past 50px
@@ -1064,22 +1171,8 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    // Success message with booking reference and account info
-                    let successMessage;
-                    
-                    if (result.account_created) {
-                        successMessage = `🎉 Shared Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    } else {
-                        successMessage = `🎉 Shared Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    }
-                    
-                    alert(successMessage);
-                    closeSharedModal();
-                    
-                    // Refresh the page to show the updated header with user info
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show success modal instead of alert
+                    showBookingSuccess(result, bookingData);
                 } else {
                     // Handle errors
                     if (result.errors) {
@@ -1148,21 +1241,8 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    let successMessage;
-                    
-                    if (result.account_created) {
-                        successMessage = `🎉 Solo Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    } else {
-                        successMessage = `🎉 Solo Ride Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    }
-                    
-                    alert(successMessage);
-                    closeSoloModal();
-                    
-                    // Refresh the page to show the updated header with user info
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show success modal instead of alert
+                    showBookingSuccess(result, bookingData);
                 } else {
                     alert(result.error || 'Sorry, there was an error processing your solo ride booking. Please try again.');
                 }
@@ -1212,21 +1292,8 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    let successMessage;
-                    
-                    if (result.account_created) {
-                        successMessage = `🎉 Airport Transfer Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    } else {
-                        successMessage = `🎉 Airport Transfer Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and driver assignment.`;
-                    }
-                    
-                    alert(successMessage);
-                    closeAirportModal();
-                    
-                    // Refresh the page to show the updated header with user info
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show success modal instead of alert
+                    showBookingSuccess(result, bookingData);
                 } else {
                     alert(result.error || 'Sorry, there was an error processing your airport transfer booking. Please try again.');
                 }
@@ -1637,21 +1704,8 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    let successMessage;
-                    
-                    if (result.account_created) {
-                        successMessage = `🎉 Parcel Delivery Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your parcel delivery from your dashboard.\n\nWe will contact you shortly with pickup confirmation and tracking details.`;
-                    } else {
-                        successMessage = `🎉 Parcel Delivery Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this parcel delivery from your dashboard.\n\nWe will contact you shortly with pickup confirmation and tracking details.`;
-                    }
-                    
-                    alert(successMessage);
-                    closeParcelModal();
-                    
-                    // Refresh the page to show the updated header with user info
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show success modal instead of alert
+                    showBookingSuccess(result, bookingData);
                 } else {
                     // Handle errors
                     if (result.errors) {
@@ -1737,21 +1791,8 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    let successMessage;
-                    
-                    if (result.account_created) {
-                        successMessage = `🎉 Car Hire Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Your SafariConnect account has been created!\nEmail: ${bookingData.customer_email}\n\nYou are now logged in and can track your booking from your dashboard.\n\nWe will contact you shortly with confirmation details and vehicle pickup instructions.\n\n🚗 Please bring your valid driver's license when picking up the vehicle.`;
-                    } else {
-                        successMessage = `🎉 Car Hire Booking Successful!\n\nBooking Reference: ${result.booking_reference}\n\n✅ Welcome back! You are now logged in.\n\nYou can track this booking from your dashboard.\n\nWe will contact you shortly with confirmation details and vehicle pickup instructions.\n\n🚗 Please bring your valid driver's license when picking up the vehicle.`;
-                    }
-                    
-                    alert(successMessage);
-                    closeCarHireModal();
-                    
-                    // Refresh the page to show the updated header with user info
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show success modal instead of alert
+                    showBookingSuccess(result, bookingData);
                 } else {
                     // Handle errors
                     if (result.errors) {

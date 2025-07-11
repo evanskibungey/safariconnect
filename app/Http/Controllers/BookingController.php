@@ -327,6 +327,14 @@ class BookingController extends Controller
             // 3. Process payment if required
             // 4. Notify drivers/operators
 
+            // Get cities for route description
+            $pickupCity = City::find($request->pickup_city_id);
+            $dropoffCity = City::find($request->dropoff_city_id);
+            $routeDescription = ($pickupCity ? $pickupCity->name : 'Unknown') . ' → ' . ($dropoffCity ? $dropoffCity->name : 'Unknown');
+            
+            // Format travel date and time
+            $travelDate = \Carbon\Carbon::parse($request->travel_date)->format('l, F j, Y');
+            
             return response()->json([
                 'success' => true,
                 'booking_reference' => $booking->booking_reference,
@@ -337,9 +345,10 @@ class BookingController extends Controller
                     : 'Booking successful! We will contact you shortly with confirmation details.',
                 'booking_details' => [
                     'service' => 'Shared Ride',
-                    'route' => $pricing->route_description,
-                    'travel_date' => $request->travel_date,
+                    'route' => $routeDescription,
+                    'travel_date' => $travelDate,
                     'travel_time' => $request->travel_time,
+                    'travel_info' => $travelDate . ' at ' . $request->travel_time,
                     'passengers' => $request->passengers,
                     'price_per_passenger' => $pricePerPassenger,
                     'total_price' => $totalPrice,
@@ -915,6 +924,21 @@ class BookingController extends Controller
                 throw $e;
             }
 
+            // Get route description based on transfer type
+            $routeDescription = '';
+            if ($request->transfer_type === 'pickup') {
+                $airport = Airport::find($request->pickup_airport_id);
+                $city = City::find($request->dropoff_city_id);
+                $routeDescription = ($airport ? $airport->name : 'Airport') . ' → ' . ($city ? $city->name : 'City');
+            } else {
+                $city = City::find($request->pickup_city_id);
+                $airport = Airport::find($request->dropoff_airport_id);
+                $routeDescription = ($city ? $city->name : 'City') . ' → ' . ($airport ? $airport->name : 'Airport');
+            }
+            
+            // Format travel date and time
+            $travelDate = \Carbon\Carbon::parse($request->travel_date)->format('l, F j, Y');
+            
             return response()->json([
                 'success' => true,
                 'booking_reference' => $booking->booking_reference,
@@ -926,10 +950,11 @@ class BookingController extends Controller
                 'booking_details' => [
                     'service' => 'Airport Transfer',
                     'transfer_type' => ucfirst($request->transfer_type),
-                    'route' => $pricing->route_description,
-                    'vehicle_type' => $request->vehicle_type_id,
-                    'travel_date' => $request->travel_date,
+                    'route' => $routeDescription,
+                    'travel_date' => $travelDate,
                     'travel_time' => $request->travel_time,
+                    'travel_info' => $travelDate . ' at ' . $request->travel_time,
+                    'vehicle_type' => $request->vehicle_type_id,
                     'passengers' => $request->passengers,
                     'base_price' => $basePrice,
                     'surcharge_amount' => $surchargeAmount,

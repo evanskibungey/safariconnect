@@ -1,5 +1,6 @@
 <!-- Footer -->
-<footer id="footer" class="bg-gradient-to-br from-slate-900 via-slate-800 to-dark-blue text-white relative overflow-hidden">
+<footer id="footer"
+    class="bg-gradient-to-br from-slate-900 via-slate-800 to-dark-blue text-white relative overflow-hidden">
     <!-- Background Elements -->
     <div class="absolute inset-0">
         <div class="absolute top-20 left-20 w-40 h-40 bg-orange-custom/5 rounded-full animate-float"></div>
@@ -258,47 +259,6 @@
         </div>
     </div>
 
-    <!-- Payment Methods & Trust Badges -->
-    <div class="border-t border-gray-700 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-                <!-- Payment Methods -->
-                <div class="flex flex-col items-center md:items-start">
-                    <p class="text-gray-300 text-sm mb-3">Secure Payment Methods</p>
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-white rounded px-3 py-2">
-                            <span class="text-blue-600 font-bold text-sm">VISA</span>
-                        </div>
-                        <div class="bg-white rounded px-3 py-2">
-                            <span class="text-orange-500 font-bold text-sm">MC</span>
-                        </div>
-                        <div class="bg-white rounded px-3 py-2">
-                            <span class="text-blue-700 font-bold text-sm">AMEX</span>
-                        </div>
-                        <div class="bg-white rounded px-3 py-2">
-                            <span class="text-green-600 font-bold text-sm">PayPal</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trust Badges -->
-                <div class="flex flex-col items-center md:items-end">
-                    <p class="text-gray-300 text-sm mb-3">Certified & Trusted</p>
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-green-600 text-white px-3 py-2 rounded text-xs font-semibold">
-                            SSL SECURED
-                        </div>
-                        <div class="bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold">
-                            24/7 SUPPORT
-                        </div>
-                        <div class="bg-orange-custom text-white px-3 py-2 rounded text-xs font-semibold">
-                            VERIFIED
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Bottom Footer -->
     <div class="border-t border-gray-700 relative z-10">

@@ -27,6 +27,8 @@
 
     @include('components.modals.parcel-delivery-modal')
 
+    @include('components.modals.booking-success-modal')
+
     @include('components.partials.scripts-enhanced')
     
     <!-- Temporary debug script - remove after testing -->
