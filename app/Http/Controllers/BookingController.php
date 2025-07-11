@@ -108,6 +108,7 @@ class BookingController extends Controller
             $validator = Validator::make($request->all(), [
                 'pickup_city_id' => 'required|exists:cities,id',
                 'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
+                'passengers' => 'required|integer|min:1|max:7',
             ]);
 
             if ($validator->fails()) {
@@ -146,10 +147,16 @@ class BookingController extends Controller
             // Calculate price with any applicable surcharges
             $travelDateTime = $request->travel_date . ' ' . $request->travel_time;
             $isWeekend = in_array(date('w', strtotime($request->travel_date)), [0, 6]);
-            $totalPrice = $pricing->calculateTotalPrice($travelDateTime, $isWeekend);
+            $pricePerPassenger = $pricing->calculateTotalPrice($travelDateTime, $isWeekend);
+            
+            // Multiply by number of passengers for shared rides
+            $passengers = $request->passengers;
+            $totalPrice = $pricePerPassenger * $passengers;
 
             return response()->json([
                 'price' => $totalPrice,
+                'price_per_passenger' => $pricePerPassenger,
+                'passengers' => $passengers,
                 'base_price' => $pricing->base_price,
                 'route' => $pricing->route_description,
                 'distance_km' => $pricing->distance_km,
@@ -173,7 +180,7 @@ class BookingController extends Controller
                 'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
                 'travel_date' => 'required|date|after_or_equal:today',
                 'travel_time' => 'required|date_format:H:i',
-                'passengers' => 'required|integer|min:1|max:4',
+                'passengers' => 'required|integer|min:1|max:7',
                 'customer_name' => 'required|string|max:255',
                 'customer_email' => 'required|email|max:255',
                 'customer_phone' => 'required|string|max:20',

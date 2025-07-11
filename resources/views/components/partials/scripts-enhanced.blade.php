@@ -895,27 +895,50 @@
             // Add event listener for pricing updates
             dropoffCitySelect.addEventListener('change', checkSharedRidePricing);
         }
+        
+        // Add event listener for passengers dropdown
+        const passengersSelect = document.getElementById('passengers');
+        if (passengersSelect) {
+            passengersSelect.addEventListener('change', checkSharedRidePricing);
+        }
     }
 
     // Check shared ride pricing when cities are selected
     async function checkSharedRidePricing() {
         const pickupCitySelect = document.getElementById('pickup_city');
         const dropoffCitySelect = document.getElementById('dropoff_city');
+        const passengersSelect = document.getElementById('passengers');
         const priceDisplay = document.getElementById('price-display');
         const priceAmount = document.getElementById('price-amount');
+        const priceDescription = document.getElementById('price-description');
         
-        if (!pickupCitySelect || !dropoffCitySelect) return;
+        if (!pickupCitySelect || !dropoffCitySelect || !passengersSelect) return;
         
         const pickupCityId = pickupCitySelect.value;
         const dropoffCityId = dropoffCitySelect.value;
+        const passengers = passengersSelect.value;
         
-        if (pickupCityId && dropoffCityId && pickupCityId !== dropoffCityId) {
+        if (pickupCityId && dropoffCityId && passengers && pickupCityId !== dropoffCityId) {
             try {
-                const response = await fetch(`/api/shared-ride/pricing?pickup_city_id=${pickupCityId}&dropoff_city_id=${dropoffCityId}`);
+                const response = await fetch(`/api/shared-ride/pricing?pickup_city_id=${pickupCityId}&dropoff_city_id=${dropoffCityId}&passengers=${passengers}`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.price) {
                         priceAmount.textContent = `KSh ${data.price.toLocaleString()}`;
+                        
+                        // Update description based on passenger count
+                        const passengerCount = parseInt(passengers);
+                        if (passengerCount === 1) {
+                            priceDescription.textContent = 'Total for 1 passenger';
+                        } else {
+                            priceDescription.textContent = `Total for ${passengerCount} passengers`;
+                            
+                            // Also show per-passenger breakdown if available
+                            if (data.price_per_passenger) {
+                                priceDescription.innerHTML = `Total for ${passengerCount} passengers<br><small class="text-gray-500">(KSh ${data.price_per_passenger.toLocaleString()} per passenger)</small>`;
+                            }
+                        }
+                        
                         priceDisplay.classList.remove('hidden');
                     } else {
                         priceDisplay.classList.add('hidden');
@@ -924,7 +947,16 @@
             } catch (error) {
                 console.error('Error checking shared ride price:', error);
                 // Show sample price for demonstration
-                priceAmount.textContent = 'KSh 1,500';
+                const passengerCount = parseInt(passengers) || 1;
+                const samplePricePerPassenger = 1500;
+                const totalPrice = samplePricePerPassenger * passengerCount;
+                
+                priceAmount.textContent = `KSh ${totalPrice.toLocaleString()}`;
+                if (passengerCount === 1) {
+                    priceDescription.textContent = 'Total for 1 passenger';
+                } else {
+                    priceDescription.innerHTML = `Total for ${passengerCount} passengers<br><small class="text-gray-500">(KSh ${samplePricePerPassenger.toLocaleString()} per passenger)</small>`;
+                }
                 priceDisplay.classList.remove('hidden');
             }
         } else {

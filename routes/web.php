@@ -110,6 +110,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/confirm-password', [AdminConfirmablePasswordController::class, 'store']);
         
         // ===================================
+        // Settings Management
+        // ===================================
+        Route::prefix('settings')->name('settings.')->group(function () {
+            // Logo Management
+            Route::get('logo', [App\Http\Controllers\Admin\Settings\LogoController::class, 'index'])
+                ->name('logo.index');
+            Route::post('logo/upload', [App\Http\Controllers\Admin\Settings\LogoController::class, 'upload'])
+                ->name('logo.upload');
+            Route::delete('logo/delete', [App\Http\Controllers\Admin\Settings\LogoController::class, 'delete'])
+                ->name('logo.delete');
+        });
+        
+        // ===================================
         // Transportation Services Management
         // ===================================
         Route::prefix('transportation')->name('transportation.')->group(function () {

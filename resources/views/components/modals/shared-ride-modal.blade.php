@@ -113,6 +113,9 @@
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
                                     </select>
                                 </div>
                             </div>
@@ -136,7 +139,7 @@
                                         <span class="text-sm text-gray-700">Estimated:</span>
                                         <span id="price-amount" class="text-xl font-bold text-orange-600"></span>
                                     </div>
-                                    <p class="text-xs text-gray-600 mt-1">Per passenger</p>
+                                    <p id="price-description" class="text-xs text-gray-600 mt-1">Total for 1 passenger</p>
                                 </div>
                             </div>
                         </div>
