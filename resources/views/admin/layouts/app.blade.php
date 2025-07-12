@@ -35,8 +35,30 @@
         </header>
         @endif
 
+        <!-- Breadcrumbs (optional) -->
+        @if(isset($breadcrumbs))
+        <div class="bg-gray-50 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex py-3" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2">
+                        @foreach($breadcrumbs as $breadcrumb)
+                            @if($loop->last)
+                                <li class="text-sm text-gray-500">{{ $breadcrumb['label'] }}</li>
+                            @else
+                                <li>
+                                    <a href="{{ $breadcrumb['url'] }}" class="text-sm text-gray-500 hover:text-gray-700">{{ $breadcrumb['label'] }}</a>
+                                    <span class="mx-2 text-gray-400">/</span>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        @endif
+
         <!-- Page Content -->
-        <main>
+        <main id="main-content">
             @yield('content')
         </main>
     </div>
