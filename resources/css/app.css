@@ -113,4 +113,31 @@
     nav a:hover::before {
         left: 0;
     }
+    
+    /* Service Card Interactive Styles */
+    .service-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .service-card.active {
+        @apply bg-brown-custom text-white transform scale-105 shadow-2xl;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px rgba(139, 69, 19, 0.3);
+    }
+    
+    .service-card.active .bg-brown-custom\/20,
+    .service-card.active .bg-green-500\/20,
+    .service-card.active .bg-blue-500\/20,
+    .service-card.active .bg-teal-500\/20,
+    .service-card.active .bg-orange-500\/20 {
+        @apply bg-white/20;
+    }
+    
+    .service-card:hover:not(.active) {
+        @apply transform scale-105 shadow-2xl bg-gray-50;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .service-card-transition {
+        will-change: transform, box-shadow, background-color;
+    }
 }

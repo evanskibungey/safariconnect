@@ -115,32 +115,135 @@
         });
     }
     
-    // Update active card styling
+    // Update active card styling with improved visual feedback
     function updateActiveCard(activeCardId) {
         // Reset all cards
         resetCardStyling();
         
-        // Highlight active card
+        // Highlight active card with smooth animation
         const activeCard = document.getElementById(activeCardId);
         if (activeCard) {
-            activeCard.classList.remove('bg-white', 'text-gray-800');
-            activeCard.classList.add('bg-brown-custom', 'text-white');
+            // Add selection animation
+            activeCard.classList.add('selecting');
+            
+            setTimeout(() => {
+                // Remove default styling
+                activeCard.classList.remove('bg-white', 'border-gray-200', 'text-gray-800');
+                
+                // Add selected styling
+                activeCard.classList.add('service-card-selected');
+                
+                // Update background and border
+                activeCard.style.background = 'linear-gradient(135deg, #8B4513 0%, #d97706 100%)';
+                activeCard.style.borderColor = '#8B4513';
+                activeCard.style.color = 'white';
+                
+                // Update text colors for better readability
+                const title = activeCard.querySelector('h3');
+                const description = activeCard.querySelector('p');
+                const badge = activeCard.querySelector('.inline-flex');
+                
+                if (title) title.style.color = 'white';
+                if (description) description.style.color = 'rgba(255, 255, 255, 0.9)';
+                if (badge) {
+                    badge.style.background = 'rgba(255, 255, 255, 0.2)';
+                    badge.style.color = 'white';
+                    badge.style.backdropFilter = 'blur(10px)';
+                }
+                
+                // Add selection indicator if it doesn't exist
+                if (!activeCard.querySelector('.selection-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'selection-indicator absolute -top-2 -right-2 w-6 h-6 bg-orange-custom rounded-full flex items-center justify-center shadow-lg';
+                    indicator.innerHTML = `
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    `;
+                    activeCard.appendChild(indicator);
+                }
+                
+                // Remove animation class
+                activeCard.classList.remove('selecting');
+            }, 100);
         }
     }
     
-    // Reset card styling
+    // Reset card styling to default state
     function resetCardStyling() {
-        const allCards = document.querySelectorAll('[id$="-card"]');
+        const allCards = document.querySelectorAll('.service-card');
         allCards.forEach(card => {
-            if (card.id === 'shared-ride-card') {
-                // Shared ride card is default active
-                card.classList.remove('bg-white', 'text-gray-800');
-                card.classList.add('bg-brown-custom', 'text-white');
-            } else {
-                card.classList.remove('bg-brown-custom', 'text-white');
-                card.classList.add('bg-white', 'text-gray-800');
+            // Remove all selection classes
+            card.classList.remove('service-card-selected', 'selecting');
+            
+            // Reset to default styling
+            card.classList.add('bg-white', 'border-gray-200', 'text-gray-800');
+            
+            // Reset inline styles
+            card.style.background = '';
+            card.style.borderColor = '';
+            card.style.color = '';
+            card.style.transform = '';
+            card.style.boxShadow = '';
+            
+            // Reset text colors
+            const title = card.querySelector('h3');
+            const description = card.querySelector('p');
+            const badge = card.querySelector('.inline-flex');
+            
+            if (title) title.style.color = '';
+            if (description) description.style.color = '';
+            if (badge) {
+                badge.style.background = '';
+                badge.style.color = '';
+                badge.style.backdropFilter = '';
+            }
+            
+            // Remove selection indicator
+            const indicator = card.querySelector('.selection-indicator');
+            if (indicator) {
+                indicator.remove();
             }
         });
+        
+        // Set Solo Ride as default selected
+        const soloRideCard = document.getElementById('solo-ride-card');
+        if (soloRideCard) {
+            soloRideCard.classList.remove('bg-white', 'border-gray-200', 'text-gray-800');
+            soloRideCard.classList.add('service-card-selected');
+            
+            // Apply selected styling
+            soloRideCard.style.background = 'linear-gradient(135deg, #8B4513 0%, #d97706 100%)';
+            soloRideCard.style.borderColor = '#8B4513';
+            soloRideCard.style.color = 'white';
+            soloRideCard.style.transform = 'scale(1.02) translateY(-4px)';
+            soloRideCard.style.boxShadow = '0 12px 30px rgba(139, 69, 19, 0.3)';
+            
+            // Update text colors
+            const title = soloRideCard.querySelector('h3');
+            const description = soloRideCard.querySelector('p');
+            const badge = soloRideCard.querySelector('.inline-flex');
+            
+            if (title) title.style.color = 'white';
+            if (description) description.style.color = 'rgba(255, 255, 255, 0.9)';
+            if (badge) {
+                badge.style.background = 'rgba(255, 255, 255, 0.2)';
+                badge.style.color = 'white';
+                badge.style.backdropFilter = 'blur(10px)';
+            }
+            
+            // Add selection indicator
+            if (!soloRideCard.querySelector('.selection-indicator')) {
+                const indicator = document.createElement('div');
+                indicator.className = 'selection-indicator absolute -top-2 -right-2 w-6 h-6 bg-orange-custom rounded-full flex items-center justify-center shadow-lg';
+                indicator.innerHTML = `
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                `;
+                soloRideCard.appendChild(indicator);
+            }
+        }
     }
     
     // Event listeners for success modal
@@ -2216,5 +2319,72 @@
         dateInputs.forEach(input => {
             input.min = today;
         });
+        
+        // Initialize service cards with proper styling
+        initializeServiceCards();
     });
+    
+    // Initialize service cards with improved interaction and Solo Ride as default
+    function initializeServiceCards() {
+        // Set up initial state
+        resetCardStyling();
+        
+        // Add enhanced click handlers for all service cards
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach(card => {
+            // Add click handler
+            card.addEventListener('click', handleCardClick);
+            
+            // Add keyboard accessibility
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            card.setAttribute('aria-pressed', card.id === 'solo-ride-card' ? 'true' : 'false');
+            
+            // Handle keyboard navigation
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick.call(this, e);
+                }
+            });
+        });
+    }
+    
+    // Enhanced card click handler
+    function handleCardClick(e) {
+        e.preventDefault();
+        
+        // Prevent double-clicking the already selected card
+        if (this.classList.contains('service-card-selected')) {
+            return;
+        }
+        
+        // Add visual feedback
+        this.style.transform = 'scale(0.98)';
+        
+        setTimeout(() => {
+            // Update aria-pressed for all cards
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.setAttribute('aria-pressed', 'false');
+            });
+            this.setAttribute('aria-pressed', 'true');
+            
+            // Update active card
+            updateActiveCard(this.id);
+            
+            // Reset transform
+            this.style.transform = '';
+        }, 100);
+    }
+    
+    // Add a function to ensure brand colors are properly loaded
+    function ensureBrandColors() {
+        // Add CSS custom properties for brand colors if not already defined
+        const root = document.documentElement;
+        root.style.setProperty('--orange-custom', '#FF6B35');
+        root.style.setProperty('--brown-custom', '#8B4513');
+    }
+    
+    // Call on page load
+    ensureBrandColors();
 </script>

@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             <!-- Form Header -->
-            <div class="bg-gradient-to-r from-orange-600 to-red-700 px-6 py-4">
+            <div class="bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
@@ -53,7 +53,7 @@
                                         Pickup City <span class="text-red-500">*</span>
                                     </label>
                                     <select id="parcel_pickup_city" name="pickup_city_id"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 bg-white"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                         required>
                                         <option value="">Select pickup city</option>
                                     </select>
@@ -212,7 +212,7 @@
                                             Sender Name <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text" id="parcel_customer_name" name="customer_name"
-                                            class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                                            class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                             required>
                                     </div>
 
@@ -267,7 +267,7 @@
                                             Recipient Name <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text" id="recipient_name" name="recipient_name"
-                                            class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                                            class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                             required>
                                     </div>
 
@@ -349,7 +349,7 @@
                                     Additional Notes (Optional)
                                 </label>
                                 <textarea id="special_instructions" name="special_instructions" rows="4"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 resize-none"
                                     placeholder="Any special handling or delivery instructions..."></textarea>
                             </div>
 
@@ -411,7 +411,7 @@
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-8 py-3 bg-gradient-to-r from-orange-600 via-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:via-red-700 hover:to-orange-600 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
+                        class="px-8 py-3 bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom text-white rounded-lg hover:from-amber-700 hover:via-brown-custom hover:to-amber-700 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
                         <span class="flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             <!-- Form Header -->
-            <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 px-6 py-4">
+            <div class="bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
@@ -35,8 +35,8 @@
                     <!-- Column 1: Trip Details -->
                     <div class="bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl p-5 border border-gray-200 shadow-md">
                         <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <div class="p-2 bg-orange-100 rounded-lg mr-2 border border-orange-200">
-                                <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="p-2 bg-red-100 rounded-lg mr-2 border border-red-200">
+                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path
                                         d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z">
                                     </path>
@@ -52,7 +52,7 @@
                                         Pickup City <span class="text-red-500">*</span>
                                     </label>
                                     <select id="pickup_city" name="pickup_city_id"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 bg-white"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                         required>
                                         <option value="">Select city</option>
                                     </select>
@@ -63,7 +63,7 @@
                                         Drop-off City <span class="text-red-500">*</span>
                                     </label>
                                     <select id="dropoff_city" name="dropoff_city_id"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 bg-white"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                         required>
                                         <option value="">Select city</option>
                                     </select>
@@ -76,7 +76,7 @@
                                         Travel Date <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" id="travel_date" name="travel_date"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required min="{{ date('Y-m-d') }}">
                                 </div>
 
@@ -85,7 +85,7 @@
                                         Time <span class="text-red-500">*</span>
                                     </label>
                                     <input type="time" id="travel_time" name="travel_time"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required>
                                 </div>
 
@@ -94,7 +94,7 @@
                                         Passengers <span class="text-red-500">*</span>
                                     </label>
                                     <select id="passengers" name="passengers"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 bg-white"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                         required>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
@@ -131,10 +131,10 @@
                     </div>
 
                     <!-- Column 2: Contact Information -->
-                    <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-200 shadow-md">
+                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-5 border border-red-200 shadow-md">
                         <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <div class="p-2 bg-amber-100 rounded-lg mr-2 border border-amber-200">
-                                <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="p-2 bg-red-100 rounded-lg mr-2 border border-red-200">
+                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                         clip-rule="evenodd"></path>
                                 </svg>
@@ -148,7 +148,7 @@
                                     Full Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="customer_name" name="customer_name"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     required>
                             </div>
 
@@ -157,10 +157,10 @@
                                     Email Address <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" id="customer_email" name="customer_email"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     required>
                                 <p class="text-xs text-gray-500 mt-1 flex items-center">
-                                    <svg class="w-3 h-3 mr-1 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                             clip-rule="evenodd"></path>
@@ -174,7 +174,7 @@
                                     Phone Number <span class="text-red-500">*</span>
                                 </label>
                                 <input type="tel" id="customer_phone" name="customer_phone"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     placeholder="+254 7XX XXX XXX" required>
                             </div>
                         </div>
@@ -264,7 +264,7 @@
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-8 py-3 bg-gradient-to-r from-orange-600 via-amber-600 to-red-500 text-white rounded-lg hover:from-red-500 hover:via-amber-600 hover:to-orange-600 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
+                        class="px-8 py-3 bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom text-white rounded-lg hover:from-amber-700 hover:via-brown-custom hover:to-amber-700 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
                         <span class="flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

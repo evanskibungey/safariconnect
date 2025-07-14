@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             <!-- Form Header -->
-            <div class="bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-4">
+            <div class="bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
@@ -38,8 +38,8 @@
                     <!-- Column 1: Vehicle & Rental Details -->
                     <div class="bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl p-5 border border-gray-200 shadow-md">
                         <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <div class="p-2 bg-teal-100 rounded-lg mr-2 border border-teal-200">
-                                <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="p-2 bg-amber-100 rounded-lg mr-2 border border-amber-200">
+                                <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path
                                         d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
                                     </path>
@@ -57,12 +57,12 @@
                                     Vehicle Type <span class="text-red-500">*</span>
                                 </label>
                                 <select id="car_hire_vehicle_type" name="vehicle_type_id"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 bg-white"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                     required>
                                     <option value="">Select vehicle type</option>
                                 </select>
                                 <p class="text-xs text-gray-500 mt-1 flex items-center">
-                                    <svg class="w-3 h-3 mr-1 text-teal-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 mr-1 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                             clip-rule="evenodd"></path>
@@ -76,7 +76,7 @@
                                     Pickup Location <span class="text-red-500">*</span>
                                 </label>
                                 <select id="pickup_location" name="pickup_city_id"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 bg-white"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 bg-white"
                                     required>
                                     <option value="">Select pickup location</option>
                                 </select>
@@ -88,7 +88,7 @@
                                         Start Date <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" id="hire_start_date" name="hire_start_date"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required min="{{ date('Y-m-d') }}">
                                 </div>
 
@@ -97,7 +97,7 @@
                                         End Date <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" id="hire_end_date" name="hire_end_date"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required>
                                 </div>
                             </div>
@@ -107,36 +107,36 @@
                                     Pickup Time <span class="text-red-500">*</span>
                                 </label>
                                 <input type="time" id="pickup_time" name="pickup_time"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     required>
                             </div>
 
                             <!-- Price Display -->
                             <div id="car-hire-price-display" class="hidden">
-                                <div class="bg-gradient-to-br from-teal-50 via-cyan-50 to-teal-50 border border-teal-200 rounded-lg p-4">
+                                <div class="bg-gradient-to-br from-orange-50 via-red-50 to-orange-50 border border-orange-200 rounded-lg p-4">
                                     <div class="flex items-center mb-3">
-                                        <div class="p-2 bg-teal-100 rounded mr-2 border border-teal-200">
-                                            <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <div class="p-2 bg-orange-100 rounded mr-2 border border-orange-200">
+                                            <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                                 <path
                                                     d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z">
                                                 </path>
                                             </svg>
                                         </div>
-                                        <h5 class="text-sm font-bold text-teal-800">Rental Pricing</h5>
+                                        <h5 class="text-sm font-bold text-orange-800">Rental Pricing</h5>
                                     </div>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between">
                                             <span class="text-gray-600">Per day:</span>
-                                            <span id="car-hire-price-per-day" class="font-semibold text-teal-600"></span>
+                                            <span id="car-hire-price-per-day" class="font-semibold text-orange-600"></span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-600">Duration:</span>
                                             <span id="car-hire-duration" class="text-gray-700"></span>
                                         </div>
-                                        <div class="border-t border-teal-200 pt-2 mt-2">
+                                        <div class="border-t border-orange-200 pt-2 mt-2">
                                             <div class="flex justify-between items-center">
                                                 <span class="text-sm font-medium text-gray-700">Total:</span>
-                                                <span id="car-hire-total-price" class="text-xl font-bold text-teal-600"></span>
+                                                <span id="car-hire-total-price" class="text-xl font-bold text-orange-600"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -146,10 +146,10 @@
                     </div>
 
                     <!-- Column 2: Contact & Driver Information -->
-                    <div class="bg-gradient-to-br from-cyan-50 to-teal-50 rounded-xl p-5 border border-cyan-200 shadow-md">
+                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-5 border border-red-200 shadow-md">
                         <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <div class="p-2 bg-cyan-100 rounded-lg mr-2 border border-cyan-200">
-                                <svg class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="p-2 bg-red-100 rounded-lg mr-2 border border-red-200">
+                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                         clip-rule="evenodd"></path>
                                 </svg>
@@ -163,7 +163,7 @@
                                     Full Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="car_hire_customer_name" name="customer_name"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     required>
                             </div>
 
@@ -172,10 +172,10 @@
                                     Email Address <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" id="car_hire_customer_email" name="customer_email"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     required>
                                 <p class="text-xs text-gray-500 mt-1 flex items-center">
-                                    <svg class="w-3 h-3 mr-1 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                             clip-rule="evenodd"></path>
@@ -189,7 +189,7 @@
                                     Phone Number <span class="text-red-500">*</span>
                                 </label>
                                 <input type="tel" id="car_hire_customer_phone" name="customer_phone"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     placeholder="+254 7XX XXX XXX" required>
                             </div>
 
@@ -198,7 +198,7 @@
                                     Driver's License <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="drivers_license_number" name="drivers_license_number"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                     placeholder="License number" required>
                                 <p class="text-xs text-gray-500 mt-1 flex items-center">
                                     <svg class="w-3 h-3 mr-1 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
@@ -215,7 +215,7 @@
                                     Special Requirements (Optional)
                                 </label>
                                 <textarea id="car_hire_special_requirements" name="special_requirements" rows="3"
-                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 resize-none"
+                                    class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200 resize-none"
                                     placeholder="Any special requests or requirements..."></textarea>
                             </div>
                         </div>
@@ -224,10 +224,10 @@
                     <!-- Column 3: Account Setup & Benefits -->
                     <div class="space-y-5">
                         <!-- Password Section -->
-                        <div class="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-5 border border-teal-200 shadow-md">
+                        <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-5 border border-pink-200 shadow-md">
                             <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <div class="p-2 bg-teal-100 rounded-lg mr-2 border border-teal-200">
-                                    <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="p-2 bg-pink-100 rounded-lg mr-2 border border-pink-200">
+                                    <svg class="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
                                             clip-rule="evenodd"></path>
@@ -242,7 +242,7 @@
                                         Password <span class="text-red-500">*</span>
                                     </label>
                                     <input type="password" id="car_hire_password" name="password"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required minlength="4">
                                     <p class="text-xs text-gray-500 mt-1">Minimum 4 characters</p>
                                 </div>
@@ -252,7 +252,7 @@
                                         Confirm Password <span class="text-red-500">*</span>
                                     </label>
                                     <input type="password" id="car_hire_password_confirmation" name="password_confirmation"
-                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                                        class="w-full px-3 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-custom focus:border-brown-custom transition-all duration-200"
                                         required minlength="4">
                                     <p class="text-xs text-gray-500 mt-1">Re-enter password</p>
                                 </div>
@@ -260,10 +260,10 @@
                         </div>
 
                         <!-- Car Hire Benefits -->
-                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200 shadow-md">
+                        <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-5 border border-orange-200 shadow-md">
                             <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <div class="p-2 bg-blue-100 rounded-lg mr-2 border border-blue-200">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="p-2 bg-orange-100 rounded-lg mr-2 border border-orange-200">
+                                    <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                             clip-rule="evenodd"></path>
@@ -316,8 +316,8 @@
                             </ul>
 
                             <!-- Terms Notice -->
-                            <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                                <p class="text-xs text-amber-800 flex items-center">
+                            <div class="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                <p class="text-xs text-orange-800 flex items-center">
                                     <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -337,7 +337,7 @@
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-8 py-3 bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-700 text-white rounded-lg hover:from-teal-700 hover:via-cyan-700 hover:to-teal-800 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
+                        class="px-8 py-3 bg-gradient-to-r from-brown-custom via-amber-700 to-brown-custom text-white rounded-lg hover:from-amber-700 hover:via-brown-custom hover:to-amber-700 transition-all duration-200 transform hover:scale-105 shadow-md font-medium text-sm">
                         <span class="flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

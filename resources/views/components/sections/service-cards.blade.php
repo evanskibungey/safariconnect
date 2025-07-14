@@ -1,100 +1,328 @@
-<!-- Service Cards Section -->
+{{-- Service Cards Section --}}
 <section id="service-cards" class="relative -mt-16 z-30 pb-16">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap justify-center gap-4 lg:gap-6">
-            <!-- Share Ride Card - Active -->
-            <div
-                id="shared-ride-card"
-                class="group bg-brown-custom text-white px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl min-w-0 flex-shrink-0 service-card-transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
-                            </path>
-                            <path
-                                d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z">
-                            </path>
-                        </svg>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Service Cards Grid --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
+            {{-- Share Ride Card --}}
+            <div id="shared-ride-card"
+                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                <div class="text-center">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🚗</span>
                     </div>
-                    <h3 class="font-bold text-lg whitespace-nowrap">Share Ride</h3>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                        Share Ride
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
+                        Split costs and travel together. Perfect for budget-friendly journeys with fellow travelers.
+                    </p>
+                    <div class="flex items-center justify-center">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                            💰 Budget-friendly
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Solo Ride Card -->
-            <div
-                id="solo-ride-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-all">
-                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5z"></path>
-                        </svg>
+            {{-- Solo Ride Card (Default Selected) --}}
+            <div id="solo-ride-card"
+                class="service-card service-card-selected group bg-gradient-to-br from-brown-custom to-amber-700 border-2 border-brown-custom text-white p-6 rounded-2xl shadow-lg cursor-pointer transition-all duration-300 transform scale-[1.02] -translate-y-1 relative">
+                <div class="text-center">
+                    <div class="icon-container w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
+                        <span class="text-2xl">🚙</span>
                     </div>
-                    <h3 class="font-bold text-lg whitespace-nowrap">Solo Ride</h3>
+                    <h3 class="font-bold text-xl mb-3 text-white transition-colors duration-300">
+                        Private Ride
+                    </h3>
+                    <p class="text-sm text-white/90 leading-relaxed mb-4 transition-colors duration-300">
+                        Your own private vehicle with professional driver. Comfort and privacy guaranteed.
+                    </p>
+                    <div class="flex items-center justify-center">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm transition-all duration-300">
+                            ⭐ Premium
+                        </span>
+                    </div>
+                </div>
+                {{-- Selection Indicator --}}
+                <div class="selection-indicator absolute -top-2 -right-2 w-6 h-6 bg-orange-custom rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
                 </div>
             </div>
 
-            <!-- Airport Card -->
-            <div
-                id="airport-transfer-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:bg-blue-500/30 transition-all">
-                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 018 8v2a2 2 0 01-2 2h-2.28l-.9-2.7c-.16-.48-.61-.8-1.13-.8H8.31c-.52 0-.97.32-1.13.8L6.28 14H4a2 2 0 01-2-2v-2a8 8 0 018-8zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z">
-                            </path>
-                        </svg>
+            {{-- Airport Transfer Card --}}
+            <div id="airport-transfer-card"
+                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                <div class="text-center">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">✈️</span>
                     </div>
-                    <h3 class="font-bold text-lg whitespace-nowrap">Airport</h3>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                        Airport Transfer
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
+                        Reliable airport pickups and drop-offs. Never miss a flight with our punctual service.
+                    </p>
+                    <div class="flex items-center justify-center">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                            🕐 On-time
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Car Hire Card -->
-            <div
-                id="car-hire-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-teal-500/20 rounded-full flex items-center justify-center group-hover:bg-teal-500/30 transition-all">
-                        <svg class="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
-                            </path>
-                            <path
-                                d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z">
-                            </path>
-                        </svg>
+            {{-- Car Hire Card --}}
+            <div id="car-hire-card"
+                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                <div class="text-center">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🚐</span>
                     </div>
-                    <h3 class="font-bold text-lg whitespace-nowrap">Car Hire</h3>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                        Car Hire
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
+                        Rent a vehicle for your convenience. Perfect for extended trips and personal mobility.
+                    </p>
+                    <div class="flex items-center justify-center">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                            🗓️ Flexible
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Parcel Card -->
-            <div
-                id="parcel-delivery-card"
-                class="group bg-white text-gray-800 px-6 py-4 rounded-2xl shadow-xl cursor-pointer transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-50 min-w-0 flex-shrink-0 service-card-transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center group-hover:bg-orange-500/30 transition-all">
-                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z">
-                            </path>
-                        </svg>
+            {{-- Parcel Delivery Card --}}
+            <div id="parcel-delivery-card"
+                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                <div class="text-center">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">📦</span>
                     </div>
-                    <h3 class="font-bold text-lg whitespace-nowrap">Parcel</h3>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                        Parcel Delivery
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
+                        Fast and secure package delivery. Send your items safely to any destination.
+                    </p>
+                    <div class="flex items-center justify-center">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                            🚀 Fast
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Dynamic Forms Area -->
+    {{-- Dynamic Forms Area --}}
     <div id="dynamic-forms-area" class="mt-8">
-        <!-- Forms will be dynamically inserted here -->
+        {{-- Forms will be dynamically inserted here --}}
     </div>
 </section>
+
+{{-- Enhanced Custom Styles for Service Cards --}}
+<style>
+/* Service Card States */
+.service-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 107, 53, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+/* Selected State */
+.service-card-selected {
+    position: relative;
+    box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3) !important;
+    background: linear-gradient(135deg, #8B4513 0%, #d97706 100%) !important;
+    border-color: #8B4513 !important;
+    color: white !important;
+    transform: scale(1.02) translateY(-4px) !important;
+}
+
+.service-card-selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Default unselected state styling */
+.service-card:not(.service-card-selected) {
+    background: white;
+    border: 2px solid #e5e7eb;
+    color: #374151;
+}
+
+/* Hover effects for unselected cards */
+.service-card:not(.service-card-selected):hover {
+    border-color: #FF6B35;
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.15);
+}
+
+/* Ensure readability in selected state */
+.service-card-selected h3,
+.service-card-selected p {
+    color: white !important;
+}
+
+.service-card-selected .inline-flex {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Animation for selection */
+.service-card.selecting {
+    animation: selectCard 0.4s ease-out forwards;
+}
+
+@keyframes selectCard {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1.02) translateY(-4px);
+    }
+}
+
+/* Improved icon containers */
+.service-card .icon-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-card:hover .icon-container {
+    transform: scale(1.1) rotate(2deg);
+}
+
+.service-card-selected .icon-container {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Professional typography */
+.service-card h3 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+}
+
+.service-card p {
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+    .service-card {
+        padding: 1.25rem;
+    }
+    
+    .service-card h3 {
+        font-size: 1.125rem;
+    }
+    
+    .service-card p {
+        font-size: 0.875rem;
+    }
+}
+
+/* Focus states for accessibility */
+.service-card:focus {
+    outline: 2px solid #FF6B35;
+    outline-offset: 2px;
+}
+
+/* Selection indicator animation */
+.service-card-selected .selection-indicator {
+    animation: checkmarkPop 0.4s ease-out 0.2s both;
+}
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    80% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Ensure orange-custom color is available */
+.border-orange-custom {
+    border-color: #FF6B35;
+}
+
+.hover\:border-orange-custom:hover {
+    border-color: #FF6B35;
+}
+
+.text-orange-custom {
+    color: #FF6B35;
+}
+
+.group:hover .group-hover\:text-orange-custom {
+    color: #FF6B35;
+}
+
+.bg-orange-custom {
+    background-color: #FF6B35;
+}
+
+.group-hover\:from-orange-custom:hover {
+    --tw-gradient-from: #FF6B35;
+}
+
+.group-hover\:to-orange-600:hover {
+    --tw-gradient-to: #ea580c;
+}
+
+.group-hover\:bg-orange-100:hover {
+    background-color: #fed7aa;
+}
+
+.group-hover\:text-orange-800:hover {
+    color: #9a3412;
+}
+
+/* Brown custom colors */
+.bg-brown-custom {
+    background-color: #8B4513;
+}
+
+.border-brown-custom {
+    border-color: #8B4513;
+}
+
+.from-brown-custom {
+    --tw-gradient-from: #8B4513;
+}
+</style>
