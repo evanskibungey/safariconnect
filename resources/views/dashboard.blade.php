@@ -76,6 +76,9 @@
             </div>
             @endif
 
+            <!-- Quick Booking for Authenticated Users -->
+            @include('components.dashboard.quick-booking')
+
             <!-- Account Summary -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Total Bookings Card -->

@@ -33,6 +33,9 @@
 
     @include('components.partials.scripts-enhanced')
     
+    <!-- Booking Form Enhancement for Authenticated Users -->
+    <script src="{{ asset('js/booking-form-enhancement.js') }}"></script>
+    
     <!-- Temporary debug script - remove after testing -->
     <script src="{{ asset('js/carousel-debug.js') }}"></script>
 

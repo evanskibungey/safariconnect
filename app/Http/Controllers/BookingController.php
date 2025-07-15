@@ -20,6 +20,96 @@ use Illuminate\Auth\Events\Registered;
 class BookingController extends Controller
 {
     /**
+     * Handle user authentication/registration for booking
+     */
+    protected function handleUserForBooking(Request $request)
+    {
+        $user = null;
+        $accountCreated = false;
+        
+        // If user is already authenticated, use the authenticated user
+        if (Auth::check()) {
+            $user = Auth::user();
+            
+            // Update user info if they've changed their name or phone
+            $user->update([
+                'name' => $request->customer_name,
+                'phone' => $request->customer_phone,
+            ]);
+            
+            Log::info('Authenticated user making booking', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+        } else {
+            // Check if user already exists
+            $existingUser = User::where('email', $request->customer_email)->first();
+            
+            if ($existingUser) {
+                // User exists - verify the password matches
+                if (!Hash::check($request->password, $existingUser->password)) {
+                    throw new \Exception('password_mismatch');
+                }
+                
+                // Update user info if they've changed their name or phone
+                $existingUser->update([
+                    'name' => $request->customer_name,
+                    'phone' => $request->customer_phone,
+                ]);
+                
+                $user = $existingUser;
+                
+                Log::info('Existing user logged in during booking', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            } else {
+                // Create new user account
+                $user = User::create([
+                    'name' => $request->customer_name,
+                    'email' => $request->customer_email,
+                    'phone' => $request->customer_phone,
+                    'password' => Hash::make($request->password),
+                ]);
+                
+                $accountCreated = true;
+                
+                // Fire the registered event
+                event(new Registered($user));
+                
+                Log::info('New user account created during booking', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->name
+                ]);
+            }
+            
+            // Authenticate the user
+            Auth::login($user);
+        }
+        
+        return [$user, $accountCreated];
+    }
+
+    /**
+     * Get base validation rules for booking (without password for authenticated users)
+     */
+    protected function getBookingValidationRules($additionalRules = [])
+    {
+        $baseRules = [
+            'customer_name' => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'customer_phone' => 'required|string|max:20',
+        ];
+
+        // Add password validation only if user is not authenticated
+        if (!Auth::check()) {
+            $baseRules['password'] = 'required|string|min:4|confirmed';
+        }
+
+        return array_merge($baseRules, $additionalRules);
+    }
+    /**
      * Get all active cities for dropdown
      */
     public function getCities()
@@ -175,7 +265,8 @@ class BookingController extends Controller
     public function bookSharedRide(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Base validation rules
+            $rules = [
                 'pickup_city_id' => 'required|exists:cities,id',
                 'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
                 'travel_date' => 'required|date|after_or_equal:today',
@@ -184,8 +275,14 @@ class BookingController extends Controller
                 'customer_name' => 'required|string|max:255',
                 'customer_email' => 'required|email|max:255',
                 'customer_phone' => 'required|string|max:20',
-                'password' => 'required|string|min:4|confirmed',
-            ]);
+            ];
+
+            // Add password validation only if user is not authenticated
+            if (!Auth::check()) {
+                $rules['password'] = 'required|string|min:4|confirmed';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
@@ -195,61 +292,77 @@ class BookingController extends Controller
             $user = null;
             $accountCreated = false;
             
-            // Check if user already exists
-            $existingUser = User::where('email', $request->customer_email)->first();
-            
-            if ($existingUser) {
-                // User exists - verify the password matches
-                if (!Hash::check($request->password, $existingUser->password)) {
-                    return response()->json([
-                        'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
-                        'errors' => [
-                            'customer_email' => ['An account with this email already exists.'],
-                            'password' => ['Please enter your existing account password.']
-                        ]
-                    ], 422);
-                }
+            // If user is already authenticated, use the authenticated user
+            if (Auth::check()) {
+                $user = Auth::user();
                 
                 // Update user info if they've changed their name or phone
-                $existingUser->update([
+                $user->update([
                     'name' => $request->customer_name,
                     'phone' => $request->customer_phone,
                 ]);
                 
-                $user = $existingUser;
-                
-                Log::info('Existing user logged in during booking', [
+                Log::info('Authenticated user making booking', [
                     'user_id' => $user->id,
                     'email' => $user->email
                 ]);
             } else {
-                // Create new user account
-                try {
-                    $user = User::create([
+                // Check if user already exists
+                $existingUser = User::where('email', $request->customer_email)->first();
+                
+                if ($existingUser) {
+                    // User exists - verify the password matches
+                    if (!Hash::check($request->password, $existingUser->password)) {
+                        return response()->json([
+                            'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
+                            'errors' => [
+                                'customer_email' => ['An account with this email already exists.'],
+                                'password' => ['Please enter your existing account password.']
+                            ]
+                        ], 422);
+                    }
+                    
+                    // Update user info if they've changed their name or phone
+                    $existingUser->update([
                         'name' => $request->customer_name,
-                        'email' => $request->customer_email,
                         'phone' => $request->customer_phone,
-                        'password' => Hash::make($request->password),
                     ]);
                     
-                    $accountCreated = true;
+                    $user = $existingUser;
                     
-                    // Fire the registered event
-                    event(new Registered($user));
-                    
-                    Log::info('New user account created during booking', [
+                    Log::info('Existing user logged in during booking', [
                         'user_id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
+                        'email' => $user->email
                     ]);
-                } catch (\Exception $e) {
-                    Log::error('Error creating user account during booking: ' . $e->getMessage());
-                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                } else {
+                    // Create new user account
+                    try {
+                        $user = User::create([
+                            'name' => $request->customer_name,
+                            'email' => $request->customer_email,
+                            'phone' => $request->customer_phone,
+                            'password' => Hash::make($request->password),
+                        ]);
+                        
+                        $accountCreated = true;
+                        
+                        // Fire the registered event
+                        event(new Registered($user));
+                        
+                        Log::info('New user account created during booking', [
+                            'user_id' => $user->id,
+                            'email' => $user->email,
+                            'name' => $user->name
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Error creating user account during booking: ' . $e->getMessage());
+                        return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                    }
                 }
+                
+                // Authenticate the user
+                Auth::login($user);
             }
-            
-            // Authenticate the user
-            Auth::login($user);
 
             // Get shared ride service
             $sharedRideService = TransportationService::where('service_type', 'shared_ride')
@@ -448,7 +561,8 @@ class BookingController extends Controller
     public function bookSoloRide(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Base validation rules
+            $rules = [
                 'pickup_city_id' => 'required|exists:cities,id',
                 'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
                 'vehicle_type_id' => 'required|exists:vehicle_types,id',
@@ -458,9 +572,15 @@ class BookingController extends Controller
                 'customer_name' => 'required|string|max:255',
                 'customer_email' => 'required|email|max:255',
                 'customer_phone' => 'required|string|max:20',
-                'password' => 'required|string|min:4|confirmed',
                 'special_requirements' => 'nullable|string|max:1000',
-            ]);
+            ];
+
+            // Add password validation only if user is not authenticated
+            if (!Auth::check()) {
+                $rules['password'] = 'required|string|min:4|confirmed';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
@@ -470,61 +590,77 @@ class BookingController extends Controller
             $user = null;
             $accountCreated = false;
             
-            // Check if user already exists
-            $existingUser = User::where('email', $request->customer_email)->first();
-            
-            if ($existingUser) {
-                // User exists - verify the password matches
-                if (!Hash::check($request->password, $existingUser->password)) {
-                    return response()->json([
-                        'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
-                        'errors' => [
-                            'customer_email' => ['An account with this email already exists.'],
-                            'password' => ['Please enter your existing account password.']
-                        ]
-                    ], 422);
-                }
+            // If user is already authenticated, use the authenticated user
+            if (Auth::check()) {
+                $user = Auth::user();
                 
                 // Update user info if they've changed their name or phone
-                $existingUser->update([
+                $user->update([
                     'name' => $request->customer_name,
                     'phone' => $request->customer_phone,
                 ]);
                 
-                $user = $existingUser;
-                
-                Log::info('Existing user logged in during solo ride booking', [
+                Log::info('Authenticated user making solo ride booking', [
                     'user_id' => $user->id,
                     'email' => $user->email
                 ]);
             } else {
-                // Create new user account
-                try {
-                    $user = User::create([
+                // Check if user already exists
+                $existingUser = User::where('email', $request->customer_email)->first();
+                
+                if ($existingUser) {
+                    // User exists - verify the password matches
+                    if (!Hash::check($request->password, $existingUser->password)) {
+                        return response()->json([
+                            'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
+                            'errors' => [
+                                'customer_email' => ['An account with this email already exists.'],
+                                'password' => ['Please enter your existing account password.']
+                            ]
+                        ], 422);
+                    }
+                    
+                    // Update user info if they've changed their name or phone
+                    $existingUser->update([
                         'name' => $request->customer_name,
-                        'email' => $request->customer_email,
                         'phone' => $request->customer_phone,
-                        'password' => Hash::make($request->password),
                     ]);
                     
-                    $accountCreated = true;
+                    $user = $existingUser;
                     
-                    // Fire the registered event
-                    event(new Registered($user));
-                    
-                    Log::info('New user account created during solo ride booking', [
+                    Log::info('Existing user logged in during solo ride booking', [
                         'user_id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
+                        'email' => $user->email
                     ]);
-                } catch (\Exception $e) {
-                    Log::error('Error creating user account during solo ride booking: ' . $e->getMessage());
-                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                } else {
+                    // Create new user account
+                    try {
+                        $user = User::create([
+                            'name' => $request->customer_name,
+                            'email' => $request->customer_email,
+                            'phone' => $request->customer_phone,
+                            'password' => Hash::make($request->password),
+                        ]);
+                        
+                        $accountCreated = true;
+                        
+                        // Fire the registered event
+                        event(new Registered($user));
+                        
+                        Log::info('New user account created during solo ride booking', [
+                            'user_id' => $user->id,
+                            'email' => $user->email,
+                            'name' => $user->name
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Error creating user account during solo ride booking: ' . $e->getMessage());
+                        return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
+                    }
                 }
+                
+                // Authenticate the user
+                Auth::login($user);
             }
-            
-            // Authenticate the user
-            Auth::login($user);
 
             // Get solo ride service
             $soloRideService = TransportationService::where('service_type', 'solo_ride')
@@ -731,20 +867,19 @@ class BookingController extends Controller
     public function bookAirportTransfer(Request $request)
     {
         try {
-            // First validate basic fields
-            $basicValidator = Validator::make($request->all(), [
+            // Base validation rules
+            $baseRules = $this->getBookingValidationRules([
                 'transfer_type' => 'required|in:pickup,dropoff',
                 'vehicle_type_id' => 'required|exists:vehicle_types,id',
                 'travel_date' => 'required|date|after_or_equal:today',
                 'travel_time' => 'required|date_format:H:i',
                 'passengers' => 'required|integer|min:1|max:8',
-                'customer_name' => 'required|string|max:255',
-                'customer_email' => 'required|email|max:255',
-                'customer_phone' => 'required|string|max:20',
-                'password' => 'required|string|min:4|confirmed',
                 'flight_number' => 'nullable|string|max:20',
                 'special_requirements' => 'nullable|string|max:1000',
             ]);
+            
+            // First validate basic fields
+            $basicValidator = Validator::make($request->all(), $baseRules);
 
             if ($basicValidator->fails()) {
                 return response()->json(['errors' => $basicValidator->errors()], 422);
@@ -768,15 +903,10 @@ class BookingController extends Controller
             }
 
             // Handle user registration/authentication
-            $user = null;
-            $accountCreated = false;
-            
-            // Check if user already exists
-            $existingUser = User::where('email', $request->customer_email)->first();
-            
-            if ($existingUser) {
-                // User exists - verify the password matches
-                if (!Hash::check($request->password, $existingUser->password)) {
+            try {
+                list($user, $accountCreated) = $this->handleUserForBooking($request);
+            } catch (\Exception $e) {
+                if ($e->getMessage() === 'password_mismatch') {
                     return response()->json([
                         'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
                         'errors' => [
@@ -785,47 +915,9 @@ class BookingController extends Controller
                         ]
                     ], 422);
                 }
-                
-                // Update user info if they've changed their name or phone
-                $existingUser->update([
-                    'name' => $request->customer_name,
-                    'phone' => $request->customer_phone,
-                ]);
-                
-                $user = $existingUser;
-                
-                Log::info('Existing user logged in during airport transfer booking', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
-            } else {
-                // Create new user account
-                try {
-                    $user = User::create([
-                        'name' => $request->customer_name,
-                        'email' => $request->customer_email,
-                        'phone' => $request->customer_phone,
-                        'password' => Hash::make($request->password),
-                    ]);
-                    
-                    $accountCreated = true;
-                    
-                    // Fire the registered event
-                    event(new Registered($user));
-                    
-                    Log::info('New user account created during airport transfer booking', [
-                        'user_id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Error creating user account during airport transfer booking: ' . $e->getMessage());
-                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
-                }
+                Log::error('Error handling user for airport transfer booking: ' . $e->getMessage());
+                return response()->json(['error' => 'Unable to process account. Please try again.'], 500);
             }
-            
-            // Authenticate the user
-            Auth::login($user);
 
             // Get airport transfer service
             $airportTransferService = TransportationService::where('service_type', 'airport_transfer')
@@ -1238,7 +1330,8 @@ class BookingController extends Controller
     public function bookParcelDelivery(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Use base validation rules with parcel delivery specific rules
+            $additionalRules = [
                 'pickup_city_id' => 'required|exists:cities,id',
                 'dropoff_city_id' => 'required|exists:cities,id|different:pickup_city_id',
                 'parcel_type_id' => 'required|exists:parcel_types,id',
@@ -1246,10 +1339,6 @@ class BookingController extends Controller
                 'pickup_date' => 'required|date|after_or_equal:today',
                 'pickup_time' => 'required|date_format:H:i',
                 'parcel_description' => 'required|string|max:1000',
-                'customer_name' => 'required|string|max:255',
-                'customer_email' => 'required|email|max:255',
-                'customer_phone' => 'required|string|max:20',
-                'password' => 'required|string|min:4|confirmed',
                 'sender_address' => 'required|string|max:500',
                 'recipient_name' => 'required|string|max:255',
                 'recipient_phone' => 'required|string|max:20',
@@ -1258,7 +1347,9 @@ class BookingController extends Controller
                 'signature_required' => 'boolean',
                 'insurance_required' => 'boolean',
                 'special_instructions' => 'nullable|string|max:1000',
-            ]);
+            ];
+
+            $validator = Validator::make($request->all(), $this->getBookingValidationRules($additionalRules));
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
@@ -1280,15 +1371,10 @@ class BookingController extends Controller
             }
 
             // Handle user registration/authentication
-            $user = null;
-            $accountCreated = false;
-            
-            // Check if user already exists
-            $existingUser = User::where('email', $request->customer_email)->first();
-            
-            if ($existingUser) {
-                // User exists - verify the password matches
-                if (!Hash::check($request->password, $existingUser->password)) {
+            try {
+                list($user, $accountCreated) = $this->handleUserForBooking($request);
+            } catch (\Exception $e) {
+                if ($e->getMessage() === 'password_mismatch') {
                     return response()->json([
                         'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
                         'errors' => [
@@ -1297,47 +1383,9 @@ class BookingController extends Controller
                         ]
                     ], 422);
                 }
-                
-                // Update user info if they've changed their name or phone
-                $existingUser->update([
-                    'name' => $request->customer_name,
-                    'phone' => $request->customer_phone,
-                ]);
-                
-                $user = $existingUser;
-                
-                Log::info('Existing user logged in during parcel delivery booking', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
-            } else {
-                // Create new user account
-                try {
-                    $user = User::create([
-                        'name' => $request->customer_name,
-                        'email' => $request->customer_email,
-                        'phone' => $request->customer_phone,
-                        'password' => Hash::make($request->password),
-                    ]);
-                    
-                    $accountCreated = true;
-                    
-                    // Fire the registered event
-                    event(new \Illuminate\Auth\Events\Registered($user));
-                    
-                    Log::info('New user account created during parcel delivery booking', [
-                        'user_id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Error creating user account during parcel delivery booking: ' . $e->getMessage());
-                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
-                }
+                Log::error('Error handling user for parcel delivery booking: ' . $e->getMessage());
+                return response()->json(['error' => 'Unable to process account. Please try again.'], 500);
             }
-            
-            // Authenticate the user
-            Auth::login($user);
 
             // Get parcel delivery service
             $parcelDeliveryService = TransportationService::where('service_type', 'parcel_delivery')
@@ -1535,34 +1583,28 @@ class BookingController extends Controller
     public function bookCarHire(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Use base validation rules with car hire specific rules
+            $additionalRules = [
                 'vehicle_type_id' => 'required|exists:vehicle_types,id',
                 'pickup_city_id' => 'required|exists:cities,id',
                 'hire_start_date' => 'required|date|after_or_equal:today',
                 'hire_end_date' => 'required|date|after:hire_start_date',
                 'pickup_time' => 'required|date_format:H:i',
-                'customer_name' => 'required|string|max:255',
-                'customer_email' => 'required|email|max:255',
-                'customer_phone' => 'required|string|max:20',
-                'password' => 'required|string|min:4|confirmed',
                 'drivers_license_number' => 'required|string|max:50',
                 'special_requirements' => 'nullable|string|max:1000',
-            ]);
+            ];
+
+            $validator = Validator::make($request->all(), $this->getBookingValidationRules($additionalRules));
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
 
             // Handle user registration/authentication
-            $user = null;
-            $accountCreated = false;
-            
-            // Check if user already exists
-            $existingUser = User::where('email', $request->customer_email)->first();
-            
-            if ($existingUser) {
-                // User exists - verify the password matches
-                if (!Hash::check($request->password, $existingUser->password)) {
+            try {
+                list($user, $accountCreated) = $this->handleUserForBooking($request);
+            } catch (\Exception $e) {
+                if ($e->getMessage() === 'password_mismatch') {
                     return response()->json([
                         'error' => 'An account with this email already exists. Please use the correct password or use a different email address.',
                         'errors' => [
@@ -1571,47 +1613,9 @@ class BookingController extends Controller
                         ]
                     ], 422);
                 }
-                
-                // Update user info if they've changed their name or phone
-                $existingUser->update([
-                    'name' => $request->customer_name,
-                    'phone' => $request->customer_phone,
-                ]);
-                
-                $user = $existingUser;
-                
-                Log::info('Existing user logged in during car hire booking', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
-            } else {
-                // Create new user account
-                try {
-                    $user = User::create([
-                        'name' => $request->customer_name,
-                        'email' => $request->customer_email,
-                        'phone' => $request->customer_phone,
-                        'password' => Hash::make($request->password),
-                    ]);
-                    
-                    $accountCreated = true;
-                    
-                    // Fire the registered event
-                    event(new Registered($user));
-                    
-                    Log::info('New user account created during car hire booking', [
-                        'user_id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Error creating user account during car hire booking: ' . $e->getMessage());
-                    return response()->json(['error' => 'Unable to create account. Please try again.'], 500);
-                }
+                Log::error('Error handling user for car hire booking: ' . $e->getMessage());
+                return response()->json(['error' => 'Unable to process account. Please try again.'], 500);
             }
-            
-            // Authenticate the user
-            Auth::login($user);
 
             // Get car hire service
             $carHireService = TransportationService::where('service_type', 'car_hire')

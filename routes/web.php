@@ -44,6 +44,10 @@ Route::middleware('auth')->group(function () {
 
 // Public API Routes for Booking
 Route::prefix('api')->group(function () {
+    // User data endpoints
+    Route::get('/user/current', [App\Http\Controllers\Api\UserController::class, 'getCurrentUser'])->name('api.user.current');
+    Route::get('/user/booking-data', [App\Http\Controllers\Api\UserController::class, 'getUserBookingData'])->name('api.user.booking-data');
+    
     Route::get('/cities', [App\Http\Controllers\BookingController::class, 'getCities'])->name('api.cities');
     Route::get('/vehicle-types', [App\Http\Controllers\BookingController::class, 'getVehicleTypes'])->name('api.vehicle-types');
     
