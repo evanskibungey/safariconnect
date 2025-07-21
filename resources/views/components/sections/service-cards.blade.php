@@ -5,19 +5,19 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
             {{-- Share Ride Card --}}
             <div id="shared-ride-card"
-                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                class="service-card group bg-white border-2 border-gray-200 hover:border-green-safari text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
                 <div class="text-center">
-                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-green-safari group-hover:to-green-safari-light transition-all duration-300">
                         <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🚗</span>
                     </div>
-                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-green-safari transition-colors duration-300">
                         Share Ride
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
                         Split costs and travel together. Perfect for budget-friendly journeys with fellow travelers.
                     </p>
                     <div class="flex items-center justify-center">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-green-100 group-hover:text-green-800 transition-all duration-300">
                             💰 Budget-friendly
                         </span>
                     </div>
@@ -74,19 +74,19 @@
 
             {{-- Car Hire Card --}}
             <div id="car-hire-card"
-                class="service-card group bg-white border-2 border-gray-200 hover:border-orange-custom text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                class="service-card group bg-white border-2 border-gray-200 hover:border-green-safari-light text-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
                 <div class="text-center">
-                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-orange-custom group-hover:to-orange-600 transition-all duration-300">
+                    <div class="icon-container w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:from-green-safari-light group-hover:to-green-safari transition-all duration-300">
                         <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🚐</span>
                     </div>
-                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-orange-custom transition-colors duration-300">
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 group-hover:text-green-safari-light transition-colors duration-300">
                         Car Hire
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed mb-4 group-hover:text-gray-700 transition-colors duration-300">
                         Rent a vehicle for your convenience. Perfect for extended trips and personal mobility.
                     </p>
                     <div class="flex items-center justify-center">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-orange-100 group-hover:text-orange-800 transition-all duration-300">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 group-hover:bg-green-100 group-hover:text-green-800 transition-all duration-300">
                             🗓️ Flexible
                         </span>
                     </div>
@@ -324,5 +324,70 @@
 
 .from-brown-custom {
     --tw-gradient-from: #8B4513;
+}
+
+/* Green Safari custom colors */
+.border-green-safari {
+    border-color: #2D5016;
+}
+
+.hover\:border-green-safari:hover {
+    border-color: #2D5016;
+}
+
+.border-green-safari-light {
+    border-color: #4A7C59;
+}
+
+.hover\:border-green-safari-light:hover {
+    border-color: #4A7C59;
+}
+
+.text-green-safari {
+    color: #2D5016;
+}
+
+.text-green-safari-light {
+    color: #4A7C59;
+}
+
+.group:hover .group-hover\:text-green-safari {
+    color: #2D5016;
+}
+
+.group:hover .group-hover\:text-green-safari-light {
+    color: #4A7C59;
+}
+
+.bg-green-safari {
+    background-color: #2D5016;
+}
+
+.bg-green-safari-light {
+    background-color: #4A7C59;
+}
+
+.group-hover\:from-green-safari:hover {
+    --tw-gradient-from: #2D5016;
+}
+
+.group-hover\:to-green-safari:hover {
+    --tw-gradient-to: #2D5016;
+}
+
+.group-hover\:from-green-safari-light:hover {
+    --tw-gradient-from: #4A7C59;
+}
+
+.group-hover\:to-green-safari-light:hover {
+    --tw-gradient-to: #4A7C59;
+}
+
+.group-hover\:bg-green-100:hover {
+    background-color: #dcfce7;
+}
+
+.group-hover\:text-green-800:hover {
+    color: #166534;
 }
 </style>

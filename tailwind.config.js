@@ -17,6 +17,9 @@ export default {
             colors: {
                 'orange-custom': '#FF6B35',
                 'brown-custom': '#8B4513',
+                'green-safari': '#2D5016',
+                'green-safari-light': '#4A7C59',
+                'green-safari-dark': '#1A2F0D',
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

@@ -13,7 +13,7 @@
         <!-- Slide 2: Highway Journey -->
         <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 opacity-0" data-slide="1">
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style="background-image: url('https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1168&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+                style="background-image: url('https://plus.unsplash.com/premium_photo-1679830513990-82a4280f41b4?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
         </div>
@@ -21,7 +21,7 @@
         <!-- Slide 3: Safari Adventure -->
         <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 opacity-0" data-slide="2">
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style="background-image: url('https://plus.unsplash.com/premium_photo-1679830513990-82a4280f41b4?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+                style="background-image: url('https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1168&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
         </div>
@@ -32,49 +32,53 @@
         <!-- Floating particles -->
         <div class="absolute w-2 h-2 bg-orange-custom/30 rounded-full animate-float-slow" style="top: 20%; left: 10%;">
         </div>
-        <div class="absolute w-3 h-3 bg-white/20 rounded-full animate-float-medium" style="top: 60%; left: 80%;"></div>
+        <div class="absolute w-3 h-3 bg-green-safari/20 rounded-full animate-float-medium" style="top: 60%; left: 80%;">
+        </div>
         <div class="absolute w-2 h-2 bg-orange-custom/40 rounded-full animate-float-fast" style="top: 80%; left: 30%;">
         </div>
-        <div class="absolute w-4 h-4 bg-white/10 rounded-full animate-float-slow" style="top: 40%; left: 70%;"></div>
+        <div class="absolute w-4 h-4 bg-green-safari-light/15 rounded-full animate-float-slow"
+            style="top: 40%; left: 70%;"></div>
+        <div class="absolute w-3 h-3 bg-green-safari/25 rounded-full animate-float-medium" style="top: 25%; left: 85%;">
+        </div>
     </div>
-
-
 
     <!-- Main Content -->
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center -mt-20">
         <div class="text-center animate-fade-in-up">
             <!-- Dynamic Heading Container -->
             <div class="mb-8 relative min-h-[200px]" id="hero-heading-container">
-                <!-- Slide 1 Content -->
+                <!-- Slide 1 Content - Shared Rides -->
                 <div class="hero-content transition-all duration-500 opacity-100" data-content="0">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                        Share Rides, <span class="text-orange-custom">Save Money</span>
+                        Scheduled Rides, <span class="text-orange-custom">Perfect Planning</span>
                     </h1>
                     <p class="text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-                        Join thousands who are saving up to 50% on intercity travel by sharing rides with verified
-                        co-passengers.
+                        Book your intercity travel in advance with flexible pickup and drop-off points. Share
+                        comfortable rides with verified passengers on pre-scheduled routes.
                     </p>
                 </div>
 
-                <!-- Slide 2 Content -->
+                <!-- Slide 2 Content - Airport Transfer -->
                 <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0"
                     data-content="1">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                        Travel Your Way, <span class="text-orange-custom">Every Day</span>
+                        Airport Transfers, <span class="text-orange-custom">Always On Time</span>
                     </h1>
                     <p class="text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-                        From airport transfers to solo rides, we've got all your transportation needs covered.
+                        Reliable airport pickups and drop-offs with real-time flight tracking. Never miss a flight or
+                        wait for a ride again.
                     </p>
                 </div>
 
-                <!-- Slide 3 Content -->
+                <!-- Slide 3 Content - Solo Rides -->
                 <div class="hero-content absolute top-0 left-0 w-full transition-all duration-500 opacity-0"
                     data-content="2">
                     <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                        Adventure Awaits, <span class="text-orange-custom">Let's Go</span>
+                        Private Comfort, <span class="text-orange-custom">Your Way</span>
                     </h1>
                     <p class="text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-                        Experience Kenya's beauty with safe, reliable, and affordable transportation services.
+                        Enjoy the luxury of private rides with professional drivers. Travel at your own pace with
+                        complete privacy and comfort.
                     </p>
                 </div>
             </div>
@@ -87,11 +91,11 @@
                         <path
                             d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8z" />
                     </svg>
-                    Get Started Now
+                    Book Your Ride
                 </a>
                 <a href="#features"
                     class="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
-                    Learn More
+                    Explore Services
                 </a>
             </div>
 

@@ -25,7 +25,7 @@
                     <span
                         class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform"></span>
                     <span
-                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-custom to-red-500 transition-all group-hover:w-full"></span>
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-safari to-orange-custom transition-all group-hover:w-full"></span>
                 </a>
                 <a href="#service-cards"
                     class="text-white hover:text-orange-custom font-semibold transition-all relative group py-2">
@@ -33,23 +33,23 @@
                     <span
                         class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform"></span>
                     <span
-                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-custom to-red-500 transition-all group-hover:w-full"></span>
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-safari to-orange-custom transition-all group-hover:w-full"></span>
                 </a>
                 <a href="#features"
                     class="text-white hover:text-orange-custom font-semibold transition-all relative group py-2">
-                    <span class="relative z-10">HOW IT WORKS</span>
+                    <span class="relative z-10">AMENITIES</span>
                     <span
                         class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform"></span>
                     <span
-                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-custom to-red-500 transition-all group-hover:w-full"></span>
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-safari to-orange-custom transition-all group-hover:w-full"></span>
                 </a>
                 <a href="#footer"
                     class="text-white hover:text-orange-custom font-semibold transition-all relative group py-2">
-                    <span class="relative z-10">CONTACT</span>
+                    <span class="relative z-10">CONTACT US</span>
                     <span
                         class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform"></span>
                     <span
-                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-custom to-red-500 transition-all group-hover:w-full"></span>
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-safari to-orange-custom transition-all group-hover:w-full"></span>
                 </a>
             </nav>
 
