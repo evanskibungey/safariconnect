@@ -21,7 +21,8 @@ use App\Http\Controllers\Admin\AirportController;
 
 use Illuminate\Support\Facades\Route;
 
-// Customer Routes
+// Customer     
+// outes
 Route::get('/', function () {
     return view('welcome');
 });
@@ -87,8 +88,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'create'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'store']);
         
-        Route::get('/register', [AdminRegisterController::class, 'create'])->name('register');
-        Route::post('/register', [AdminRegisterController::class, 'store']);
+        // Admin registration routes with additional security
+        Route::middleware('prevent.admin.registration')->group(function () {
+            Route::get('/register', [AdminRegisterController::class, 'create'])->name('register');
+            Route::post('/register', [AdminRegisterController::class, 'store']);
+        });
         
         Route::get('/forgot-password', [AdminPasswordResetLinkController::class, 'create'])->name('password.request');
         Route::post('/forgot-password', [AdminPasswordResetLinkController::class, 'store'])->name('password.email');

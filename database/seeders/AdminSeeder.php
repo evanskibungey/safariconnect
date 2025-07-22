@@ -5,38 +5,44 @@ namespace Database\Seeders;
 use App\Models\Admin;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Exception;
 
 class AdminSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * Creates only ONE admin account for security
      */
     public function run(): void
     {
-        // Create default admin user
-        Admin::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            [
+        try {
+            // Check if admin already exists
+            if (Admin::adminExists()) {
+                $this->command->warn('Admin account already exists. Skipping creation.');
+                $admin = Admin::getSingleAdmin();
+                $this->command->info('Current admin: ' . $admin->email);
+                return;
+            }
+
+            // Create single admin user using secure method
+            $admin = Admin::createSingleAdmin([
                 'name' => 'System Administrator',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('admin123'),
+                'email' => 'admin@safarikonnect.com',
+                'password' => Hash::make('Admin@2025!Secure'),
                 'email_verified_at' => now(),
-            ]
-        );
+            ]);
 
-        // Create test admin user
-        Admin::firstOrCreate(
-            ['email' => 'test@admin.com'],
-            [
-                'name' => 'Test Admin',
-                'email' => 'test@admin.com', 
-                'password' => Hash::make('test'),
-                'email_verified_at' => now(),
-            ]
-        );
+            $this->command->info('✓ Single admin account created successfully!');
+            $this->command->info('Email: admin@safarikonnect.com');
+            $this->command->info('Password: Admin@2025!Secure');
+            $this->command->warn('');
+            $this->command->warn('⚠️  SECURITY REMINDER:');
+            $this->command->warn('   Please change the default password after first login!');
+            $this->command->warn('   Only ONE admin account is allowed in the system.');
+            $this->command->warn('');
 
-        $this->command->info('Admin users created successfully!');
-        $this->command->info('Default admin: admin@example.com / admin123');
-        $this->command->info('Test admin: test@admin.com / test');
+        } catch (Exception $e) {
+            $this->command->error('Failed to create admin: ' . $e->getMessage());
+        }
     }
 }

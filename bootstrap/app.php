@@ -13,8 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+            'prevent.admin.registration' => \App\Http\Middleware\PreventAdminRegistration::class,
         ]);
     })
+    ->withCommands([
+        \App\Console\Commands\ManageAdmin::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
